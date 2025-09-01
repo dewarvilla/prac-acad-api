@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         //tabla SMMLV
-        Schema::create('SMMLV', function (Blueprint $table) {
+        Schema::create('salarios', function (Blueprint $table) {
             $table->id();
-            $table->integer('valor');
-            $table->integer('anio');
+            
+            $table->unsignedInteger('anio')->unique();
+            $table->decimal('valor', 12, 2);
+
             $table->timestamps();
         });
     }
