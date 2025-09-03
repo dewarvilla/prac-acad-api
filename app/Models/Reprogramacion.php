@@ -16,6 +16,13 @@ class Reprogramacion extends Model
         'estado_vice',
         'justificacion',
         'practica_id',
+        'estado',
+        'fechacreacion',
+        'usuariocreacion',
+        'fechamodificacion',
+        'usuariomodificacion',
+        'ipcreacion',
+        'ipmodificacion'
     ];
 
     // Relaciones

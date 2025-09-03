@@ -16,6 +16,13 @@ class Legalizacion extends Model
         'estado_tesoreria',
         'estado_contabilidad',
         'practica_id',
+        'estado',
+        'fechacreacion',
+        'usuariocreacion',
+        'fechamodificacion',
+        'usuariomodificacion',
+        'ipcreacion',
+        'ipmodificacion'
     ];
 
     // Relaciones

@@ -21,6 +21,13 @@ class Auxilio extends Model
         'valor_por_acompanante',
         'valor_total_auxilio',
         'practica_id',
+        'estado',
+        'fechacreacion',
+        'usuariocreacion',
+        'fechamodificacion',
+        'usuariomodificacion',
+        'ipcreacion',
+        'ipmodificacion'
     ];
 
     public function practica()

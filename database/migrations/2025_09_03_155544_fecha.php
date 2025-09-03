@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // tabla reprogramacion de practicas
-        Schema::create('reprogramaciones', function (Blueprint $table) {
+        //tabla de fecha de apertura y cierre definida por el vice academica
+        Schema::create('fecha', function (Blueprint $table) {
             $table->id();
             
-            $table->date('fecha_reprogramacion');
-
-            $table->enum('estado_reprogramacion', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
-            $table->enum('tipo_reprogramacion', ['normal', 'emergencia'])->default('normal');
-            $table->enum('estado_vice', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
-
-            $table->string('justificacion');
-
-            $table->foreignId('practica_id')->constrained('practicas')->onDelete('cascade');
+            $table->date('fecha_apertura')->unique();
+            $table->date('fecha_cierre')->unique();
 
             //Datos de auditoria
             $table->timestamp('fechacreacion');

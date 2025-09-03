@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Salario extends Model
+class Fecha extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'anio',
-        'valor',
+        'fecha_apertura',
+        'fecha_cierre',
         'estado',
         'fechacreacion',
         'usuariocreacion',

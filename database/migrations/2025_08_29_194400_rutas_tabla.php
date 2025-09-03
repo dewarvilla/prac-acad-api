@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->decimal('valor_peajes', 10, 2);
             $table->decimal('valor_total_peajes', 10, 2);
-            $table->decimal('distacia_trayectos_km', 10, 2);
+            $table->decimal('distancia_trayectos_km', 10, 2);
             $table->decimal('distancia_total_km', 10, 2);
 
             $table->string('ruta_salida')->nullable();
@@ -30,7 +30,14 @@ return new class extends Migration
 
             $table->foreignId('practica_id')->constrained('practicas')->onDelete('cascade');
             
-            $table->timestamps();
+            //Datos de auditoria
+            $table->timestamp('fechacreacion');
+            $table->integer('usuariocreacion');
+            $table->timestamp('fechamodificacion');
+            $table->integer('usuariomodificacion');
+            $table->string('ipcreacion',255);
+            $table->string('ipmodificacion',255);
+
         });
     }
 

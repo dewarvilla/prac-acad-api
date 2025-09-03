@@ -24,7 +24,13 @@ return new class extends Migration
             
             $table->foreignId('practica_id')->constrained('practicas')->onDelete('cascade');
 
-            $table->timestamps();
+            //Datos de auditoria
+            $table->timestamp('fechacreacion');
+            $table->integer('usuariocreacion');
+            $table->timestamp('fechamodificacion');
+            $table->integer('usuariomodificacion');
+            $table->string('ipcreacion',255);
+            $table->string('ipmodificacion',255);
         });
     }
 

@@ -9,6 +9,13 @@ class Ruta extends Model
 {
     use HasFactory;
 
+    protected $table = 'ruta';
+
+    protected $connection  = 'pgsql';
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
+    
+
     protected $fillable = [
         'origen_lat',
         'origen_lng',
@@ -23,6 +30,13 @@ class Ruta extends Model
         'ruta_salida',
         'ruta_llegada',
         'practica_id',
+        'estado',
+        'fechacreacion',
+        'usuariocreacion',
+        'fechamodificacion',
+        'usuariomodificacion',
+        'ipcreacion',
+        'ipmodificacion'
     ];
 
     // Relaciones

@@ -3,9 +3,8 @@
 namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StoreSalarioRequest extends FormRequest
+class StoreAuxilioRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,10 +15,8 @@ class StoreSalarioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'anio' => ['required','integer','min:1990',],
-            'valor' => ['required','integer','min:0'],
-            'practica_id' => ['required','exists:practicas,id'],
+            'fecha_apertura' => ['required', 'date'],
+            'fecha_cierre' => ['required', 'date','after:fecha_apertura'],
         ];
     }
 }
-

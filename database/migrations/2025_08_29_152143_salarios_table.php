@@ -18,7 +18,14 @@ return new class extends Migration
             $table->unsignedInteger('anio')->unique();
             $table->decimal('valor', 12, 2);
 
-            $table->timestamps();
+            //Datos de auditoria
+            $table->timestamp('fechacreacion');
+            $table->integer('usuariocreacion');
+            $table->timestamp('fechamodificacion');
+            $table->integer('usuariomodificacion');
+            $table->string('ipcreacion',255);
+            $table->string('ipmodificacion',255);
+
         });
     }
 

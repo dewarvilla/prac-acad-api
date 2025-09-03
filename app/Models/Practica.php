@@ -27,6 +27,13 @@ class Practica extends Model
         'fecha_finalizacion',
         'fecha_solicitud',
         'user_id',
+        'estado',
+        'fechacreacion',
+        'usuariocreacion',
+        'fechamodificacion',
+        'usuariomodificacion',
+        'ipcreacion',
+        'ipmodificacion'
     ];
 
     // Relaciones

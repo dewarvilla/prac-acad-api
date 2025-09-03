@@ -26,6 +26,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('rutas', RutaController::class);
     Route::apiResource('reprogramaciones', ReprogramacionController::class);
     Route::apiResource('legalizaciones', LegalizacionController::class);
+    Route::apiResource('fechas', FechaController::class);
 
     // carga masiva de participantes
     Route::post('participantes/bulk', [ParticipanteController::class, 'bulkStore'])

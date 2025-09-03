@@ -4,25 +4,26 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use Illuminate\Validation\Rule;
+
 class StoreLegalizacionRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        $user = $this->user();
+        return $user != null && $user->tokenCan('create');
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'fecha_legalizacion' => ['required','date'],
+            'estado_depart' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
+            'estado_postg' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
+            'estado_tesoreria' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
+            'estado_contabilidad' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
+
+            'practica_id' => ['required','exists:practicas,id'],
         ];
     }
 }

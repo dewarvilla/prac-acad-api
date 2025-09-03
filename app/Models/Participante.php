@@ -22,6 +22,13 @@ class Participante extends Model
         'repitente',
         'practica_id',
         'user_id',
+        'estado',
+        'fechacreacion',
+        'usuariocreacion',
+        'fechamodificacion',
+        'usuariomodificacion',
+        'ipcreacion',
+        'ipmodificacion'
     ];
 
     // Relaciones

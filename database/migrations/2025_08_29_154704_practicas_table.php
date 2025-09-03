@@ -38,7 +38,13 @@ return new class extends Migration
 
             $table->unique(['nombre', 'programa_academico']);//para no repetir el nombre de la practica en el mismo programa academico
 
-            $table->timestamps();
+            //Datos de auditoria
+            $table->timestamp('fechacreacion');
+            $table->integer('usuariocreacion');
+            $table->timestamp('fechamodificacion');
+            $table->integer('usuariomodificacion');
+            $table->string('ipcreacion',255);
+            $table->string('ipmodificacion',255);
         });
     }
 

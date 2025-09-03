@@ -32,7 +32,13 @@ return new class extends Migration
             //para que no se repita el participante en la misma practica
             $table->unique(['numero_identificacion', 'practica_id']);
 
-            $table->timestamps();
+            //Datos de auditoria
+            $table->timestamp('fechacreacion');
+            $table->integer('usuariocreacion');
+            $table->timestamp('fechamodificacion');
+            $table->integer('usuariomodificacion');
+            $table->string('ipcreacion',255);
+            $table->string('ipmodificacion',255);
         });
     }
 

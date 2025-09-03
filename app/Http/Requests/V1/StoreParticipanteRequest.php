@@ -22,7 +22,7 @@ class StoreParticipanteRequest extends FormRequest
                 // Único por práctica
                 Rule::unique('participantes','numero_identificacion')->where(fn($q)=>$q->where('practica_id',$practicaId))
             ],
-            'tipo_participante' => ['required', Rule::in('estudiante', 'docente', 'acompañante')],
+            'tipo_participante' => ['required', Rule::in('estudiante', 'docente', 'acompanante')],
             'discapacidad' => ['required', 'boolean'],
             'nombre' => ['required','string','max:120'],
             'apellido' => ['required','string','max:120'],
