@@ -9,25 +9,37 @@ class Legalizacion extends Model
 {
     use HasFactory;
 
+    protected $table = 'legalizaciones';
+
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
+
     protected $fillable = [
         'fecha_legalizacion',
         'estado_depart',
         'estado_postg',
+        'estado_logistica',
         'estado_tesoreria',
         'estado_contabilidad',
-        'practica_id',
-        'estado',
+        'programacion_id',
         'fechacreacion',
         'usuariocreacion',
         'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
-        'ipmodificacion'
+        'ipmodificacion',
+    ];
+
+    protected $casts = [
+        'fecha_legalizacion' => 'date',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime',
     ];
 
     // Relaciones
-    public function practica()
+    public function programacion()
     {
-        return $this->belongsTo(Practica::class);
+        return $this->belongsTo(Programacion::class, 'programacion_id');
     }
 }
+

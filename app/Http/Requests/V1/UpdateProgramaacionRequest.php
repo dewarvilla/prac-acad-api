@@ -5,7 +5,7 @@ namespace App\Http\Requests\V1;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdatePracticaRequest extends FormRequest
+class UpdateProgramacionRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class UpdatePracticaRequest extends FormRequest
 
     public function rules(): array
     {
-        $model = $this->route('practica');               // model o id
+        $model = $this->route('programacion');               // model o id
         $id    = is_object($model) ? $model->id : $model;
 
         // Para unico (nombre por programa_academico)
@@ -48,6 +48,10 @@ class UpdatePracticaRequest extends FormRequest
                 'fecha_solicitud' => ['sometimes','date'],
                 'fecha_finalizacion' => ['sometimes','date'],
                 'user_id' => ['sometimes','exists:users,id'],
+
+
+                
+
             ];
         }
 

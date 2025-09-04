@@ -9,36 +9,41 @@ class Participante extends Model
 {
     use HasFactory;
 
+    protected $table = 'participantes';
+
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
+
     protected $fillable = [
         'numero_identificacion',
-        'tipo_participante',
         'discapacidad',
         'nombre',
-        'apellido',
         'correo_institucional',
         'telefono',
         'programa_academico',
         'facultad',
         'repitente',
-        'practica_id',
-        'user_id',
-        'estado',
+        'tipo_participante', // 'estudiante' | 'docente' | 'acompanante'
+        'programacion_id',
         'fechacreacion',
         'usuariocreacion',
         'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
-        'ipmodificacion'
+        'ipmodificacion',
+    ];
+
+    protected $casts = [
+        'discapacidad' => 'boolean',
+        'repitente' => 'boolean',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime',
     ];
 
     // Relaciones
-    public function practica()
+    public function programacion()
     {
-        return $this->belongsTo(Practica::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Programacion::class, 'programacion_id');
     }
 }
+

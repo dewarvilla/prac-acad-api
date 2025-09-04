@@ -18,27 +18,25 @@ return new class extends Migration
             $table->string('numero_identificacion');
             $table->boolean('discapacidad')->default(false);
             $table->string('nombre');
-            $table->string('apellido');
             $table->string('correo_institucional')->nullable();
             $table->string('telefono');
             $table->string('programa_academico')->nullable();
             $table->string('facultad')->nullable();
             $table->boolean('repitente')->default(false);
-            
             $table->enum('tipo_participante', ['estudiante', 'docente', 'acompanante']);
             
-            $table->foreignId('practica_id')->constrained('practicas')->onDelete('cascade');
+            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
 
             //para que no se repita el participante en la misma practica
-            $table->unique(['numero_identificacion', 'practica_id']);
+            $table->unique(['numero_identificacion', 'programacion_id']);
 
             //Datos de auditoria
             $table->timestamp('fechacreacion');
-            $table->integer('usuariocreacion');
+            $table->unsignedBigInteger('usuariocreacion');
             $table->timestamp('fechamodificacion');
-            $table->integer('usuariomodificacion');
-            $table->string('ipcreacion',255);
-            $table->string('ipmodificacion',255);
+            $table->unsignedBigInteger('usuariomodificacion');
+            $table->ipAddress('ipcreacion');
+            $table->ipAddress('ipmodificacion');
         });
     }
 

@@ -28,15 +28,15 @@ return new class extends Migration
             $table->string('ruta_salida')->nullable();
             $table->string('ruta_llegada')->nullable();
 
-            $table->foreignId('practica_id')->constrained('practicas')->onDelete('cascade');
+            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
             
             //Datos de auditoria
             $table->timestamp('fechacreacion');
-            $table->integer('usuariocreacion');
+            $table->unsignedBigInteger('usuariocreacion');
             $table->timestamp('fechamodificacion');
-            $table->integer('usuariomodificacion');
-            $table->string('ipcreacion',255);
-            $table->string('ipmodificacion',255);
+            $table->unsignedBigInteger('usuariomodificacion');
+            $table->ipAddress('ipcreacion');
+            $table->ipAddress('ipmodificacion');
 
         });
     }

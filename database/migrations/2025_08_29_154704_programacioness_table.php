@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //tabla crear practicas
-        Schema::create('practicas', function (Blueprint $table) {
+        //tabla para programaciones de practicas
+        Schema::create('programaciones', function (Blueprint $table) {
             $table->id();
 
             $table->string('nombre');
@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('facultad');
             $table->string('programa_academico');
             $table->text('descripcion');
+            $table->boolean('requiere_transporte')->default(false);
             $table->string('lugar_de_realizacion')->nullable();
             $table->text('justificacion');
             $table->text('recursos_necesarios');
@@ -33,18 +34,19 @@ return new class extends Migration
             $table->enum('estado_vice', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
 
             $table->date('fecha_inicio');
-            $table->date('fecha_finalizacion');
-            $table->date('fecha_solicitud');    
+            $table->date('fecha_finalizacion'); 
 
             $table->unique(['nombre', 'programa_academico']);//para no repetir el nombre de la practica en el mismo programa academico
 
+            $table->foreignId('creacion_id')->constrained('creaciones')->onDelete('cascade');
+
             //Datos de auditoria
             $table->timestamp('fechacreacion');
-            $table->integer('usuariocreacion');
+            $table->unsignedBigInteger('usuariocreacion');
             $table->timestamp('fechamodificacion');
-            $table->integer('usuariomodificacion');
-            $table->string('ipcreacion',255);
-            $table->string('ipmodificacion',255);
+            $table->unsignedBigInteger('usuariomodificacion');
+            $table->ipAddress('ipcreacion');
+            $table->ipAddress('ipmodificacion');
         });
     }
 

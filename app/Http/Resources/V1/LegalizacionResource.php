@@ -7,20 +7,23 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class LegalizacionResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
-            'fechaLegalizacion' => $this->fecha_legalizacion,
-            'estadoDepart' => $this->estado_depart,
-            'estadoPostg' => $this->estado_postg,
-            'estadoTesoreria' => $this->estado_tesoreria,
+            'id'                 => $this->id,
+            'fechaLegalizacion'  => $this->fecha_legalizacion,
+            'estadoDepart'       => $this->estado_depart,
+            'estadoPostg'        => $this->estado_postg,
+            'estadoLogistica'    => $this->estado_logistica,
+            'estadoTesoreria'    => $this->estado_tesoreria,
             'estadoContabilidad' => $this->estado_contabilidad,
-            'practicaId' => $this->practica_id,
+            'programacionId'     => $this->programacion_id,
+            'fechacreacion'      => $this->fechacreacion,
+            'usuariocreacion'    => $this->usuariocreacion,
+            'fechamodificacion'  => $this->fechamodificacion,
+            'usuariomodificacion'=> $this->usuariomodificacion,
+            'ipcreacion'         => $this->ipcreacion,
+            'ipmodificacion'     => $this->ipmodificacion,
         ];
     }
 }

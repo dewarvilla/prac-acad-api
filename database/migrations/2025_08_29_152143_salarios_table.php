@@ -20,11 +20,11 @@ return new class extends Migration
 
             //Datos de auditoria
             $table->timestamp('fechacreacion');
-            $table->integer('usuariocreacion');
+            $table->unsignedBigInteger('usuariocreacion');
             $table->timestamp('fechamodificacion');
-            $table->integer('usuariomodificacion');
-            $table->string('ipcreacion',255);
-            $table->string('ipmodificacion',255);
+            $table->unsignedBigInteger('usuariomodificacion');
+            $table->ipAddress('ipcreacion');
+            $table->ipAddress('ipmodificacion');
 
         });
     }
@@ -37,3 +37,5 @@ return new class extends Migration
         //
     }
 };
+
+

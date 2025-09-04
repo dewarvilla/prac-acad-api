@@ -36,12 +36,12 @@ class AuxilioController extends Controller
             ->setStatusCode(201); // 201 Created
     }
 
-    public function show(Auxilio $auxilio) // ← singular para route model binding {auxilio}
+    public function show(Auxilio $auxilio) // para route model {auxilio}
     {
         return new AuxilioResource($auxilio);
     }
 
-    public function update(UpdateAuxilioRequest $request, Auxilio $auxilio) // ← singular
+    public function update(UpdateAuxilioRequest $request, Auxilio $auxilio) 
     {
         $auxilio->update($request->validated());
 
@@ -49,7 +49,7 @@ class AuxilioController extends Controller
         return new AuxilioResource($auxilio->refresh());
     }
 
-    public function destroy(Auxilio $auxilio) // singular y usa la misma var
+    public function destroy(Auxilio $auxilio) 
     {
         $auxilio->delete();
         return response()->noContent(); // 204

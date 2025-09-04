@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // tabla reprogramacion de practicas
-        Schema::create('reprogramaciones', function (Blueprint $table) {
+        //tabla de fecha de apertura y cierre definida por el vice academica
+        Schema::create('fechas', function (Blueprint $table) {
             $table->id();
             
-            $table->date('fecha_reprogramacion');
-
-            $table->enum('estado_reprogramacion', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
-            $table->enum('tipo_reprogramacion', ['normal', 'emergencia'])->default('normal');
-            $table->enum('estado_vice', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
-
-            $table->string('justificacion');
-
-            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
+            $table->date('fecha_apertura_preg')->unique();
+            $table->date('fecha_cierre_docente_preg')->unique();
+            $table->date('fecha_cierre_jefe_depart')->unique();
+            $table->date('fecha_cierre_decano')->unique();
+            $table->date('fecha_apertura_postg')->unique();
+            $table->date('fecha_cierre_docente_postg')->unique();
+            $table->date('fecha_cierre_coordinador_postg')->unique();
+            $table->date('fecha_cierre_jefe_postg')->unique();
 
             //Datos de auditoria
             $table->timestamp('fechacreacion');

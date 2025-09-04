@@ -5,22 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Reprogramacion extends Model
+class Creacion extends Model
 {
     use HasFactory;
 
-    protected $table = 'reprogramaciones';
+    protected $table = 'creaciones';
 
     const CREATED_AT = 'fechacreacion';
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
-        'fecha_reprogramacion',
-        'estado_reprogramacion', // 'aprobada'|'rechazada'|'pendiente'
-        'tipo_reprogramacion',   // 'normal'|'emergencia'
-        'estado_vice',           // 'aprobada'|'rechazada'|'pendiente'
+        'nivel_academico',
+        'facultad',
+        'programa_academico',
+        'nombre_practica',
+        'recursos_necesarios',
         'justificacion',
-        'programacion_id',
+        'estado_practica',
+        'estado_depart',
+        'estado_consejo_facultad',
+        'estado_consejo_academico',
         'fechacreacion',
         'usuariocreacion',
         'fechamodificacion',
@@ -30,14 +34,13 @@ class Reprogramacion extends Model
     ];
 
     protected $casts = [
-        'fecha_reprogramacion' => 'date',
         'fechacreacion' => 'datetime',
         'fechamodificacion' => 'datetime',
     ];
 
     // Relaciones
-    public function programacion()
+    public function programaciones()
     {
-        return $this->belongsTo(Programacion::class, 'programacion_id');
+        return $this->hasMany(Programacion::class, 'creacion_id');
     }
 }

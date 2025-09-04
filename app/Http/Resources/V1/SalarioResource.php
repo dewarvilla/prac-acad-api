@@ -7,16 +7,20 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SalarioResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
-            'anio' => $this->anio,
-            'valor' => $this->valor, 
+            'id'             => $this->id,
+            'anio'           => $this->anio,
+            'valor'          => $this->valor,
+
+            // Auditoría
+            'fechacreacion'      => $this->fechacreacion,
+            'usuariocreacion'    => $this->usuariocreacion,
+            'fechamodificacion'  => $this->fechamodificacion,
+            'usuariomodificacion'=> $this->usuariomodificacion,
+            'ipcreacion'         => $this->ipcreacion,
+            'ipmodificacion'     => $this->ipmodificacion,
         ];
     }
 }

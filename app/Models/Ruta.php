@@ -9,18 +9,14 @@ class Ruta extends Model
 {
     use HasFactory;
 
-    protected $table = 'ruta';
+    protected $table = 'rutas';
 
-    protected $connection  = 'pgsql';
     const CREATED_AT = 'fechacreacion';
     const UPDATED_AT = 'fechamodificacion';
-    
 
     protected $fillable = [
-        'origen_lat',
-        'origen_lng',
-        'destino_lat',
-        'destino_lng',
+        'latitud_salidas',
+        'latitud_llegadas',
         'numero_recorridos',
         'numero_peajes',
         'valor_peajes',
@@ -29,19 +25,29 @@ class Ruta extends Model
         'distancia_total_km',
         'ruta_salida',
         'ruta_llegada',
-        'practica_id',
-        'estado',
+        'programacion_id',
         'fechacreacion',
         'usuariocreacion',
         'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
-        'ipmodificacion'
+        'ipmodificacion',
+    ];
+
+    protected $casts = [
+        'numero_recorridos' => 'integer',
+        'numero_peajes' => 'integer',
+        'valor_peajes' => 'decimal:2',
+        'valor_total_peajes' => 'decimal:2',
+        'distancia_trayectos_km' => 'decimal:2',
+        'distancia_total_km' => 'decimal:2',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime',
     ];
 
     // Relaciones
-    public function practica()
+    public function programacion()
     {
-        return $this->belongsTo(Practica::class);
+        return $this->belongsTo(Programacion::class, 'programacion_id');
     }
 }

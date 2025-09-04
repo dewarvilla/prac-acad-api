@@ -5,9 +5,9 @@ namespace App\Http\Resources\V1;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class PracticaCollection extends ResourceCollection
+class CreacionCollection extends ResourceCollection
 {
-    public $collects = PracticaResource::class;
+    public $collects = CreacionResource::class;
 
     public function toArray(Request $request): array
     {
@@ -19,16 +19,16 @@ class PracticaCollection extends ResourceCollection
         if (method_exists($this->resource, 'perPage')) {
             return [
                 'meta' => [
-                    'per_page' => $this->resource->perPage(),
+                    'per_page'     => $this->resource->perPage(),
                     'current_page' => $this->resource->currentPage(),
-                    'last_page' => $this->resource->lastPage(),
-                    'total' => $this->resource->total(),
+                    'last_page'    => $this->resource->lastPage(),
+                    'total'        => $this->resource->total(),
                 ],
                 'links' => [
                     'first' => $this->resource->url(1),
-                    'last' => $this->resource->url($this->resource->lastPage()),
-                    'prev' => $this->resource->previousPageUrl(),
-                    'next' => $this->resource->nextPageUrl(),
+                    'last'  => $this->resource->url($this->resource->lastPage()),
+                    'prev'  => $this->resource->previousPageUrl(),
+                    'next'  => $this->resource->nextPageUrl(),
                 ],
             ];
         }

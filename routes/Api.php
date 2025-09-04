@@ -1,34 +1,51 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\V1\PracticaController;
+use App\Http\Controllers\Api\V1\ProgramacionController;
 use App\Http\Controllers\Api\V1\SalarioController;
 use App\Http\Controllers\Api\V1\ParticipanteController;
 use App\Http\Controllers\Api\V1\AuxilioController;
 use App\Http\Controllers\Api\V1\RutaController;
 use App\Http\Controllers\Api\V1\ReprogramacionController;
 use App\Http\Controllers\Api\V1\LegalizacionController;
+use App\Http\Controllers\Api\V1\FechaController;
+use App\Http\Controllers\Api\V1\CreacionController;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// SIN autenticación (endpoint /user removido)
 
-// API v1 (protegida con Sanctum)
-Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+// API v1 (público, sin middleware de auth)
+Route::prefix('v1')->group(function () {
 
-    // Recursos principales
-    Route::apiResource('practicas', PracticaController::class);
-    Route::apiResource('salarios', SalarioController::class)->only(['index','show','store','update']);
-    Route::apiResource('participantes', ParticipanteController::class);
-    Route::apiResource('auxilios', AuxilioController::class);
-    Route::apiResource('rutas', RutaController::class);
-    Route::apiResource('reprogramaciones', ReprogramacionController::class);
-    Route::apiResource('legalizaciones', LegalizacionController::class);
-    Route::apiResource('fechas', FechaController::class);
+    Route::apiResource('programaciones', ProgramacionController::class)
+        ->parameters(['programaciones' => 'programacion']);
 
-    // carga masiva de participantes
+    Route::apiResource('salarios', SalarioController::class)
+        ->only(['index','show','store','update'])
+        ->parameters(['salarios' => 'salario']);
+
+    Route::apiResource('participantes', ParticipanteController::class)
+        ->parameters(['participantes' => 'participante']);
+
+    Route::apiResource('auxilios', AuxilioController::class)
+        ->parameters(['auxilios' => 'auxilio']);
+
+    Route::apiResource('rutas', RutaController::class)
+        ->parameters(['rutas' => 'ruta']);
+
+    Route::apiResource('reprogramaciones', ReprogramacionController::class)
+        ->parameters(['reprogramaciones' => 'reprogramacion']);
+
+    Route::apiResource('legalizaciones', LegalizacionController::class)
+        ->parameters(['legalizaciones' => 'legalizacion']);
+
+    Route::apiResource('fechas', FechaController::class)
+        ->parameters(['fechas' => 'fecha']);
+
+    Route::apiResource('creaciones', CreacionController::class)
+        ->parameters(['creaciones' => 'creacion']);
+
+    // Carga masiva de participantes
     Route::post('participantes/bulk', [ParticipanteController::class, 'bulkStore'])
         ->name('participantes.bulk-store');
 });

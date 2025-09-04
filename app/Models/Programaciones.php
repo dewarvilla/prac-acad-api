@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Practica extends Model
+class Programacion extends Model
 {
     use HasFactory;
+
+    protected $table = 'programaciones';
+
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
         'nombre',
@@ -24,46 +29,53 @@ class Practica extends Model
         'estado_decano',
         'estado_jefe_postg',
         'estado_vice',
+        'fecha_inicio',
         'fecha_finalizacion',
-        'fecha_solicitud',
-        'user_id',
-        'estado',
+        'requiere_transporte',
+        'creacion_id',
         'fechacreacion',
         'usuariocreacion',
         'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
-        'ipmodificacion'
+        'ipmodificacion',
+    ];
+
+    protected $casts = [
+        'fecha_inicio' => 'date',
+        'fecha_finalizacion' => 'date',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime',
     ];
 
     // Relaciones
-    public function user()
+    public function creacion()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Creacion::class, 'creacion_id');
     }
 
     public function participantes()
     {
-        return $this->hasMany(Participante::class);
+        return $this->hasMany(Participante::class, 'programacion_id');
     }
 
     public function auxilios()
     {
-        return $this->hasMany(Auxilio::class);
+        return $this->hasMany(Auxilio::class, 'programacion_id');
     }
 
     public function rutas()
     {
-        return $this->hasMany(Ruta::class);
+        return $this->hasMany(Ruta::class, 'programacion_id');
     }
 
     public function reprogramaciones()
     {
-        return $this->hasMany(Reprogramacion::class);
+        return $this->hasMany(Reprogramacion::class, 'programacion_id');
     }
 
     public function legalizaciones()
     {
-        return $this->hasMany(Legalizacion::class);
+        return $this->hasMany(Legalizacion::class, 'programacion_id');
     }
 }

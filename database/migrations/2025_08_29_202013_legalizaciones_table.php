@@ -19,18 +19,19 @@ return new class extends Migration
 
             $table->enum('estado_depart', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_postg', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
+            $table->enum('estado_logistica', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_tesoreria', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_contabilidad', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             
-            $table->foreignId('practica_id')->constrained('practicas')->onDelete('cascade');
+            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
 
             //Datos de auditoria
             $table->timestamp('fechacreacion');
-            $table->integer('usuariocreacion');
+            $table->unsignedBigInteger('usuariocreacion');
             $table->timestamp('fechamodificacion');
-            $table->integer('usuariomodificacion');
-            $table->string('ipcreacion',255);
-            $table->string('ipmodificacion',255);
+            $table->unsignedBigInteger('usuariomodificacion');
+            $table->ipAddress('ipcreacion');
+            $table->ipAddress('ipmodificacion');
         });
     }
 

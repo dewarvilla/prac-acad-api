@@ -9,6 +9,11 @@ class Auxilio extends Model
 {
     use HasFactory;
 
+    protected $table = 'auxilios';
+
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
+
     protected $fillable = [
         'pernocta',
         'distancias_mayor_70km',
@@ -20,18 +25,34 @@ class Auxilio extends Model
         'valor_por_estudiante',
         'valor_por_acompanante',
         'valor_total_auxilio',
-        'practica_id',
-        'estado',
+        'programacion_id',
         'fechacreacion',
         'usuariocreacion',
         'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
-        'ipmodificacion'
+        'ipmodificacion',
     ];
 
-    public function practica()
+    protected $casts = [
+        'pernocta' => 'boolean',
+        'distancias_mayor_70km' => 'boolean',
+        'fuera_cordoba' => 'boolean',
+        'numero_total_estudiantes' => 'integer',
+        'numero_total_docentes' => 'integer',
+        'numero_total_acompanantes' => 'integer',
+        'valor_por_docente' => 'decimal:2',
+        'valor_por_estudiante' => 'decimal:2',
+        'valor_por_acompanante' => 'decimal:2',
+        'valor_total_auxilio' => 'decimal:2',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime',
+    ];
+
+    // Relaciones
+    public function programacion()
     {
-        return $this->belongsTo(Practica::class);
+        return $this->belongsTo(Programacion::class, 'programacion_id');
     }
 }
+
