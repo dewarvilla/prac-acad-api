@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // tabla reprogramacion de practicas
         Schema::create('reprogramaciones', function (Blueprint $table) {
-            $table->id();
+            $table->reprogramacion_id();
             
             $table->date('fecha_reprogramacion');
 
@@ -28,8 +28,6 @@ return new class extends Migration
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();

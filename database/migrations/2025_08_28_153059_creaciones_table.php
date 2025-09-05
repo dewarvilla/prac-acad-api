@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //tabla para crear practicas por el vice academico
         Schema::create('creaciones', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             
             $table->enum('nivel_academico', ['pregrado', 'postgrado'])->default('pregrado');
             $table->string('facultad');
@@ -27,13 +27,11 @@ return new class extends Migration
             $table->enum('estado_consejo_facultad', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_consejo_academico', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
 
-            $table->unique(['nombre', 'programa_academico']);//para no repetir el nombre de la practica en el mismo programa academico
+            $table->unique(['nombre_practica', 'programa_academico']);
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();

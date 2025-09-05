@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //tabla de fecha de apertura y cierre definida por el vice academica
         Schema::create('fechas', function (Blueprint $table) {
-            $table->id();
+            $table->fecha_id();
             
             $table->date('fecha_apertura_preg')->unique();
             $table->date('fecha_cierre_docente_preg')->unique();
@@ -27,8 +27,6 @@ return new class extends Migration
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();

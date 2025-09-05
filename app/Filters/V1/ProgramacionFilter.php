@@ -5,7 +5,7 @@ namespace App\Filters\V1;
 class ProgramacionFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'id'                 => ['eq','in','gt','lt','gte','lte'],
+        'programacion_id'                 => ['eq','in','gt','lt','gte','lte'],
         'nombre'             => ['eq','lk'],
         'nivel'              => ['eq','in'],
         'facultad'           => ['eq','lk'],
@@ -36,6 +36,7 @@ class ProgramacionFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
+        'programacionId'      => 'programacion_id',
         'programaAcademico'  => 'programa_academico',
         'lugarDeRealizacion' => 'lugar_de_realizacion',
         'recursosNecesarios' => 'recursos_necesarios',

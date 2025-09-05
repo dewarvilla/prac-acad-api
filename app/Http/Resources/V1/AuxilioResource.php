@@ -10,7 +10,7 @@ class AuxilioResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                        => $this->id,
+            'auxilioId'                 => $this->auxilio_id,
             'pernocta'                  => $this->pernocta,
             'distanciasMayor70km'       => $this->distancias_mayor_70km,
             'fueraCordoba'              => $this->fuera_cordoba,

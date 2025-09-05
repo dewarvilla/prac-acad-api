@@ -10,7 +10,7 @@ class LegalizacionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                 => $this->id,
+            'legalizacionId'    => $this->legalizacion_id,
             'fechaLegalizacion'  => $this->fecha_legalizacion,
             'estadoDepart'       => $this->estado_depart,
             'estadoPostg'        => $this->estado_postg,

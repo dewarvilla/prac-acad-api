@@ -10,7 +10,7 @@ class CreacionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                     => $this->id,
+            'creacionId'             => $this->creacion_id,
             'nivelAcademico'         => $this->nivel_academico,
             'facultad'               => $this->facultad,
             'programaAcademico'      => $this->programa_academico,

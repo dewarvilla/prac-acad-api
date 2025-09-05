@@ -5,7 +5,7 @@ namespace App\Filters\V1;
 class CreacionFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'id' => ['eq','in','gt','lt','gte','lte'],
+        'creacion_id' => ['eq','in','gt','lt','gte','lte'],
         'nivel_academico' => ['eq','in'],
         'facultad' => ['eq','lk'],
         'programa_academico' => ['eq','lk'],
@@ -26,6 +26,7 @@ class CreacionFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
+        'creacionId' => 'creacion_id',
         'nivelAcademico' => 'nivel_academico',
         'programaAcademico' => 'programa_academico',
         'nombrePractica' => 'nombre_practica',

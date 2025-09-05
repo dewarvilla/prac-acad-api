@@ -5,7 +5,7 @@ namespace App\Filters\V1;
 class LegalizacionFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'id'                  => ['eq','in','gt','lt','gte','lte'],
+        'legalizacion_id'                  => ['eq','in','gt','lt','gte','lte'],
         'fecha_legalizacion'  => ['eq','gt','gte','lt','lte','btn'],
 
         'estado_depart'       => ['eq','in'],
@@ -25,6 +25,7 @@ class LegalizacionFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
+        'legalizacionId'      => 'legalizacion_id',
         'fechaLegalizacion'   => 'fecha_legalizacion',
         'estadoDepart'        => 'estado_depart',
         'estadoPostg'         => 'estado_postg',

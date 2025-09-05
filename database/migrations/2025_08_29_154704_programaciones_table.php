@@ -14,7 +14,7 @@ return new class extends Migration
         //tabla para programaciones de practicas
         Schema::create('programaciones', function (Blueprint $table) {
             $table->id();
-
+            $table->unsignedBigInteger('creacion_id');
             $table->string('nombre');
             $table->enum('nivel', ['pregrado', 'posgrado']);
             $table->string('facultad');
@@ -38,13 +38,11 @@ return new class extends Migration
 
             $table->unique(['nombre', 'programa_academico']);
 
-            $table->foreignId('creacion_id')->constrained('creaciones')->onDelete('cascade');
+            $table->foreign('creacion_id')->references('id')->on('creaciones')->onUpdate('cascade')->onDelete('cascade') ;
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();

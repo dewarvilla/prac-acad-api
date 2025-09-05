@@ -10,6 +10,7 @@ class AjusteResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'ajusteId'                  => $this->ajuste_id,
             'fechaAjuste'               => $this->fecha_ajuste,
             'estadoAjuste'              => $this->estado_ajuste, 
             'estadoVice'                => $this->estado_vice,          

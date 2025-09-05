@@ -5,7 +5,7 @@ namespace App\Filters\V1;
 class SalarioFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'id'    => ['eq','in','gt','lt','gte','lte'],
+        'salario_id'    => ['eq','in','gt','lt','gte','lte'],
         'anio'  => ['eq','gt','gte','lt','lte','in','btn'],
         'valor' => ['eq','gt','gte','lt','lte','btn'],
 
@@ -17,7 +17,9 @@ class SalarioFilter extends ApiFilter
         'ipmodificacion'    => ['eq'],
     ];
 
-    protected array $columnMap = [];
+    protected array $columnMap = [
+        'salarioId'     => 'salario_id',
+    ];
 
     protected array $dateFilters = [
         'fechacreacion','fechamodificacion',

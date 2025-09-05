@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // tabla rutas de practicas
         Schema::create('rutas', function (Blueprint $table) {
-            $table->id();
+            $table->ruta_id();
 
             $table->string('latitud_salidas');
             $table->string('latitud_llegadas');
@@ -33,8 +33,6 @@ return new class extends Migration
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();

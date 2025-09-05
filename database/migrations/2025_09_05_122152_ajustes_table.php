@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // tabla ajuste de solicitudes de programacion de practicas
         Schema::create('ajustes', function (Blueprint $table) {
-            $table->id();
+            $table->ajuste_id();
             
             $table->date('fecha_ajuste');
 
@@ -29,8 +29,6 @@ return new class extends Migration
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();

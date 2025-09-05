@@ -10,7 +10,7 @@ class FechaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                         => $this->id,
+            'fechaId'                    => $this->fecha_id,
             'fechaAperturaPreg'          => $this->fecha_apertura_preg,
             'fechaCierreDocentePreg'     => $this->fecha_cierre_docente_preg,
             'fechaCierreJefeDepart'      => $this->fecha_cierre_jefe_depart,

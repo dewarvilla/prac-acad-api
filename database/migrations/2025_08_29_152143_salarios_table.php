@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //tabla SMMLV
         Schema::create('salarios', function (Blueprint $table) {
-            $table->id();
+            $table->salario_id();
             
             $table->unsignedInteger('anio')->unique();
             $table->decimal('valor', 12, 2);
@@ -21,8 +21,6 @@ return new class extends Migration
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
-
-            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();
