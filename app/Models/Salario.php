@@ -17,18 +17,16 @@ class Salario extends Model
     protected $fillable = [
         'anio',
         'valor',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'anio' => 'integer',
-        'valor' => 'decimal:2',
-        'fechacreacion' => 'datetime',
+        'anio'              => 'integer',
+        'valor'             => 'decimal:2',
+        'fechacreacion'     => 'datetime',
         'fechamodificacion' => 'datetime',
     ];
 }

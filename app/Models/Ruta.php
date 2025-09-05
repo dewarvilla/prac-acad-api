@@ -26,26 +26,23 @@ class Ruta extends Model
         'ruta_salida',
         'ruta_llegada',
         'programacion_id',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'numero_recorridos' => 'integer',
-        'numero_peajes' => 'integer',
-        'valor_peajes' => 'decimal:2',
-        'valor_total_peajes' => 'decimal:2',
-        'distancia_trayectos_km' => 'decimal:2',
-        'distancia_total_km' => 'decimal:2',
-        'fechacreacion' => 'datetime',
-        'fechamodificacion' => 'datetime',
+        'numero_recorridos'     => 'integer',
+        'numero_peajes'         => 'integer',
+        'valor_peajes'          => 'decimal:2',
+        'valor_total_peajes'    => 'decimal:2',
+        'distancia_trayectos_km'=> 'decimal:2',
+        'distancia_total_km'    => 'decimal:2',
+        'fechacreacion'         => 'datetime',
+        'fechamodificacion'     => 'datetime',
     ];
 
-    // Relaciones
     public function programacion()
     {
         return $this->belongsTo(Programacion::class, 'programacion_id');

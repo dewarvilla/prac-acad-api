@@ -16,27 +16,24 @@ class Ajuste extends Model
 
     protected $fillable = [
         'fecha_ajuste',
-        'estado_ajuste', // 'aprobada'|'rechazada'|'pendiente'
-        'estado_vice',           // 'aprobada'|'rechazada'|'pendiente'
-        'estado_jefe_depart',           // 'aprobada'|'rechazada'|'pendiente'
-        'estado_coordinador_postg',           // 'aprobada'|'rechazada'|'pendiente'
+        'estado_ajuste',
+        'estado_vice',
+        'estado_jefe_depart',
+        'estado_coordinardor_postg',
         'justificacion',
         'programacion_id',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'fecha_ajuste' => 'date',
-        'fechacreacion' => 'datetime',
+        'fecha_ajuste'      => 'date',
+        'fechacreacion'     => 'datetime',
         'fechamodificacion' => 'datetime',
     ];
 
-    // Relaciones
     public function programacion()
     {
         return $this->belongsTo(Programacion::class, 'programacion_id');

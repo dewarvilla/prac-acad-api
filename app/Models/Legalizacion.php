@@ -22,9 +22,7 @@ class Legalizacion extends Model
         'estado_tesoreria',
         'estado_contabilidad',
         'programacion_id',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
@@ -32,14 +30,12 @@ class Legalizacion extends Model
 
     protected $casts = [
         'fecha_legalizacion' => 'date',
-        'fechacreacion' => 'datetime',
-        'fechamodificacion' => 'datetime',
+        'fechacreacion'      => 'datetime',
+        'fechamodificacion'  => 'datetime',
     ];
 
-    // Relaciones
     public function programacion()
     {
         return $this->belongsTo(Programacion::class, 'programacion_id');
     }
 }
-

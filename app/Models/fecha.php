@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Fecha extends Model
 {
     use HasFactory;
-    
-    protected $table = 'fechas';
+
+    // La migración crea la tabla 'fecha' (singular)
+    protected $table = 'fecha';
 
     const CREATED_AT = 'fechacreacion';
     const UPDATED_AT = 'fechamodificacion';
@@ -22,25 +23,21 @@ class Fecha extends Model
         'fecha_apertura_postg',
         'fecha_cierre_docente_postg',
         'fecha_cierre_coordinador_postg',
-        'fecha_cierre_jefe_postg',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'fecha_apertura_preg' => 'date',
-        'fecha_cierre_docente_preg' => 'date',
-        'fecha_cierre_jefe_depart' => 'date',
-        'fecha_cierre_decano' => 'date',
-        'fecha_apertura_postg' => 'date',
+        'fecha_apertura_preg'        => 'date',
+        'fecha_cierre_docente_preg'  => 'date',
+        'fecha_cierre_jefe_depart'   => 'date',
+        'fecha_cierre_decano'        => 'date',
+        'fecha_apertura_postg'       => 'date',
         'fecha_cierre_docente_postg' => 'date',
         'fecha_cierre_coordinador_postg' => 'date',
-        'fechacreacion' => 'datetime',
-        'fechamodificacion' => 'datetime',
+        'fechacreacion'              => 'datetime',
+        'fechamodificacion'          => 'datetime',
     ];
 }
-

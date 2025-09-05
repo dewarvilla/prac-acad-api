@@ -24,13 +24,15 @@ return new class extends Migration
             $table->date('fecha_cierre_coordinador_postg')->unique();
             $table->date('fecha_cierre_jefe_postg')->unique();
 
-            //Datos de auditoria
-            $table->timestamp('fechacreacion');
-            $table->unsignedBigInteger('usuariocreacion');
-            $table->timestamp('fechamodificacion');
-            $table->unsignedBigInteger('usuariomodificacion');
-            $table->ipAddress('ipcreacion');
-            $table->ipAddress('ipmodificacion');
+            // Auditoría
+            $table->timestamp('fechacreacion')->useCurrent();
+            $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
+
+            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
+            $table->unsignedBigInteger('usuariocreacion')->nullable();
+            $table->unsignedBigInteger('usuariomodificacion')->nullable();
+            $table->ipAddress('ipcreacion')->nullable();
+            $table->ipAddress('ipmodificacion')->nullable();
         });
     }
 

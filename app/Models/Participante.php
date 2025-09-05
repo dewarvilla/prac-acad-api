@@ -25,25 +25,21 @@ class Participante extends Model
         'repitente',
         'tipo_participante', // 'estudiante' | 'docente' | 'acompanante'
         'programacion_id',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'discapacidad' => 'boolean',
-        'repitente' => 'boolean',
-        'fechacreacion' => 'datetime',
-        'fechamodificacion' => 'datetime',
+        'discapacidad'     => 'boolean',
+        'repitente'        => 'boolean',
+        'fechacreacion'    => 'datetime',
+        'fechamodificacion'=> 'datetime',
     ];
 
-    // Relaciones
     public function programacion()
     {
         return $this->belongsTo(Programacion::class, 'programacion_id');
     }
 }
-

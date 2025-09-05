@@ -30,13 +30,15 @@ return new class extends Migration
             //para que no se repita el participante en la misma practica
             $table->unique(['numero_identificacion', 'programacion_id']);
 
-            //Datos de auditoria
-            $table->timestamp('fechacreacion');
-            $table->unsignedBigInteger('usuariocreacion');
-            $table->timestamp('fechamodificacion');
-            $table->unsignedBigInteger('usuariomodificacion');
-            $table->ipAddress('ipcreacion');
-            $table->ipAddress('ipmodificacion');
+            // Auditoría
+            $table->timestamp('fechacreacion')->useCurrent();
+            $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
+
+            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
+            $table->unsignedBigInteger('usuariocreacion')->nullable();
+            $table->unsignedBigInteger('usuariomodificacion')->nullable();
+            $table->ipAddress('ipcreacion')->nullable();
+            $table->ipAddress('ipmodificacion')->nullable();
         });
     }
 

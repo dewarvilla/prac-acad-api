@@ -33,22 +33,20 @@ class Programacion extends Model
         'fecha_finalizacion',
         'requiere_transporte',
         'creacion_id',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'fecha_inicio' => 'date',
-        'fecha_finalizacion' => 'date',
-        'fechacreacion' => 'datetime',
-        'fechamodificacion' => 'datetime',
+        'fecha_inicio'        => 'date',
+        'fecha_finalizacion'  => 'date',
+        'requiere_transporte' => 'boolean',
+        'fechacreacion'       => 'datetime',
+        'fechamodificacion'   => 'datetime',
     ];
 
-    // Relaciones
     public function creacion()
     {
         return $this->belongsTo(Creacion::class, 'creacion_id');
@@ -77,5 +75,10 @@ class Programacion extends Model
     public function legalizaciones()
     {
         return $this->hasMany(Legalizacion::class, 'programacion_id');
+    }
+
+    public function ajustes()
+    {
+        return $this->hasMany(Ajuste::class, 'programacion_id');
     }
 }

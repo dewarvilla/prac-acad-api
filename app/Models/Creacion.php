@@ -25,20 +25,17 @@ class Creacion extends Model
         'estado_depart',
         'estado_consejo_facultad',
         'estado_consejo_academico',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
     ];
 
     protected $casts = [
-        'fechacreacion' => 'datetime',
+        'fechacreacion'     => 'datetime',
         'fechamodificacion' => 'datetime',
     ];
 
-    // Relaciones
     public function programaciones()
     {
         return $this->hasMany(Programacion::class, 'creacion_id');

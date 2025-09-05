@@ -16,14 +16,12 @@ class Reprogramacion extends Model
 
     protected $fillable = [
         'fecha_reprogramacion',
-        'estado_reprogramacion', // 'aprobada'|'rechazada'|'pendiente'
-        'tipo_reprogramacion',   // 'normal'|'emergencia'
-        'estado_vice',           // 'aprobada'|'rechazada'|'pendiente'
+        'estado_reprogramacion',
+        'tipo_reprogramacion',
+        'estado_vice',
         'justificacion',
         'programacion_id',
-        'fechacreacion',
         'usuariocreacion',
-        'fechamodificacion',
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
@@ -31,11 +29,10 @@ class Reprogramacion extends Model
 
     protected $casts = [
         'fecha_reprogramacion' => 'date',
-        'fechacreacion' => 'datetime',
-        'fechamodificacion' => 'datetime',
+        'fechacreacion'        => 'datetime',
+        'fechamodificacion'    => 'datetime',
     ];
 
-    // Relaciones
     public function programacion()
     {
         return $this->belongsTo(Programacion::class, 'programacion_id');

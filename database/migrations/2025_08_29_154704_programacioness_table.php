@@ -36,17 +36,19 @@ return new class extends Migration
             $table->date('fecha_inicio');
             $table->date('fecha_finalizacion'); 
 
-            $table->unique(['nombre', 'programa_academico']);//para no repetir el nombre de la practica en el mismo programa academico
+            $table->unique(['nombre', 'programa_academico']);
 
             $table->foreignId('creacion_id')->constrained('creaciones')->onDelete('cascade');
 
-            //Datos de auditoria
-            $table->timestamp('fechacreacion');
-            $table->unsignedBigInteger('usuariocreacion');
-            $table->timestamp('fechamodificacion');
-            $table->unsignedBigInteger('usuariomodificacion');
-            $table->ipAddress('ipcreacion');
-            $table->ipAddress('ipmodificacion');
+            // Auditoría
+            $table->timestamp('fechacreacion')->useCurrent();
+            $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
+
+            // estos conviene dejarlos nullables si no los vas a poner tú al insertar
+            $table->unsignedBigInteger('usuariocreacion')->nullable();
+            $table->unsignedBigInteger('usuariomodificacion')->nullable();
+            $table->ipAddress('ipcreacion')->nullable();
+            $table->ipAddress('ipmodificacion')->nullable();
         });
     }
 
