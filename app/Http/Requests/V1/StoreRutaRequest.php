@@ -6,11 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRutaRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        $user = $this->user();
-        return $user != null && $user->tokenCan('create');
-    }
+    public function authorize(): bool { return true; }
 
     public function rules(): array
     {
@@ -25,9 +21,25 @@ class StoreRutaRequest extends FormRequest
             'distancia_total_km' => ['required','numeric','min:0'],
             'ruta_salida' => ['nullable','string','max:255'],
             'ruta_llegada' => ['nullable','string','max:255'],
-
-            'practica_id' => ['required','exists:practicas,id'],
+            'programacion_id' => ['required','exists:programaciones,id'],
         ];
     }
-}
 
+    protected function prepareForValidation(): void
+    {
+        $map = [
+            'latitudSalidas' => 'latitud_salidas',
+            'latitudLlegadas' => 'latitud_llegadas',
+            'numeroRecorridos' => 'numero_recorridos',
+            'numeroPeajes' => 'numero_peajes',
+            'valorPeajes' => 'valor_peajes',
+            'valorTotalPeajes' => 'valor_total_peajes',
+            'distanciaTrayectosKm' => 'distancia_trayectos_km',
+            'distanciaTotalKm' => 'distancia_total_km',
+            'rutaSalida' => 'ruta_salida',
+            'rutaLlegada' => 'ruta_llegada',
+            'programacionId' => 'programacion_id',
+        ];
+        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+    }
+}

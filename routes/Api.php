@@ -11,17 +11,14 @@ use App\Http\Controllers\Api\V1\ReprogramacionController;
 use App\Http\Controllers\Api\V1\LegalizacionController;
 use App\Http\Controllers\Api\V1\FechaController;
 use App\Http\Controllers\Api\V1\CreacionController;
+use App\Http\Controllers\Api\V1\AjusteController;
 
-// SIN autenticación (endpoint /user removido)
-
-// API v1 (público, sin middleware de auth)
 Route::prefix('v1')->group(function () {
 
     Route::apiResource('programaciones', ProgramacionController::class)
         ->parameters(['programaciones' => 'programacion']);
 
     Route::apiResource('salarios', SalarioController::class)
-        ->only(['index','show','store','update'])
         ->parameters(['salarios' => 'salario']);
 
     Route::apiResource('participantes', ParticipanteController::class)
@@ -45,7 +42,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('creaciones', CreacionController::class)
         ->parameters(['creaciones' => 'creacion']);
 
-    // Carga masiva de participantes
-    Route::post('participantes/bulk', [ParticipanteController::class, 'bulkStore'])
-        ->name('participantes.bulk-store');
+    Route::apiResource('ajustes', AjusteController::class)
+        ->parameters(['ajustes' => 'ajuste']);
 });

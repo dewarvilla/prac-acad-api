@@ -3,48 +3,77 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Reprogramacion;
+use App\Filters\V1\ReprogramacionFilter;
+use App\Http\Resources\V1\ReprogramacionResource;
+use App\Http\Resources\V1\ReprogramacionCollection;
+use App\Http\Requests\V1\IndexReprogramacionRequest;
+use App\Http\Requests\V1\StoreReprogramacionRequest;
+use App\Http\Requests\V1\UpdateReprogramacionRequest;
+use Illuminate\Database\QueryException;
 
 class ReprogramacionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(IndexReprogramacionRequest $request, ReprogramacionFilter $filter)
     {
-        //
+        $perPage = (int) $request->query('per_page', 15);
+
+        $q = Reprogramacion::query();
+        $filter->apply($request, $q);
+
+        return new ReprogramacionCollection(
+            $q->paginate($perPage)->appends($request->query())
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreReprogramacionRequest $request)
     {
-        //
+        $now = now();
+        $data = $request->validated() + [
+            'fechacreacion'       => $now,
+            'fechamodificacion'   => $now,
+            'usuariocreacion'     => auth()->id() ?? 0,
+            'usuariomodificacion' => auth()->id() ?? 0,
+            'ipcreacion'          => $request->ip(),
+            'ipmodificacion'      => $request->ip(),
+        ];
+
+        $reprogramacion = Reprogramacion::create($data);
+
+        return (new ReprogramacionResource($reprogramacion))
+            ->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Reprogramacion $reprogramacion)
     {
-        //
+        return new ReprogramacionResource($reprogramacion);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateReprogramacionRequest $request, Reprogramacion $reprogramacion)
     {
-        //
+        $data = $request->validated() + [
+            'fechamodificacion'   => now(),
+            'usuariomodificacion' => auth()->id() ?? 0,
+            'ipmodificacion'      => $request->ip(),
+        ];
+
+        $reprogramacion->update($data);
+
+        return new ReprogramacionResource($reprogramacion->refresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Reprogramacion $reprogramacion)
     {
-        //
+        try {
+            $reprogramacion->delete();
+            return response()->noContent();
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'message' => 'No se puede eliminar: existen registros relacionados.'
+                ], 409);
+            }
+            throw $e;
+        }
     }
 }

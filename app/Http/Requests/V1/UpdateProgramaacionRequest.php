@@ -7,107 +7,75 @@ use Illuminate\Validation\Rule;
 
 class UpdateProgramacionRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        $user = $this->user();
-        return $user !== null && $user->tokenCan('update');
-    }
+    public function authorize(): bool { return true; }
 
     public function rules(): array
     {
-        $model = $this->route('programacion');               // model o id
-        $id    = is_object($model) ? $model->id : $model;
+        $id = (int) optional($this->route('programacion'))->id;
 
-        // Para unico (nombre por programa_academico)
-        $programa = $this->input('programa_academico', is_object($model) ? $model->programa_academico : null);
+        $rules = [
+            'nombre' => ['string','max:255'],
+            'nivel' => [Rule::in(['pregrado','posgrado'])],
+            'facultad' => ['string','max:255'],
+            'programa_academico' => ['string','max:255'],
+            'descripcion' => ['string'],
+            'lugar_de_realizacion' => ['nullable','string','max:255'],
+            'justificacion' => ['string'],
+            'recursos_necesarios' => ['string'],
+
+            'estado_practica' => [Rule::in(['en_aprobacion','aprobada','rechazada','en_ejecucion','ejecutada','en_legalizacion','legalizada'])],
+            'estado_depart' => [Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_postg' => [Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_decano' => [Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_jefe_postg' => [Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_vice' => [Rule::in(['aprobada','rechazada','pendiente'])],
+
+            'fecha_inicio' => ['date'],
+            'fecha_finalizacion' => ['date'],
+
+            'creacion_id' => ['exists:creaciones,id'],
+
+            // unicidad compuesta
+            'unique_nombre_programa' => [
+                function($attr,$val,$fail){
+                    if ($this->filled('nombre') || $this->filled('programa_academico')) {
+                        $nombre = $this->input('nombre', optional($this->route('programacion'))->nombre);
+                        $prog   = $this->input('programa_academico', optional($this->route('programacion'))->programa_academico);
+
+                        $exists = \DB::table('programaciones')
+                            ->where('nombre', $nombre)
+                            ->where('programa_academico', $prog)
+                            ->where('id', '!=', optional($this->route('programacion'))->id)
+                            ->exists();
+                        if ($exists) $fail('La combinación nombre y programa_academico ya existe.');
+                    }
+                }
+            ],
+        ];
 
         if ($this->isMethod('patch')) {
-            return [
-                'nombre'               => [
-                    'sometimes','string','max:255',
-                    Rule::unique('practicas','nombre')
-                        ->where(fn($q) => $q->where('programa_academico', $programa))
-                        ->ignore($id)
-                ],
-                'nivel' => ['sometimes', Rule::in('pregrado', 'postgrado')],
-                'facultad' => ['sometimes','string','max:255'],
-                'programa_academico' => ['sometimes','string','max:255'],
-                'descripcion' => ['sometimes','string'],
-                'lugar_de_realizacion' => ['sometimes','nullable','string','max:255'],
-                'justificacion' => ['sometimes','string'],
-                'recursos_necesarios' => ['sometimes','string'],
-
-                'estado_practica' => ['sometimes', Rule::in('en_aprobacion', 'aprobada', 'rechazada', 
-                'en_ejecucion', 'ejecutada', 'en_legalizacion', 'legalizada')],
-                'estado_depart' => ['sometimes', Rule::in('aprobada', 'rechazada', 'pendiente')],
-                'estado_postg' => ['sometimes', Rule::in('aprobada', 'rechazada', 'pendiente')],
-                'estado_decano' => ['sometimes', Rule::in('aprobada', 'rechazada', 'pendiente')],
-                'estado_jefe_postg' => ['sometimes', Rule::in('aprobada', 'rechazada', 'pendiente')],
-                'estado_vice' => ['sometimes', Rule::in('aprobada', 'rechazada', 'pendiente')],
-
-                'fecha_solicitud' => ['sometimes','date'],
-                'fecha_finalizacion' => ['sometimes','date'],
-                'user_id' => ['sometimes','exists:users,id'],
-
-
-                
-
-            ];
+            return collect($rules)->map(fn($r)=>is_array($r)?array_merge(['sometimes'],$r):$r)->all();
         }
 
-        // PUT = reemplazo completo
-        return [
-            'nombre' => [
-                'required','string','max:255',
-                Rule::unique('practicas','nombre')
-                    ->where(fn($q) => $q->where('programa_academico', $programa))
-                    ->ignore($id)
-            ],
-            'nivel' => ['required', Rule::in('pregrado', 'postgrado')],
+        return array_merge($rules, [
+            'nombre' => ['required','string','max:255'],
+            'nivel' => ['required', Rule::in(['pregrado','posgrado'])],
             'facultad' => ['required','string','max:255'],
             'programa_academico' => ['required','string','max:255'],
             'descripcion' => ['required','string'],
             'lugar_de_realizacion' => ['nullable','string','max:255'],
             'justificacion' => ['required','string'],
             'recursos_necesarios' => ['required','string'],
-
-            'estado_practica' => ['nullable', Rule::in('en_aprobacion', 'aprobada', 'rechazada', 
-                'en_ejecucion', 'ejecutada', 'en_legalizacion', 'legalizada')],
-            'estado_depart' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
-            'estado_postg' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
-            'estado_decano' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
-            'estado_jefe_postg' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
-            'estado_vice' => ['nullable', Rule::in('aprobada', 'rechazada', 'pendiente')],
-
-            'fecha_solicitud' => ['required','date'],
-            'fecha_finalizacion' => ['required','date'],
-            'user_id' => ['required','exists:users,id'],
-        ];
+            'fecha_inicio' => ['required','date'],
+            'fecha_finalizacion' => ['required','date','after_or_equal:fecha_inicio'],
+            'creacion_id' => ['required','exists:creaciones,id'],
+        ]);
     }
 
     protected function prepareForValidation(): void
     {
-        $map = [
-            'programaAcademico' => 'programa_academico',
-            'lugarDeRealizacion' => 'lugar_de_realizacion',
-            'estadoPractica' => 'estado_practica',
-            'estadoDepart' => 'estado_depart',
-            'estadoPostg' => 'estado_postg',
-            'estadoDecano' => 'estado_decano',
-            'estadoJefePostg' => 'estado_jefe_postg',
-            'estadoVice' => 'estado_vice',
-            'fechaSolicitud' => 'fecha_solicitud',
-            'fechaFinalizacion' => 'fecha_finalizacion',
-            'userId' => 'user_id',
-        ];
-
-        $merge = [];
-        foreach ($map as $in => $out) {
-            if ($this->has($in)) {
-                $merge[$out] = $this->input($in);
-            }
-        }
-        if ($merge) $this->merge($merge);
+        (new StoreProgramacionRequest())->prepareForValidation.call($this);
     }
 }
+
 

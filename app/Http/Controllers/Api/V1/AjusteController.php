@@ -3,30 +3,30 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ruta;
-use App\Filters\V1\RutaFilter;
-use App\Http\Resources\V1\RutaResource;
-use App\Http\Resources\V1\RutaCollection;
-use App\Http\Requests\V1\IndexRutaRequest;
-use App\Http\Requests\V1\StoreRutaRequest;
-use App\Http\Requests\V1\UpdateRutaRequest;
+use App\Models\Ajuste;
+use App\Filters\V1\AjusteFilter;
+use App\Http\Resources\V1\AjusteResource;
+use App\Http\Resources\V1\AjusteCollection;
+use App\Http\Requests\V1\IndexAjusteRequest;
+use App\Http\Requests\V1\StoreAjusteRequest;
+use App\Http\Requests\V1\UpdateAjusteRequest;
 use Illuminate\Database\QueryException;
 
-class RutaController extends Controller
+class AjusteController extends Controller
 {
-    public function index(IndexRutaRequest $request, RutaFilter $filter)
+    public function index(IndexAjusteRequest $request, AjusteFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Ruta::query();
+        $q = Ajuste::query();
         $filter->apply($request, $q);
 
-        return new RutaCollection(
+        return new AjusteCollection(
             $q->paginate($perPage)->appends($request->query())
         );
     }
 
-    public function store(StoreRutaRequest $request)
+    public function store(StoreAjusteRequest $request)
     {
         $now = now();
         $data = $request->validated() + [
@@ -38,18 +38,18 @@ class RutaController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $ruta = Ruta::create($data);
+        $ajuste = Ajuste::create($data);
 
-        return (new RutaResource($ruta))
+        return (new AjusteResource($ajuste))
             ->response()->setStatusCode(201);
     }
 
-    public function show(Ruta $ruta)
+    public function show(Ajuste $ajuste)
     {
-        return new RutaResource($ruta);
+        return new AjusteResource($ajuste);
     }
 
-    public function update(UpdateRutaRequest $request, Ruta $ruta)
+    public function update(UpdateAjusteRequest $request, Ajuste $ajuste)
     {
         $data = $request->validated() + [
             'fechamodificacion'   => now(),
@@ -57,15 +57,15 @@ class RutaController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $ruta->update($data);
+        $ajuste->update($data);
 
-        return new RutaResource($ruta->refresh());
+        return new AjusteResource($ajuste->refresh());
     }
 
-    public function destroy(Ruta $ruta)
+    public function destroy(Ajuste $ajuste)
     {
         try {
-            $ruta->delete();
+            $ajuste->delete();
             return response()->noContent();
         } catch (QueryException $e) {
             if ($e->getCode() === '23000') {

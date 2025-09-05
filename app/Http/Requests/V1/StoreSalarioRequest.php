@@ -7,18 +7,13 @@ use Illuminate\Validation\Rule;
 
 class StoreSalarioRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        $user = $this->user();
-        return $user != null && $user->tokenCan('create');
-    }
+    public function authorize(): bool { return true; }
 
     public function rules(): array
     {
         return [
-            'anio' => ['required','integer','min:1990',],
-            'valor' => ['required','integer','min:0'],
-            'practica_id' => ['required','exists:practicas,id'],
+            'anio' => ['required','integer','min:1900', Rule::unique('salarios','anio')],
+            'valor' => ['required','numeric','min:0'],
         ];
     }
 }

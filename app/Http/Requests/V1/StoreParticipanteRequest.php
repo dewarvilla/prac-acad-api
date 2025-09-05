@@ -7,33 +7,33 @@ use Illuminate\Validation\Rule;
 
 class StoreParticipanteRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        $user = $this->user();
-        return $user != null && $user->tokenCan('create');
-    }
+    public function authorize(): bool { return true; }
 
     public function rules(): array
     {
-        $practicaId = $this->input('practica_id');
-
         return [
-            'numero_identificacion' => ['required','string','max:100',
-                // Único por práctica
-                Rule::unique('participantes','numero_identificacion')->where(fn($q)=>$q->where('practica_id',$practicaId))
-            ],
-            'tipo_participante' => ['required', Rule::in('estudiante', 'docente', 'acompanante')],
-            'discapacidad' => ['required', 'boolean'],
-            'nombre' => ['required','string','max:120'],
-            'apellido' => ['required','string','max:120'],
+            'numero_identificacion' => ['required','string','max:100'],
+            'discapacidad' => ['required','boolean'],
+            'nombre' => ['required','string','max:255'],
             'correo_institucional' => ['nullable','email','max:255'],
-            'telefono' => ['nullable','string','max:50'],
-            'programa_academico' => ['required','string','max:255'],
-            'facultad' => ['required','string','max:255'],
-            'repitente' => ['required', 'boolean'],
-
-            'practica_id' => ['required','exists:practicas,id'],
-            'user_id' => ['required','exists:users,id'],
+            'telefono' => ['required','string','max:50'],
+            'programa_academico' => ['nullable','string','max:255'],
+            'facultad' => ['nullable','string','max:255'],
+            'repitente' => ['required','boolean'],
+            'tipo_participante' => ['required', Rule::in(['docente','estudiante','acompanante'])],
+            'programacion_id' => ['required','exists:programaciones,id'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $map = [
+            'numeroIdentificacion' => 'numero_identificacion',
+            'correoInstitucional' => 'correo_institucional',
+            'programaAcademico' => 'programa_academico',
+            'tipoParticipante' => 'tipo_participante',
+            'programacionId' => 'programacion_id',
+        ];
+        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
     }
 }

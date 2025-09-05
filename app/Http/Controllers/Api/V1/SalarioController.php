@@ -3,48 +3,77 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Salario;
+use App\Filters\V1\SalarioFilter;
+use App\Http\Resources\V1\SalarioResource;
+use App\Http\Resources\V1\SalarioCollection;
+use App\Http\Requests\V1\IndexSalarioRequest;
+use App\Http\Requests\V1\StoreSalarioRequest;
+use App\Http\Requests\V1\UpdateSalarioRequest;
+use Illuminate\Database\QueryException;
 
 class SalarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(IndexSalarioRequest $request, SalarioFilter $filter)
     {
-        //
+        $perPage = (int) $request->query('per_page', 15);
+
+        $q = Salario::query();
+        $filter->apply($request, $q);
+
+        return new SalarioCollection(
+            $q->paginate($perPage)->appends($request->query())
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreSalarioRequest $request)
     {
-        //
+        $now = now();
+        $data = $request->validated() + [
+            'fechacreacion'       => $now,
+            'fechamodificacion'   => $now,
+            'usuariocreacion'     => auth()->id() ?? 0,
+            'usuariomodificacion' => auth()->id() ?? 0,
+            'ipcreacion'          => $request->ip(),
+            'ipmodificacion'      => $request->ip(),
+        ];
+
+        $salario = Salario::create($data);
+
+        return (new SalarioResource($salario))
+            ->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Salario $salario)
     {
-        //
+        return new SalarioResource($salario);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateSalarioRequest $request, Salario $salario)
     {
-        //
+        $data = $request->validated() + [
+            'fechamodificacion'   => now(),
+            'usuariomodificacion' => auth()->id() ?? 0,
+            'ipmodificacion'      => $request->ip(),
+        ];
+
+        $salario->update($data);
+
+        return new SalarioResource($salario->refresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Salario $salario)
     {
-        //
+        try {
+            $salario->delete();
+            return response()->noContent();
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'message' => 'No se puede eliminar: existen registros relacionados.'
+                ], 409);
+            }
+            throw $e;
+        }
     }
 }

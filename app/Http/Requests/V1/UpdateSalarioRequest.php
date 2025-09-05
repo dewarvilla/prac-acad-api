@@ -7,39 +7,24 @@ use Illuminate\Validation\Rule;
 
 class UpdateSalarioRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        $user = $this->user();
-        return $user !== null && $user->tokenCan('update');
-    }
+    public function authorize(): bool { return true; }
 
     public function rules(): array
     {
-        $model = $this->route('salario');
-        $id = is_object($model) ? $model->id : $model;
+        $salario = $this->route('salario');
+
+        $rules = [
+            'anio' => ['integer','min:1900', Rule::unique('salarios','anio')->ignore($salario)],
+            'valor' => ['numeric','min:0'],
+        ];
 
         if ($this->isMethod('patch')) {
-            return [
-                'anio' => [
-                    'sometimes','integer','min:1990',
-                    Rule::unique('salarios','anio')
-                        ->where(fn($q)=>$q->where('practica_id',$pid))
-                        ->ignore($id)
-                ],
-                'valor' => ['sometimes','integer','min:0'],
-                'practica_id' => ['sometimes','exists:practicas,id'],
-            ];
+            return collect($rules)->map(fn($r)=>array_merge(['sometimes'], $r))->all();
         }
 
         return [
-            'anio' => [
-                'required','integer','min:1990',
-                Rule::unique('salarios','anio')
-                    ->where(fn($q)=>$q->where('practica_id',$pid))
-                    ->ignore($id)
-            ],
-            'valor' => ['required','integer','min:0'],
-            'practica_id' => ['required','exists:practicas,id'],
+            'anio' => ['required','integer','min:1900', Rule::unique('salarios','anio')->ignore($salario)],
+            'valor' => ['required','numeric','min:0'],
         ];
     }
 }

@@ -3,48 +3,78 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Participante;
+use App\Filters\V1\ParticipanteFilter;
+use App\Http\Resources\V1\ParticipanteResource;
+use App\Http\Resources\V1\ParticipanteCollection;
+use App\Http\Requests\V1\IndexParticipanteRequest;
+use App\Http\Requests\V1\StoreParticipanteRequest;
+use App\Http\Requests\V1\UpdateParticipanteRequest;
+use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class ParticipanteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(IndexParticipanteRequest $request, ParticipanteFilter $filter)
     {
-        //
+        $perPage = (int) $request->query('per_page', 15);
+
+        $q = Participante::query();
+        $filter->apply($request, $q);
+
+        return new ParticipanteCollection(
+            $q->paginate($perPage)->appends($request->query())
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreParticipanteRequest $request)
     {
-        //
+        $now = now();
+        $data = $request->validated() + [
+            'fechacreacion'       => $now,
+            'fechamodificacion'   => $now,
+            'usuariocreacion'     => auth()->id() ?? 0,
+            'usuariomodificacion' => auth()->id() ?? 0,
+            'ipcreacion'          => $request->ip(),
+            'ipmodificacion'      => $request->ip(),
+        ];
+
+        $participante = Participante::create($data);
+
+        return (new ParticipanteResource($participante))
+            ->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Participante $participante)
     {
-        //
+        return new ParticipanteResource($participante);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateParticipanteRequest $request, Participante $participante)
     {
-        //
+        $data = $request->validated() + [
+            'fechamodificacion'   => now(),
+            'usuariomodificacion' => auth()->id() ?? 0,
+            'ipmodificacion'      => $request->ip(),
+        ];
+
+        $participante->update($data);
+
+        return new ParticipanteResource($participante->refresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Participante $participante)
     {
-        //
+        try {
+            $participante->delete();
+            return response()->noContent();
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'message' => 'No se puede eliminar: existen registros relacionados.'
+                ], 409);
+            }
+            throw $e;
+        }
     }
 }
