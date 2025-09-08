@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //tabla de fecha de apertura y cierre definida por el vice academica
         Schema::create('fechas', function (Blueprint $table) {
-            $table->fecha_id();
+            $table->bigIncrements('id');
             
             $table->date('fecha_apertura_preg')->unique();
             $table->date('fecha_cierre_docente_preg')->unique();

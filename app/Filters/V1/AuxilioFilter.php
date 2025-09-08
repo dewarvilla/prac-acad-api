@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class AuxilioFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'auxilio_id'                         => ['eq','in','gt','lt','gte','lte'],
+        'id'                         => ['eq','in','gt','lt','gte','lte'],
         'pernocta'                   => ['eq'],
         'distancias_mayor_70km'      => ['eq'],
         'fuera_cordoba'              => ['eq'],
@@ -30,7 +32,6 @@ class AuxilioFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'auxilioId'               => 'auxilio_id',
         'distanciasMayor70km'     => 'distancias_mayor_70km',
         'fueraCordoba'            => 'fuera_cordoba',
         'numeroTotalEstudiantes'  => 'numero_total_estudiantes',

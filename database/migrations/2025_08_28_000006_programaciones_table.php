@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //tabla para programaciones de practicas
         Schema::create('programaciones', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->unsignedBigInteger('creacion_id');
             $table->string('nombre');
             $table->enum('nivel', ['pregrado', 'posgrado']);

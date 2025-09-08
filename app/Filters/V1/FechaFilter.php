@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class FechaFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'fecha_id'                          => ['eq','in','gt','lt','gte','lte'],
+        'id'                          => ['eq','in','gt','lt','gte','lte'],
         'fecha_apertura_preg'         => ['eq','gt','gte','lt','lte','btn'],
         'fecha_cierre_docente_preg'   => ['eq','gt','gte','lt','lte','btn'],
         'fecha_cierre_jefe_depart'    => ['eq','gt','gte','lt','lte','btn'],
@@ -23,7 +25,6 @@ class FechaFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'fechaId'                       => 'fecha_id',
         'fechaAperturaPreg'           => 'fecha_apertura_preg',
         'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
         'fechaCierreJefeDepart'       => 'fecha_cierre_jefe_depart',

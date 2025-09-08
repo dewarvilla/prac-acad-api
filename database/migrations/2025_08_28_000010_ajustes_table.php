@@ -13,7 +13,8 @@ return new class extends Migration
     {
         // tabla ajuste de solicitudes de programacion de practicas
         Schema::create('ajustes', function (Blueprint $table) {
-            $table->ajuste_id();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('programacion_id');
             
             $table->date('fecha_ajuste');
 
@@ -24,7 +25,7 @@ return new class extends Migration
 
             $table->string('justificacion');
 
-            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
+            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class RutaFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'ruta_id'                    => ['eq','in','gt','lt','gte','lte'],
+        'id'                    => ['eq','in','gt','lt','gte','lte'],
         'latitud_salidas'       => ['eq','lk'],
         'latitud_llegadas'      => ['eq','lk'],
         'numero_recorridos'     => ['eq','gt','gte','lt','lte','btn'],
@@ -28,7 +30,6 @@ class RutaFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'rutaId'                => 'ruta_id',
         'latitudSalidas'        => 'latitud_salidas',
         'latitudLlegadas'       => 'latitud_llegadas',
         'numeroRecorridos'      => 'numero_recorridos',

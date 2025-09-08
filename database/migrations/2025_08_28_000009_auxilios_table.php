@@ -13,7 +13,9 @@ return new class extends Migration
     {
         //tabla auxilios de practicas
         Schema::create('auxilios', function (Blueprint $table) {
-            $table->auxilio_id();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('programacion_id');
+            $table->unsignedBigInteger('salario_id');
             
             $table->boolean('pernocta')->default(false);
             $table->boolean('distancias_mayor_70km')->default(false);
@@ -28,7 +30,8 @@ return new class extends Migration
             $table->decimal('valor_por_acompanante', 10, 2)->default(0);
             $table->decimal('valor_total_auxilio', 10, 2);
 
-            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
+            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('salario_id')->references('id')->on('salarios')->onUpdate('cascade')->onDelete('cascade');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

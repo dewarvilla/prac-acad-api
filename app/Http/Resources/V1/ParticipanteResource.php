@@ -10,7 +10,6 @@ class ParticipanteResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'participanteId'      => $this->participante_id,
             'numeroIdentificacion' => $this->numero_identificacion,
             'tipoParticipante'     => $this->tipo_participante, // estudiante|docente|acompanante
             'discapacidad'         => $this->discapacidad,

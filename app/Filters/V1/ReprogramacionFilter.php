@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class ReprogramacionFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'reprogramacion_id'                   => ['eq','in','gt','lt','gte','lte'],
+        'id'                   => ['eq','in','gt','lt','gte','lte'],
         'fecha_reprogramacion' => ['eq','gt','gte','lt','lte','btn'],
         'estado_reprogramacion'=> ['eq','in'],
         'tipo_reprogramacion'  => ['eq','in'],
@@ -23,7 +25,6 @@ class ReprogramacionFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'reprogramacionId'      => 'reprogramacion_id',
         'fechaReprogramacion'  => 'fecha_reprogramacion',
         'estadoReprogramacion' => 'estado_reprogramacion',
         'tipoReprogramacion'   => 'tipo_reprogramacion',

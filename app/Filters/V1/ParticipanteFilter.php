@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class ParticipanteFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'participante_id'                    => ['eq','in','gt','lt','gte','lte'],
+        'id'                    => ['eq','in','gt','lt','gte','lte'],
         'numero_identificacion' => ['eq','lk'],
         'tipo_participante'     => ['eq','in'], // 'estudiante','docente','acompanante'
         'discapacidad'          => ['eq'],
@@ -27,7 +29,6 @@ class ParticipanteFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'participanteId'        => 'participante_id',
         'numeroIdentificacion'  => 'numero_identificacion',
         'tipoParticipante'      => 'tipo_participante',
         'correoInstitucional'   => 'correo_institucional',

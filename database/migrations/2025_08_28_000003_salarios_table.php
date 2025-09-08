@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // tabla reprogramacion de practicas
-        Schema::create('reprogramaciones', function (Blueprint $table) {
-            $table->reprogramacion_id();
+        //tabla SMMLV
+        Schema::create('salarios', function (Blueprint $table) {
+            $table->bigIncrements('id');
             
-            $table->date('fecha_reprogramacion');
-
-            $table->enum('estado_reprogramacion', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
-            $table->enum('tipo_reprogramacion', ['normal', 'emergencia'])->default('normal');
-            $table->enum('estado_vice', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
-
-            $table->string('justificacion');
-
-            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
+            $table->unsignedInteger('anio')->unique();
+            $table->decimal('valor', 12, 2);
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
@@ -32,6 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();
             $table->ipAddress('ipmodificacion')->nullable();
+
         });
     }
 
@@ -42,7 +36,9 @@ return new class extends Migration
     {
         //
         {
-            Schema::dropIfExists('reprogramaciones');
+            Schema::dropIfExists('salarios');
         }
     }
 };
+
+

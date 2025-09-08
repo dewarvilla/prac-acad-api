@@ -10,7 +10,6 @@ class ReprogramacionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'reprogramacionId'    => $this->reprogramacion_id,
             'fechaReprogramacion'  => $this->fecha_reprogramacion,
             'estadoReprogramacion' => $this->estado_reprogramacion,
             'tipoReprogramacion'   => $this->tipo_reprogramacion,

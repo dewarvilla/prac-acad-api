@@ -10,7 +10,6 @@ class ProgramacionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'programacionId'     => $this->programacion_id,
             'nombre'             => $this->nombre,
             'nivel'              => $this->nivel,
             'facultad'           => $this->facultad,

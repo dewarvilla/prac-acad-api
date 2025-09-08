@@ -10,7 +10,6 @@ class SalarioResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'salarioId'      => $this->salario_id,
             'anio'           => $this->anio,
             'valor'          => $this->valor,
 

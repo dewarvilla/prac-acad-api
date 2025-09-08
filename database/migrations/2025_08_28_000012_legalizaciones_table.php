@@ -13,8 +13,8 @@ return new class extends Migration
     {
         // tabla legalizacion de practicas
         Schema::create('legalizaciones', function (Blueprint $table) {
-            $table->legalizacion_id();
-
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('programacion_id');
             $table->date('fecha_legalizacion');
 
             $table->enum('estado_depart', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('estado_tesoreria', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_contabilidad', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             
-            $table->foreignId('programacion_id')->constrained('programaciones')->onDelete('cascade');
+            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

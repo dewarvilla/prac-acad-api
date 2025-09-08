@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class AjusteFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'ajuste_id'                   => ['eq','in','gt','lt','gte','lte'],
+        'id'                   => ['eq','in','gt','lt','gte','lte'],
         'fecha_ajuste'         => ['eq','gt','gte','lt','lte','btn'],
         'estado_ajuste' => ['eq','in'], 
         'estado_vice'   => ['eq','in'],    
@@ -23,7 +25,6 @@ class AjusteFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'ajusteId'             => 'ajuste_id',
         'fechaAjuste'          => 'fecha_ajuste',
         'estadoAjuste'         => 'estado_ajuste',
         'estadoJefeDepart'    => 'estado_jefe_depart',

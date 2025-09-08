@@ -2,10 +2,12 @@
 
 namespace App\Filters\V1;
 
+use App\Filters\ApiFilter;
+
 class SalarioFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'salario_id'    => ['eq','in','gt','lt','gte','lte'],
+        'id'    => ['eq','in','gt','lt','gte','lte'],
         'anio'  => ['eq','gt','gte','lt','lte','in','btn'],
         'valor' => ['eq','gt','gte','lt','lte','btn'],
 
@@ -18,7 +20,6 @@ class SalarioFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'salarioId'     => 'salario_id',
     ];
 
     protected array $dateFilters = [

@@ -10,7 +10,6 @@ class RutaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'rutaId'               => $this->ruta_id,
             'latitudSalidas'       => $this->latitud_salidas,
             'latitudLlegadas'      => $this->latitud_llegadas,
             'numeroRecorridos'     => $this->numero_recorridos,
