@@ -19,7 +19,7 @@ class ParticipanteController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Participante::query();
+        $q = Participante::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new ParticipanteCollection(

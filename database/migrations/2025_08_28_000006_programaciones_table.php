@@ -38,7 +38,7 @@ return new class extends Migration
 
             $table->unique(['nombre', 'programa_academico']);
 
-            $table->foreign('creacion_id')->references('id')->on('creaciones')->onUpdate('cascade')->onDelete('cascade') ;
+            $table->foreign('creacion_id')->references('id')->on('creaciones')->onUpdate('cascade')->onDelete('cascade');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

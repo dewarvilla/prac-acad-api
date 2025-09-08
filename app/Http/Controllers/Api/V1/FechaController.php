@@ -18,7 +18,7 @@ class FechaController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Fecha::query();
+        $q = Fecha::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new FechaCollection(

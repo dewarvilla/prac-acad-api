@@ -18,7 +18,7 @@ class LegalizacionController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Legalizacion::query();
+        $q = Legalizacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new LegalizacionCollection(

@@ -18,7 +18,7 @@ class ProgramacionController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Programacion::query();
+        $q = Programacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new ProgramacionCollection(

@@ -18,7 +18,7 @@ class AuxilioController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Auxilio::query();
+        $q = Auxilio::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new AuxilioCollection(

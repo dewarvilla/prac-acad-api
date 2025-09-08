@@ -18,7 +18,7 @@ class CreacionController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Creacion::query();
+        $q = Creacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new CreacionCollection(

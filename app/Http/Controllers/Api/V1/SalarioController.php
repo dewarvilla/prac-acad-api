@@ -18,7 +18,7 @@ class SalarioController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Salario::query();
+        $q = Salario::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new SalarioCollection(

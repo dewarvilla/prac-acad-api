@@ -18,7 +18,7 @@ class AjusteController extends Controller
     {
         $perPage = (int) $request->query('per_page', 15);
 
-        $q = Ajuste::query();
+        $q = Ajuste::query()->orderBy('id');
         $filter->apply($request, $q);
 
         return new AjusteCollection(
