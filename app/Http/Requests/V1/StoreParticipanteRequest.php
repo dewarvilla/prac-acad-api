@@ -21,7 +21,7 @@ class StoreParticipanteRequest extends FormRequest
             'facultad' => ['nullable','string','max:255'],
             'repitente' => ['required','boolean'],
             'tipo_participante' => ['required', Rule::in(['docente','estudiante','acompanante'])],
-            'programacion_id' => ['required','exists:programaciones,id'],
+            'programacion_id' => ['sometimes','exists:programaciones,id'],
         ];
     }
 
@@ -34,6 +34,7 @@ class StoreParticipanteRequest extends FormRequest
             'tipoParticipante' => 'tipo_participante',
             'programacionId' => 'programacion_id',
         ];
-        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

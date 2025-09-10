@@ -17,7 +17,7 @@ class AjusteResource extends JsonResource
             'estadoJefeDepart'          => $this->estado_jefe_depart,         
             'estadoCoordinadorPostg'    => $this->estado_coordinador_postg,          
             'justificacion'             => $this->justificacion,
-            'programacionId'           => $this->programacion_id,
+            'programacionId'            => $this->programacion_id,
             'fechacreacion'             => $this->fechacreacion,
             'usuariocreacion'           => $this->usuariocreacion,
             'fechamodificacion'         => $this->fechamodificacion,

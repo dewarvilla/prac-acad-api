@@ -17,14 +17,18 @@ class ParticipanteController extends Controller
 {
     public function index(IndexParticipanteRequest $request, ParticipanteFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Participante::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new ParticipanteCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new ParticipanteCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return ParticipanteResource::collection($q->get());
     }
 
     public function store(StoreParticipanteRequest $request)

@@ -16,14 +16,18 @@ class LegalizacionController extends Controller
 {
     public function index(IndexLegalizacionRequest $request, LegalizacionFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Legalizacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new LegalizacionCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new LegalizacionCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return LegalizacionResource::collection($q->get());
     }
 
     public function store(StoreLegalizacionRequest $request)

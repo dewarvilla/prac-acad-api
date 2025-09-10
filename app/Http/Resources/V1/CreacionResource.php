@@ -16,7 +16,7 @@ class CreacionResource extends JsonResource
             'programaAcademico'      => $this->programa_academico,
             'nombrePractica'         => $this->nombre_practica,
             'recursosNecesarios'     => $this->recursos_necesarios,
-            'justificacion'           => $this->justificacion,
+            'justificacion'          => $this->justificacion,
             'estadoPractica'         => $this->estado_practica,
             'estadoDepart'           => $this->estado_depart,
             'estadoConsejoFacultad'  => $this->estado_consejo_facultad,

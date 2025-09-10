@@ -16,14 +16,18 @@ class FechaController extends Controller
 {
     public function index(IndexFechaRequest $request, FechaFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Fecha::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new FechaCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new FechaCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return FechaResource::collection($q->get());
     }
 
     public function store(StoreFechaRequest $request)

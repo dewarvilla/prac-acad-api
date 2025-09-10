@@ -16,14 +16,18 @@ class ProgramacionController extends Controller
 {
     public function index(IndexProgramacionRequest $request, ProgramacionFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Programacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new ProgramacionCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new ProgramacionCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return ProgramacionResource::collection($q->get());
     }
 
     public function store(StoreProgramacionRequest $request)

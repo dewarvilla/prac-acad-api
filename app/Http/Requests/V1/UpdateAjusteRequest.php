@@ -13,10 +13,10 @@ class UpdateAjusteRequest extends FormRequest
     {
         $rules = [
             'fecha_ajuste' => ['date'],
-            'estado_ajuste' => [Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_vice' => [Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_jefe_depart' => [Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_coordinador_postg' => [Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_ajuste' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_vice' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_jefe_depart' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_coordinador_postg' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
             'justificacion' => ['string'],
             'programacion_id' => ['exists:programaciones,id'],
         ];
@@ -38,6 +38,14 @@ class UpdateAjusteRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        (new StoreAjusteRequest())->prepareForValidation.call($this);
+        $map = [
+            'fechaAjuste' => 'fecha_ajuste',
+            'estadoAjuste' => 'estado_ajuste',
+            'estadoVice' => 'estado_vice',
+            'estadoJefeDepart' => 'estado_jefe_depart',
+            'estadoCoordinadorPostg' => 'estado_coordinador_postg',
+            'programacionId' => 'programacion_id',
+        ];
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

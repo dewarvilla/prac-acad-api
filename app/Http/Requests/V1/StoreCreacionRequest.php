@@ -18,11 +18,10 @@ class StoreCreacionRequest extends FormRequest
             'nombre_practica' => ['required','string','max:255'],
             'recursos_necesarios' => ['required','string'],
             'justificacion' => ['required','string'],
-            'estado_practica' => ['required', Rule::in(['en_aprobacion','aprobada','creada'])],
-            'estado_depart' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_consejo_facultad' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_consejo_academico' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'requiere_transporte' => ['sometimes','boolean'],
+            'estado_practica' => ['nullable', Rule::in(['en_aprobacion','aprobada','creada'])],
+            'estado_depart' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_consejo_facultad' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_consejo_academico' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
         ];
     }
 
@@ -39,6 +38,7 @@ class StoreCreacionRequest extends FormRequest
             'estadoConsejoAcademico' => 'estado_consejo_academico',
             'requiereTransporte' => 'requiere_transporte',
         ];
-        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

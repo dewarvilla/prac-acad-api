@@ -16,14 +16,18 @@ class AuxilioController extends Controller
 {
     public function index(IndexAuxilioRequest $request, AuxilioFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Auxilio::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new AuxilioCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new AuxilioCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return AuxilioResource::collection($q->get());
     }
 
     public function store(StoreAuxilioRequest $request)

@@ -16,14 +16,18 @@ class CreacionController extends Controller
 {
     public function index(IndexCreacionRequest $request, CreacionFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Creacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new CreacionCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new CreacionCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return CreacionResource::collection($q->get());
     }
 
     public function store(StoreCreacionRequest $request)

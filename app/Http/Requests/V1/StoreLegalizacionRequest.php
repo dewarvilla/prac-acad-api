@@ -15,12 +15,12 @@ class StoreLegalizacionRequest extends FormRequest
 
         return [
             'fecha_legalizacion' => ['required','date'],
-            'estado_depart' => ['required', Rule::in($estadoTri)],
-            'estado_postg' => ['required', Rule::in($estadoTri)],
-            'estado_logistica' => ['required', Rule::in($estadoTri)],
-            'estado_tesoreria' => ['required', Rule::in($estadoTri)],
-            'estado_contabilidad' => ['required', Rule::in($estadoTri)],
-            'programacion_id' => ['required','exists:programaciones,id'],
+            'estado_depart' => ['nullable', Rule::in($estadoTri)],
+            'estado_postg' => ['nullable', Rule::in($estadoTri)],
+            'estado_logistica' => ['nullable', Rule::in($estadoTri)],
+            'estado_tesoreria' => ['nullable', Rule::in($estadoTri)],
+            'estado_contabilidad' => ['nullable', Rule::in($estadoTri)],
+            'programacion_id' => ['sometimes','exists:programaciones,id'],
         ];
     }
 
@@ -35,7 +35,8 @@ class StoreLegalizacionRequest extends FormRequest
             'estadoContabilidad' => 'estado_contabilidad',
             'programacionId' => 'programacion_id',
         ];
-        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }
 

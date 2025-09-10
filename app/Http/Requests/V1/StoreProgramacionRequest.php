@@ -21,13 +21,15 @@ class StoreProgramacionRequest extends FormRequest
             'lugar_de_realizacion' => ['nullable','string','max:255'],
             'justificacion' => ['required','string'],
             'recursos_necesarios' => ['required','string'],
+            'requiere_transporte' => ['required','boolean'],
 
-            'estado_practica' => ['required', Rule::in(['en_aprobacion','aprobada','rechazada','en_ejecucion','ejecutada','en_legalizacion','legalizada'])],
-            'estado_depart' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_postg' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_decano' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_jefe_postg' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_vice' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
+
+            'estado_practica' => ['nullable', Rule::in(['en_aprobacion','aprobada','rechazada','en_ejecucion','ejecutada','en_legalizacion','legalizada'])],
+            'estado_depart' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_postg' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_decano' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_jefe_postg' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_vice' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
 
             'fecha_inicio' => ['required','date'],
             'fecha_finalizacion' => ['required','date','after_or_equal:fecha_inicio'],
@@ -63,7 +65,8 @@ class StoreProgramacionRequest extends FormRequest
             'fechaFinalizacion' => 'fecha_finalizacion',
             'creacionId' => 'creacion_id',
         ];
-        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }
 

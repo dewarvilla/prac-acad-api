@@ -45,6 +45,19 @@ class UpdateAuxilioRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        (new StoreAuxilioRequest())->prepareForValidation.call($this);
+        $map = [
+            'distanciasMayor70km' => 'distancias_mayor_70km',
+            'fueraCordoba' => 'fuera_cordoba',
+            'numeroTotalEstudiantes' => 'numero_total_estudiantes',
+            'numeroTotalDocentes' => 'numero_total_docentes',
+            'numeroTotalAcompanantes' => 'numero_total_acompanantes',
+            'valorPorDocente' => 'valor_por_docente',
+            'valorPorEstudiante' => 'valor_por_estudiante',
+            'valorPorAcompanante' => 'valor_por_acompanante',
+            'valorTotalAuxilio' => 'valor_total_auxilio',
+            'programacionId' => 'programacion_id',
+        ];
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

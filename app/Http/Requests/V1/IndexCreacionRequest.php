@@ -28,7 +28,6 @@ class IndexCreacionRequest extends FormRequest
             'estadoDepart'          => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
             'estadoConsejoFacultad' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
             'estadoConsejoAcademico'=> ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'requiereTransporte'    => ['sometimes','boolean'],
         ];
     }
 

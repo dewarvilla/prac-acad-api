@@ -36,7 +36,15 @@ class UpdateReprogramacionRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        (new StoreReprogramacionRequest())->prepareForValidation.call($this);
+        $map = [
+            'fechaReprogramacion' => 'fecha_reprogramacion',
+            'estadoReprogramacion' => 'estado_reprogramacion',
+            'tipoReprogramacion' => 'tipo_reprogramacion',
+            'estadoVice' => 'estado_vice',
+            'programacionId' => 'programacion_id',
+        ];
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }
 

@@ -16,14 +16,18 @@ class ReprogramacionController extends Controller
 {
     public function index(IndexReprogramacionRequest $request, ReprogramacionFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Reprogramacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new ReprogramacionCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new ReprogramacionCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return ReprogramacionResource::collection($q->get());
     }
 
     public function store(StoreReprogramacionRequest $request)

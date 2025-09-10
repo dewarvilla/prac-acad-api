@@ -11,6 +11,7 @@ class StoreFechaRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'periodo' => ['required','string'],
             'fecha_apertura_preg' => ['required','date'],
             'fecha_cierre_docente_preg' => ['required','date','after_or_equal:fecha_apertura_preg'],
             'fecha_cierre_jefe_depart' => ['required','date'],
@@ -25,6 +26,7 @@ class StoreFechaRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $map = [
+            'periodo' => 'periodo',
             'fechaAperturaPreg' => 'fecha_apertura_preg',
             'fechaCierreDocentePreg' => 'fecha_cierre_docente_preg',
             'fechaCierreJefeDepart' => 'fecha_cierre_jefe_depart',
@@ -34,6 +36,7 @@ class StoreFechaRequest extends FormRequest
             'fechaCierreCoordinadorPostg' => 'fecha_cierre_coordinador_postg',
             'fechaCierreJefePostg' => 'fecha_cierre_jefe_postg',
         ];
-        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

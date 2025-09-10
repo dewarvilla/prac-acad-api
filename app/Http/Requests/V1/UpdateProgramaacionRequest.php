@@ -74,7 +74,22 @@ class UpdateProgramacionRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        (new StoreProgramacionRequest())->prepareForValidation.call($this);
+        $map = [
+            'programaAcademico' => 'programa_academico',
+            'lugarDeRealizacion' => 'lugar_de_realizacion',
+            'recursosNecesarios' => 'recursos_necesarios',
+            'estadoPractica' => 'estado_practica',
+            'estadoDepart' => 'estado_depart',
+            'estadoPostg' => 'estado_postg',
+            'estadoDecano' => 'estado_decano',
+            'estadoJefePostg' => 'estado_jefe_postg',
+            'estadoVice' => 'estado_vice',
+            'fechaInicio' => 'fecha_inicio',
+            'fechaFinalizacion' => 'fecha_finalizacion',
+            'creacionId' => 'creacion_id',
+        ];
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }
 

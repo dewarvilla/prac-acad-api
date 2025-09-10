@@ -11,6 +11,7 @@ class FechaResource extends JsonResource
     {
         return [
             'id'                         => $this->id,
+            'periodo'                    => $this->periodo,
             'fechaAperturaPreg'          => $this->fecha_apertura_preg,
             'fechaCierreDocentePreg'     => $this->fecha_cierre_docente_preg,
             'fechaCierreJefeDepart'      => $this->fecha_cierre_jefe_depart,
@@ -18,6 +19,7 @@ class FechaResource extends JsonResource
             'fechaAperturaPostg'         => $this->fecha_apertura_postg,
             'fechaCierreDocentePostg'    => $this->fecha_cierre_docente_postg,
             'fechaCierreCoordinadorPostg'=> $this->fecha_cierre_coordinador_postg,
+            'fechaCierreJefePostg'       => $this->fecha_cierre_jefe_postg,
             'fechacreacion'              => $this->fechacreacion,
             'usuariocreacion'            => $this->usuariocreacion,
             'fechamodificacion'          => $this->fechamodificacion,

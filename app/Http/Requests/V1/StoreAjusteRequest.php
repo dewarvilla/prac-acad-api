@@ -13,12 +13,12 @@ class StoreAjusteRequest extends FormRequest
     {
         return [
             'fecha_ajuste' => ['required','date'],
-            'estado_ajuste' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_vice' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_jefe_depart' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_coordinador_postg' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_ajuste' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_vice' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_jefe_depart' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_coordinador_postg' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
             'justificacion' => ['required','string'],
-            'programacion_id' => ['required','exists:programaciones,id'],
+            'programacion_id' => ['sometimes','exists:programaciones,id'],
         ];
     }
 
@@ -32,6 +32,6 @@ class StoreAjusteRequest extends FormRequest
             'estadoCoordinadorPostg' => 'estado_coordinador_postg',
             'programacionId' => 'programacion_id',
         ];
-        $this->merge(array_intersect_key($this->all(), $map) ? collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->all() : []);
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

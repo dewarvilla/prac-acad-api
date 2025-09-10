@@ -13,11 +13,11 @@ class StoreReprogramacionRequest extends FormRequest
     {
         return [
             'fecha_reprogramacion' => ['required','date'],
-            'estado_reprogramacion' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'tipo_reprogramacion' => ['required', Rule::in(['normal','emergencia'])],
-            'estado_vice' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_reprogramacion' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+            'tipo_reprogramacion' => ['nullable', Rule::in(['normal','emergencia'])],
+            'estado_vice' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
             'justificacion' => ['required','string'],
-            'programacion_id' => ['required','exists:programaciones,id'],
+            'programacion_id' => ['sometimes','exists:programaciones,id'],
         ];
     }
 
@@ -30,6 +30,7 @@ class StoreReprogramacionRequest extends FormRequest
             'estadoVice' => 'estado_vice',
             'programacionId' => 'programacion_id',
         ];
-        $this->merge(collect($map)->mapWithKeys(fn($v,$k)=>[$v=>$this->$k])->filter()->all());
+        
+        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }

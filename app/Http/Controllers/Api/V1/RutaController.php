@@ -16,14 +16,18 @@ class RutaController extends Controller
 {
     public function index(IndexRutaRequest $request, RutaFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 15);
+        $perPage = (int) $request->query('per_page', 0);
 
         $q = Ruta::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        return new RutaCollection(
-            $q->paginate($perPage)->appends($request->query())
-        );
+        if ($perPage > 0) {
+            return new RutaCollection(
+                $q->paginate($perPage)->appends($request->query())
+            );
+        }
+        
+        return RutaResource::collection($q->get());
     }
 
     public function store(StoreRutaRequest $request)

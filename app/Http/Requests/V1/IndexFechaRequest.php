@@ -18,7 +18,7 @@ class IndexFechaRequest extends FormRequest
                 'fechaAperturaPreg','-fechaAperturaPreg',
                 'fechaCierreDocentePreg','-fechaCierreDocentePreg',
             ])],
-
+            'periodo'                     => ['sometimes','string'],
             'fechaAperturaPreg'           => ['sometimes','date'],
             'fechaCierreDocentePreg'      => ['sometimes','date'],
             'fechaCierreJefeDepart'       => ['sometimes','date'],
@@ -32,6 +32,7 @@ class IndexFechaRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $map = [
+            'periodo'                      => 'periodo',
             'fechaAperturaPreg'           => 'fecha_apertura_preg',
             'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
             'fechaCierreJefeDepart'       => 'fecha_cierre_jefe_depart',
