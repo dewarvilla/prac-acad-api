@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexRutaRequest;
 use App\Http\Requests\V1\StoreRutaRequest;
 use App\Http\Requests\V1\UpdateRutaRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class RutaController extends Controller
 {
@@ -18,7 +19,7 @@ class RutaController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Ruta::query()->orderBy('id');
+        $q = Ruta::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

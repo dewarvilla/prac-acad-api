@@ -92,26 +92,33 @@ abstract class ApiFilter
             if ($request->filled($fromKey)) $query->whereDate($col, '>=', $request->input($fromKey));
             if ($request->filled($toKey))   $query->whereDate($col, '<=', $request->input($toKey));
         }
-
-        // 3) Orden: ?sort=created_at,-id
         if ($request->filled('sort')) {
             $sorts = explode(',', $request->get('sort'));
-            $allowedSorts = array_unique(array_merge(
-                array_keys($this->safeParms),
+
+    // columnas permitidas (nombres reales de BD)
+            $allowedColumns = array_unique(array_merge(
+                array_keys($this->safeParms), // ej. nombre_practica, programa_academico...
                 $this->dateFilters,
                 ['id', 'created_at', 'updated_at']
             ));
+
             foreach ($sorts as $s) {
                 $direction = str_starts_with($s, '-') ? 'desc' : 'asc';
-                $field = ltrim($s, '-');
-                if (! in_array($field, $allowedSorts, true)) continue;
+                $field     = ltrim($s, '-');
+
+        // mapear alias/camelCase -> columna real
                 $column = $this->columnMap[$field] ?? $field;
+
+        // validar contra columnas reales
+                if (!in_array($column, $allowedColumns, true)) {
+                    continue; // ignora campos no permitidos
+                }
+
                 $query->orderBy($column, $direction);
             }
-        } else {
-            $query->latest('id');
-        }
-
+    } else {
+        $query->latest('id');
+    }
         return $query;
     }
 

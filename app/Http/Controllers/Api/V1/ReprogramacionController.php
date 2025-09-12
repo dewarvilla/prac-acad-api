@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexReprogramacionRequest;
 use App\Http\Requests\V1\StoreReprogramacionRequest;
 use App\Http\Requests\V1\UpdateReprogramacionRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class ReprogramacionController extends Controller
 {
@@ -18,7 +19,7 @@ class ReprogramacionController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Reprogramacion::query()->orderBy('id');
+        $q = Reprogramacion::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

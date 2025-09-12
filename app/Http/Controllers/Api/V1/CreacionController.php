@@ -11,23 +11,37 @@ use App\Http\Requests\V1\IndexCreacionRequest;
 use App\Http\Requests\V1\StoreCreacionRequest;
 use App\Http\Requests\V1\UpdateCreacionRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class CreacionController extends Controller
 {
     public function index(IndexCreacionRequest $request, CreacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
+        $q = Creacion::query();
 
-        $q = Creacion::query()->orderBy('id');
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new CreacionCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
+        if ($request->filled('q')) {
+            $term = (string) $request->query('q');
+            $op   = DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $like = '%'.addcslashes($term, "%_\\").'%';
+
+            $q->where(function ($qq) use ($like, $term, $op) {
+                $qq->where('nombre_practica', $op, $like)
+                ->orWhere('facultad', $op, $like)
+                ->orWhere('programa_academico', $op, $like)
+                ->orWhere('nivel_academico', $op, $like);
+
+                if (ctype_digit($term)) {
+                    $qq->orWhere('id', (int) $term);
+                }
+            });
         }
-        
-        return CreacionResource::collection($q->get());
+
+        return $perPage > 0
+            ? new CreacionCollection($q->paginate($perPage)->appends($request->query()))
+            : CreacionResource::collection($q->get());
     }
 
     public function store(StoreCreacionRequest $request)

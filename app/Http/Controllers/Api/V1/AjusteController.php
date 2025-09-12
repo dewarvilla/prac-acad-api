@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexAjusteRequest;
 use App\Http\Requests\V1\StoreAjusteRequest;
 use App\Http\Requests\V1\UpdateAjusteRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class AjusteController extends Controller
 {
@@ -18,7 +19,7 @@ class AjusteController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Ajuste::query()->orderBy('id');
+        $q = Ajuste::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

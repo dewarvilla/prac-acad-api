@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexFechaRequest;
 use App\Http\Requests\V1\StoreFechaRequest;
 use App\Http\Requests\V1\UpdateFechaRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class FechaController extends Controller
 {
@@ -18,7 +19,7 @@ class FechaController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Fecha::query()->orderBy('id');
+        $q = Fecha::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

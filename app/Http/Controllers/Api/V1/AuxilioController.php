@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexAuxilioRequest;
 use App\Http\Requests\V1\StoreAuxilioRequest;
 use App\Http\Requests\V1\UpdateAuxilioRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class AuxilioController extends Controller
 {
@@ -18,7 +19,7 @@ class AuxilioController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Auxilio::query()->orderBy('id');
+        $q = Auxilio::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

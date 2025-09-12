@@ -12,12 +12,19 @@ class IndexCreacionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'q'        => ['sometimes','string','max:255'],
             'per_page' => ['sometimes','integer','min:1','max:200'],
             'page'     => ['sometimes','integer','min:1'],
+
             'sort'     => ['sometimes', Rule::in([
                 'nombrePractica','-nombrePractica',
+                'facultad','-facultad',
+                'id','-id',
+                'nivelAcademico','-nivelAcademico',
+                'programaAcademico','-programaAcademico'
             ])],
 
+            // Filtros “eq”
             'nivelAcademico'        => ['sometimes', Rule::in(['pregrado','postgrado'])],
             'facultad'              => ['sometimes','string','max:255'],
             'programaAcademico'     => ['sometimes','string','max:255'],
@@ -28,11 +35,27 @@ class IndexCreacionRequest extends FormRequest
             'estadoDepart'          => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
             'estadoConsejoFacultad' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
             'estadoConsejoAcademico'=> ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+
+            // Filtros “like” (recuerda: deben llegar como facultad[lk]=..., etc.)
+            'facultad.lk'              => ['sometimes','string','max:255'],
+            'programaAcademico.lk'     => ['sometimes','string','max:255'],
+            'nombrePractica.lk'        => ['sometimes','string','max:255'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
+        // (Opcional) normaliza q y elimínala si viene vacía
+        if ($this->has('q')) {
+            $q = trim((string) $this->input('q'));
+            if ($q === '') {
+                // si no quieres validarla cuando esté vacía:
+                $this->request->remove('q');
+            } else {
+                $this->merge(['q' => $q]);
+            }
+        }
+
         $map = [
             'nivelAcademico'        => 'nivel_academico',
             'programaAcademico'     => 'programa_academico',
@@ -45,13 +68,10 @@ class IndexCreacionRequest extends FormRequest
             'requiereTransporte'    => 'requiere_transporte',
         ];
         $merge = [];
-        foreach ($map as $in => $out) if ($this->has($in)) $merge[$out] = $this->input($in);
-
-        if ($this->has('requiereTransporte')) {
-            $merge['requiere_transporte'] = filter_var($this->input('requiereTransporte'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        foreach ($map as $in => $out) {
+            if ($this->has($in)) $merge[$out] = $this->input($in);
         }
 
         if ($merge) $this->merge($merge);
     }
 }
-

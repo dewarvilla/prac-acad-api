@@ -11,23 +11,35 @@ use App\Http\Requests\V1\IndexSalarioRequest;
 use App\Http\Requests\V1\StoreSalarioRequest;
 use App\Http\Requests\V1\UpdateSalarioRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class SalarioController extends Controller
 {
     public function index(IndexSalarioRequest $request, SalarioFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
+        $q = Salario::query();
 
-        $q = Salario::query()->orderBy('anio');
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new SalarioCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
+        if ($request->filled('q')) {
+            $term = (string) $request->query('q');
+            $op   = DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $like = '%'.addcslashes($term, "%_\\").'%';
+
+            $q->where(function ($qq) use ($like, $term, $op) {
+                $qq->where('anio', $op, $like)
+                ->orWhere('valor', $op, $like);
+
+                if (ctype_digit($term)) {
+                    $qq->orWhere('id', (int) $term);
+                }
+            });
         }
-        
-        return SalarioResource::collection($q->get());
+
+        return $perPage > 0
+            ? new SalarioCollection($q->paginate($perPage)->appends($request->query()))
+            : SalarioResource::collection($q->get());
     }
 
     public function store(StoreSalarioRequest $request)

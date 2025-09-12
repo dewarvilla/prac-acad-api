@@ -8,7 +8,7 @@ class FechaFilter extends ApiFilter
 {
     protected array $safeParms = [
         'id'                          => ['eq','in','gt','lt','gte','lte'],
-        'periodo'                     => ['eq','in','like'],
+        'periodo'                     => ['eq','in','lk'],
         'fecha_apertura_preg'         => ['eq','gt','gte','lt','lte','btn'],
         'fecha_cierre_docente_preg'   => ['eq','gt','gte','lt','lte','btn'],
         'fecha_cierre_jefe_depart'    => ['eq','gt','gte','lt','lte','btn'],

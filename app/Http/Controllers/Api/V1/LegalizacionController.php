@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexLegalizacionRequest;
 use App\Http\Requests\V1\StoreLegalizacionRequest;
 use App\Http\Requests\V1\UpdateLegalizacionRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class LegalizacionController extends Controller
 {
@@ -18,7 +19,7 @@ class LegalizacionController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Legalizacion::query()->orderBy('id');
+        $q = Legalizacion::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

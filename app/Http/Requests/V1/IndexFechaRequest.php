@@ -14,11 +14,10 @@ class IndexFechaRequest extends FormRequest
         return [
             'per_page' => ['sometimes','integer','min:1','max:200'],
             'page'     => ['sometimes','integer','min:1'],
-            'sort'     => ['sometimes', Rule::in([
-                'fechaAperturaPreg','-fechaAperturaPreg',
-                'fechaCierreDocentePreg','-fechaCierreDocentePreg',
-            ])],
-            'periodo'                     => ['sometimes','string'],
+            'sort'     => ['sometimes', Rule::in(['id','-id','periodo','-periodo'])],
+
+            'periodo'    => ['sometimes'], 
+            'periodo.lk' => ['sometimes','string'],
             'fechaAperturaPreg'           => ['sometimes','date'],
             'fechaCierreDocentePreg'      => ['sometimes','date'],
             'fechaCierreJefeDepart'       => ['sometimes','date'],
@@ -26,13 +25,13 @@ class IndexFechaRequest extends FormRequest
             'fechaAperturaPostg'          => ['sometimes','date'],
             'fechaCierreDocentePostg'     => ['sometimes','date'],
             'fechaCierreCoordinadorPostg' => ['sometimes','date'],
+            'fechaCierreJefePostg'        => ['sometimes','date'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
         $map = [
-            'periodo'                      => 'periodo',
             'fechaAperturaPreg'           => 'fecha_apertura_preg',
             'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
             'fechaCierreJefeDepart'       => 'fecha_cierre_jefe_depart',
@@ -40,6 +39,7 @@ class IndexFechaRequest extends FormRequest
             'fechaAperturaPostg'          => 'fecha_apertura_postg',
             'fechaCierreDocentePostg'     => 'fecha_cierre_docente_postg',
             'fechaCierreCoordinadorPostg' => 'fecha_cierre_coordinador_postg',
+            'fechaCierreJefePostg' => 'fecha_cierre_jefe_postg'
         ];
         $merge = [];
         foreach ($map as $in => $out) if ($this->has($in)) $merge[$out] = $this->input($in);

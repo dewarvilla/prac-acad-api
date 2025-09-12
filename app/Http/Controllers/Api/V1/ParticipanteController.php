@@ -12,6 +12,7 @@ use App\Http\Requests\V1\StoreParticipanteRequest;
 use App\Http\Requests\V1\UpdateParticipanteRequest;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class ParticipanteController extends Controller
 {
@@ -19,7 +20,7 @@ class ParticipanteController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Participante::query()->orderBy('id');
+        $q = Participante::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {

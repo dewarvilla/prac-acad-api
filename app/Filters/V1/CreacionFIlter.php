@@ -13,7 +13,7 @@ class CreacionFilter extends ApiFilter
         'programa_academico' => ['eq','lk'],
         'nombre_practica' => ['eq','lk'],
         'recursos_necesarios' => ['eq','lk'],
-        'jutificacion' => ['eq','lk'],
+        'justificacion' => ['eq','lk'],
         'estado_practica' => ['eq','in'],
         'estado_depart' => ['eq','in'],
         'estado_consejo_facultad'=> ['eq','in'],

@@ -11,6 +11,7 @@ use App\Http\Requests\V1\IndexProgramacionRequest;
 use App\Http\Requests\V1\StoreProgramacionRequest;
 use App\Http\Requests\V1\UpdateProgramacionRequest;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class ProgramacionController extends Controller
 {
@@ -18,7 +19,7 @@ class ProgramacionController extends Controller
     {
         $perPage = (int) $request->query('per_page', 0);
 
-        $q = Programacion::query()->orderBy('id');
+        $q = Programacion::query();
         $filter->apply($request, $q);
 
         if ($perPage > 0) {
