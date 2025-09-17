@@ -16,9 +16,7 @@ class IndexRutaRequest extends FormRequest
             'page'     => ['sometimes','integer','min:1'],
             'sort'     => ['sometimes', Rule::in([
                 'numeroRecorridos','-numeroRecorridos',
-                'numeroPeajes','-numeroPeajes',
-                'valorTotalPeajes','-valorTotalPeajes',
-                'distanciaTotalKm','-distanciaTotalKm',
+                'numeroPeajes','-numeroPeajes'
             ])],
 
             'latitudSalidas'       => ['sometimes','string','max:255'],
@@ -26,9 +24,7 @@ class IndexRutaRequest extends FormRequest
             'numeroRecorridos'     => ['sometimes','integer','min:0'],
             'numeroPeajes'         => ['sometimes','integer','min:0'],
             'valorPeajes'          => ['sometimes','numeric'],
-            'valorTotalPeajes'     => ['sometimes','numeric'],
             'distanciaTrayectosKm' => ['sometimes','numeric'],
-            'distanciaTotalKm'     => ['sometimes','numeric'],
             'rutaSalida'           => ['sometimes','string','max:255'],
             'rutaLlegada'          => ['sometimes','string','max:255'],
             'programacionId'       => ['sometimes','integer','min:1'],
@@ -43,9 +39,7 @@ class IndexRutaRequest extends FormRequest
             'numeroRecorridos'     => 'numero_recorridos',
             'numeroPeajes'         => 'numero_peajes',
             'valorPeajes'          => 'valor_peajes',
-            'valorTotalPeajes'     => 'valor_total_peajes',
             'distanciaTrayectosKm' => 'distancia_trayectos_km',
-            'distanciaTotalKm'     => 'distancia_total_km',
             'rutaSalida'           => 'ruta_salida',
             'rutaLlegada'          => 'ruta_llegada',
             'programacionId'       => 'programacion_id',

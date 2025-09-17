@@ -5,7 +5,7 @@ namespace App\Http\Requests\V1;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class IndexCreacionRequest extends FormRequest
+class IndexCatalogoRequest extends FormRequest
 {
     public function authorize(): bool { return true; }
 
@@ -17,22 +17,20 @@ class IndexCreacionRequest extends FormRequest
             'page'     => ['sometimes','integer','min:1'],
 
             'sort'     => ['sometimes', Rule::in([
-                'nombrePractica','-nombrePractica',
-                'id','-id'
+                'facultad','-facultad',
+                'id','-id',
+                'nivelAcademico','-nivelAcademico',
+                'programaAcademico','-programaAcademico'
             ])],
 
             // Filtros “eq”
-            'nombrePractica'        => ['sometimes','string','max:255'],
-            'recursosNecesarios'    => ['sometimes','string'],
-            'justificacion'         => ['sometimes','string'],
-            'estadoPractica'        => ['sometimes', Rule::in(['en_aprobacion','aprobada','creada'])],
-            'estadoDepart'          => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estadoConsejoFacultad' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estadoConsejoAcademico'=> ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'catalogoId'       => ['sometimes','integer','min:1'],
+            'nivelAcademico'        => ['sometimes', Rule::in(['pregrado','postgrado'])],
+            'facultad'              => ['sometimes','string','max:255'],
+            'programaAcademico'     => ['sometimes','string','max:255'],
 
             // Filtros “like” (recuerda: deben llegar como facultad[lk]=..., etc.)
-            'nombrePractica.lk'        => ['sometimes','string','max:255'],
+            'facultad.lk'              => ['sometimes','string','max:255'],
+            'programaAcademico.lk'     => ['sometimes','string','max:255'],
         ];
     }
 
@@ -52,14 +50,6 @@ class IndexCreacionRequest extends FormRequest
         $map = [
             'nivelAcademico'        => 'nivel_academico',
             'programaAcademico'     => 'programa_academico',
-            'nombrePractica'        => 'nombre_practica',
-            'catalagoId'        => 'catalago_id',
-            'recursosNecesarios'    => 'recursos_necesarios',
-            'estadoPractica'        => 'estado_practica',
-            'estadoDepart'          => 'estado_depart',
-            'estadoConsejoFacultad' => 'estado_consejo_facultad',
-            'estadoConsejoAcademico'=> 'estado_consejo_academico',
-            'requiereTransporte'    => 'requiere_transporte',
         ];
         $merge = [];
         foreach ($map as $in => $out) {

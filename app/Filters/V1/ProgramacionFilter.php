@@ -7,38 +7,35 @@ use App\Filters\ApiFilter;
 class ProgramacionFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'id'                 => ['eq','in','gt','lt','gte','lte'],
-        'nombre'             => ['eq','lk'],
-        'nivel'              => ['eq','in'],
-        'facultad'           => ['eq','lk'],
-        'programa_academico' => ['eq','lk'],
-        'descripcion'        => ['eq','lk'],
-        'lugar_de_realizacion'=> ['eq','lk'],
-        'justificacion'      => ['eq','lk'],
-        'recursos_necesarios'=> ['eq','lk'],
+        'id'                   => ['eq','in','gt','lt','gte','lte'],
+        'nombre_practica'      => ['eq','lk'],
+        'descripcion'          => ['eq','lk'],
+        'lugar_de_realizacion' => ['eq','lk'],
+        'justificacion'        => ['eq','lk'],
+        'recursos_necesarios'  => ['eq','lk'],
 
-        'estado_practica'    => ['eq','in'],
-        'estado_depart'      => ['eq','in'],
-        'estado_postg'       => ['eq','in'],
-        'estado_decano'      => ['eq','in'],
-        'estado_jefe_postg'  => ['eq','in'],
-        'estado_vice'        => ['eq','in'],
+        'estado_practica'      => ['eq','in'],
+        'estado_depart'        => ['eq','in'],
+        'estado_postg'         => ['eq','in'],
+        'estado_decano'        => ['eq','in'],
+        'estado_jefe_postg'    => ['eq','in'],
+        'estado_vice'          => ['eq','in'],
 
-        'fecha_inicio'       => ['eq','gt','gte','lt','lte','btn'],
-        'fecha_finalizacion' => ['eq','gt','gte','lt','lte','btn'],
-        'creacion_id'        => ['eq','in'],
+        'fecha_inicio'         => ['eq','gt','gte','lt','lte','btn'],
+        'fecha_finalizacion'   => ['eq','gt','gte','lt','lte','btn'],
+        'creacion_id'          => ['eq','in'],
 
-        'fechacreacion'      => ['eq','gt','gte','lt','lte','btn'],
-        'usuariocreacion'    => ['eq','in'],
-        'fechamodificacion'  => ['eq','gt','gte','lt','lte','btn'],
-        'usuariomodificacion'=> ['eq','in'],
-        'ipcreacion'         => ['eq'],
-        'ipmodificacion'     => ['eq'],
-        'requiere_transporte', ['eq'],
+        'fechacreacion'        => ['eq','gt','gte','lt','lte','btn'],
+        'usuariocreacion'      => ['eq','in'],
+        'fechamodificacion'    => ['eq','gt','gte','lt','lte','btn'],
+        'usuariomodificacion'  => ['eq','in'],
+        'ipcreacion'           => ['eq'],
+        'ipmodificacion'       => ['eq'],
+        'requiere_transporte'  => ['eq'],
     ];
 
     protected array $columnMap = [
-        'programaAcademico'  => 'programa_academico',
+        'nombrePractica'     => 'nombre_practica',
         'lugarDeRealizacion' => 'lugar_de_realizacion',
         'recursosNecesarios' => 'recursos_necesarios',
         'estadoPractica'     => 'estado_practica',
@@ -50,6 +47,8 @@ class ProgramacionFilter extends ApiFilter
         'fechaInicio'        => 'fecha_inicio',
         'fechaFinalizacion'  => 'fecha_finalizacion',
         'creacionId'         => 'creacion_id',
+        'fechacreacion'      => 'fechacreacion',
+        'fechamodificacion'  => 'fechamodificacion',
     ];
 
     protected array $dateFilters = [

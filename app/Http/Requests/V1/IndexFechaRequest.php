@@ -12,9 +12,12 @@ class IndexFechaRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'q'        => ['sometimes','string','max:255'],
             'per_page' => ['sometimes','integer','min:1','max:200'],
             'page'     => ['sometimes','integer','min:1'],
-            'sort'     => ['sometimes', Rule::in(['id','-id','periodo','-periodo'])],
+            'sort'     => ['sometimes', Rule::in(['id','-id','periodo','-periodo','fechaAperturaPreg',
+             '-fechaAperturaPreg', 'fechaCierreDocentePreg', '-fechaCierreDocentePreg', 'fechaAperturaPostg',
+             '-fechaAperturaPostg', 'fechaCierreDocentePostg', '-fechaCierreDocentePostg'])],
 
             'periodo'    => ['sometimes'], 
             'periodo.lk' => ['sometimes','string'],
@@ -31,6 +34,15 @@ class IndexFechaRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->has('q')) {
+            $q = trim((string) $this->input('q'));
+            if ($q === '') {
+                // si no quieres validarla cuando esté vacía:
+                $this->request->remove('q');
+            } else {
+                $this->merge(['q' => $q]);
+            }
+        }
         $map = [
             'fechaAperturaPreg'           => 'fecha_apertura_preg',
             'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
@@ -42,8 +54,10 @@ class IndexFechaRequest extends FormRequest
             'fechaCierreJefePostg' => 'fecha_cierre_jefe_postg'
         ];
         $merge = [];
-        foreach ($map as $in => $out) if ($this->has($in)) $merge[$out] = $this->input($in);
+        foreach ($map as $in => $out) {
+            if ($this->has($in)) $merge[$out] = $this->input($in);
+        }
+
         if ($merge) $this->merge($merge);
     }
 }
-

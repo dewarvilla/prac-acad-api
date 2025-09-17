@@ -15,10 +15,7 @@ return new class extends Migration
         Schema::create('programaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('creacion_id');
-            $table->string('nombre');
-            $table->enum('nivel', ['pregrado', 'posgrado']);
-            $table->string('facultad');
-            $table->string('programa_academico');
+            $table->string('nombre_practica');
             $table->text('descripcion');
             $table->boolean('requiere_transporte')->default(false);
             $table->string('lugar_de_realizacion')->nullable();
@@ -35,8 +32,6 @@ return new class extends Migration
 
             $table->date('fecha_inicio');
             $table->date('fecha_finalizacion'); 
-
-            $table->unique(['nombre', 'programa_academico']);
 
             $table->foreign('creacion_id')->references('id')->on('creaciones')->onUpdate('cascade')->onDelete('cascade');
 

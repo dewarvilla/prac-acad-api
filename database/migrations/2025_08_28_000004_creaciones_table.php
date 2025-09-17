@@ -14,10 +14,7 @@ return new class extends Migration
         //tabla para crear practicas por el vice academico
         Schema::create('creaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
-            $table->enum('nivel_academico', ['pregrado', 'postgrado'])->default('pregrado');
-            $table->string('facultad');
-            $table->string('programa_academico');
+            $table->unsignedBigInteger('catalogo_id');
             $table->string('nombre_practica');
             $table->text('recursos_necesarios');
             $table->text('justificacion');
@@ -28,6 +25,8 @@ return new class extends Migration
             $table->enum('estado_consejo_academico', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
 
             $table->unique(['nombre_practica', 'programa_academico']);
+
+            $table->foreign('catalogo_id')->references('id')->on('catalogos')->onUpdate('cascade')->onDelete('cascade');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

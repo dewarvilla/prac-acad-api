@@ -24,11 +24,9 @@ class IndexAuxilioRequest extends FormRequest
             'fueraCordoba'            => ['sometimes','boolean'],
             'numeroTotalEstudiantes'  => ['sometimes','integer','min:0'],
             'numeroTotalDocentes'     => ['sometimes','integer','min:0'],
-            'numeroTotalAcompanantes' => ['sometimes','integer','min:0'],
             'valorPorDocente'         => ['sometimes','numeric'],
             'valorPorEstudiante'      => ['sometimes','numeric'],
             'valorPorAcompanante'     => ['sometimes','numeric'],
-            'valorTotalAuxilio'       => ['sometimes','numeric'],
             'programacionId'          => ['sometimes','integer','min:1'],
         ];
     }
@@ -38,13 +36,9 @@ class IndexAuxilioRequest extends FormRequest
         $map = [
             'distanciasMayor70km'     => 'distancias_mayor_70km',
             'fueraCordoba'            => 'fuera_cordoba',
-            'numeroTotalEstudiantes'  => 'numero_total_estudiantes',
-            'numeroTotalDocentes'     => 'numero_total_docentes',
-            'numeroTotalAcompanantes' => 'numero_total_acompanantes',
             'valorPorDocente'         => 'valor_por_docente',
             'valorPorEstudiante'      => 'valor_por_estudiante',
             'valorPorAcompanante'     => 'valor_por_acompanante',
-            'valorTotalAuxilio'       => 'valor_total_auxilio',
             'programacionId'          => 'programacion_id',
         ];
         $merge = [];

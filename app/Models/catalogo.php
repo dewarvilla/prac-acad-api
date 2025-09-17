@@ -5,23 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Creacion extends Model
+class Catalogo extends Model
 {
     use HasFactory;
 
-    protected $table = 'creaciones';
+    protected $table = 'catalogos';
 
     const CREATED_AT = 'fechacreacion';
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
-        'nombre_practica',
-        'recursos_necesarios',
-        'justificacion',
-        'estado_practica',
-        'estado_depart',
-        'estado_consejo_facultad',
-        'estado_consejo_academico',
+        'nivel_academico',
+        'facultad',
+        'programa_academico',
         'usuariocreacion',
         'usuariomodificacion',
         'ipcreacion',
@@ -33,13 +29,8 @@ class Creacion extends Model
         'fechamodificacion' => 'datetime',
     ];
 
-    public function catalogo()
+    public function creaciones()
     {
-        return $this->belongsTo(Catalogo::class, 'catalogo_id');
-    }
-    
-    public function programaciones()
-    {
-        return $this->hasMany(Programacion::class, 'creacion_id');
+        return $this->hasMany(Creacion::class, 'catalogo_id');
     }
 }

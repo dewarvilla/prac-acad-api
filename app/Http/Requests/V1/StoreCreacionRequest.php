@@ -12,9 +12,6 @@ class StoreCreacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nivel_academico' => ['required', Rule::in(['pregrado','postgrado'])],
-            'facultad' => ['required','string','max:255'],
-            'programa_academico' => ['required','string','max:255'],
             'nombre_practica' => ['required','string','max:255'],
             'recursos_necesarios' => ['required','string'],
             'justificacion' => ['required','string'],
@@ -37,6 +34,8 @@ class StoreCreacionRequest extends FormRequest
             'estadoConsejoFacultad' => 'estado_consejo_facultad',
             'estadoConsejoAcademico' => 'estado_consejo_academico',
             'requiereTransporte' => 'requiere_transporte',
+            
+            'catalogoId' => 'catalogo_id',
         ];
         
         $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());

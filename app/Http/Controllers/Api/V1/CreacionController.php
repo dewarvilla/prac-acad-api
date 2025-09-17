@@ -29,9 +29,10 @@ class CreacionController extends Controller
 
             $q->where(function ($qq) use ($like, $term, $op) {
                 $qq->where('nombre_practica', $op, $like)
-                ->orWhere('facultad', $op, $like)
-                ->orWhere('programa_academico', $op, $like)
-                ->orWhere('nivel_academico', $op, $like);
+                ->orWhere('estado_practica', $op, $like)
+                ->orWhere('estado_depart', $op, $like)
+                ->orWhere('estado_consejo_facultad', $op, $like)
+                ->orWhere('estado_consejo_academico', $op, $like);
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);

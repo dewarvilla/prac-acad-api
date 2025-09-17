@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Fecha;
-use App\Filters\V1\FechaFilter;
-use App\Http\Resources\V1\FechaResource;
-use App\Http\Resources\V1\FechaCollection;
-use App\Http\Requests\V1\IndexFechaRequest;
-use App\Http\Requests\V1\StoreFechaRequest;
-use App\Http\Requests\V1\UpdateFechaRequest;
+use App\Models\Catalogo;
+use App\Filters\V1\CatalogoFilter;
+use App\Http\Resources\V1\CatalogoResource;
+use App\Http\Resources\V1\CatalogoCollection;
+use App\Http\Requests\V1\IndexCatalogoRequest;
+use App\Http\Requests\V1\StoreCatalogoRequest;
+use App\Http\Requests\V1\UpdateCatalogoRequest;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
-class FechaController extends Controller
+class CatalogoController extends Controller
 {
-    public function index(IndexFechaRequest $request, FechaFilter $filter)
+    public function index(IndexCatalogoRequest $request, CatalogoFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-        $q = Fecha::query();
+        $q = Catalogo::query();
 
         $filter->apply($request, $q);
 
@@ -28,11 +28,9 @@ class FechaController extends Controller
             $like = '%'.addcslashes($term, "%_\\").'%';
 
             $q->where(function ($qq) use ($like, $term, $op) {
-                $qq->where('periodo', $op, $like)
-                ->orWhere('fecha_apertura_preg', $op, $like)
-                ->orWhere('fecha_cierre_docente_preg', $op, $like)
-                ->orWhere('fecha_apertura_postg', $op, $like)
-                ->orWhere('fecha_cierre_docente_postg', $op, $like);
+                $qq->where('facultad', $op, $like)
+                ->orWhere('programa_academico', $op, $like)
+                ->orWhere('nivel_academico', $op, $like);
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);
@@ -41,11 +39,11 @@ class FechaController extends Controller
         }
 
         return $perPage > 0
-            ? new FechaCollection($q->paginate($perPage)->appends($request->query()))
-            : FechaResource::collection($q->get());
+            ? new CatalogoCollection($q->paginate($perPage)->appends($request->query()))
+            : CatalogoResource::collection($q->get());
     }
 
-    public function store(StoreFechaRequest $request)
+    public function store(StoreCatalogoRequest $request)
     {
         $now = now();
         $data = $request->validated() + [
@@ -57,18 +55,18 @@ class FechaController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $fecha = Fecha::create($data);
+        $catalogo = Catalogo::create($data);
 
-        return (new FechaResource($fecha))
+        return (new CatalogoResource($catalogo))
             ->response()->setStatusCode(201);
     }
 
-    public function show(Fecha $fecha)
+    public function show(Catalogo $catalogo)
     {
-        return new FechaResource($fecha);
+        return new CatalogoResource($catalogo);
     }
 
-    public function update(UpdateFechaRequest $request, Fecha $fecha)
+    public function update(UpdateCatalogoRequest $request, Catalogo $catalogo)
     {
         $data = $request->validated() + [
             'fechamodificacion'   => now(),
@@ -76,15 +74,15 @@ class FechaController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $fecha->update($data);
+        $catalogo->update($data);
 
-        return new FechaResource($fecha->refresh());
+        return new CatalogoResource($catalogo->refresh());
     }
 
-    public function destroy(Fecha $fecha)
+    public function destroy(Catalogo $catalogo)
     {
         try {
-            $fecha->delete();
+            $catalogo->delete();
             return response()->noContent();
         } catch (QueryException $e) {
             if ($e->getCode() === '23000') {

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Programacion extends Model
 {
@@ -15,10 +15,7 @@ class Programacion extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
-        'nombre',
-        'nivel',
-        'facultad',
-        'programa_academico',
+        'nombre_practica',
         'descripcion',
         'lugar_de_realizacion',
         'justificacion',
@@ -46,6 +43,21 @@ class Programacion extends Model
         'fechacreacion'       => 'datetime',
         'fechamodificacion'   => 'datetime',
     ];
+    
+    protected static function booted()
+    {
+        static::creating(function ($m) {
+            if ($m->creacion && empty($m->nombre_practica)) {
+                $m->nombre_practica = $m->creacion->nombre_practica;
+            }
+        });
+
+        static::updating(function ($m) {
+            if ($m->isDirty('creacion_id') && $m->creacion) {
+                $m->nombre_practica = $m->creacion->nombre_practica;
+            }
+        });
+    }
 
     public function creacion()
     {

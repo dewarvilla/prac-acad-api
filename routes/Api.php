@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\LegalizacionController;
 use App\Http\Controllers\Api\V1\FechaController;
 use App\Http\Controllers\Api\V1\CreacionController;
 use App\Http\Controllers\Api\V1\AjusteController;
+use App\Http\Controllers\Api\V1\CatalogoController;
 
 Route::prefix('v1')->group(function () {
 
@@ -41,6 +42,9 @@ Route::prefix('v1')->group(function () {
 
     Route::apiResource('creaciones', CreacionController::class)
         ->parameters(['creaciones' => 'creacion']);
+
+    Route::apiResource('catalogos', CatalogoController::class)
+        ->parameters(['catalogos' => 'catalogo']);
 
     Route::apiResource('ajustes', AjusteController::class)
         ->parameters(['ajustes' => 'ajuste']);

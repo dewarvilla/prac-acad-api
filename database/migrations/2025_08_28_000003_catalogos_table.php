@@ -11,26 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // tabla rutas de practicas
-        Schema::create('rutas', function (Blueprint $table) {
+        //tabla para crear practicas por el vice academico
+        Schema::create('catalogos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('programacion_id');
-
-            $table->string('latitud_salidas');
-            $table->string('latitud_llegadas');
-            $table->integer('numero_recorridos');
-            $table->integer('numero_peajes');
-
-            $table->decimal('valor_peajes', 10, 2);
-            $table->decimal('distancia_trayectos_km', 10, 2);
-
-            $table->string('ruta_salida')->nullable();
-            $table->string('ruta_llegada')->nullable();
-
-            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
             
+            $table->enum('nivel_academico', ['pregrado', 'postgrado'])->default('pregrado');
+            $table->string('facultad');
+            $table->string('programa_academico');
+            $table->unique(['programa_academico', 'facultad']);
+
             // Auditoría
-            $table->timestamp('fogramacionechacreacion')->useCurrent();
+            $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
@@ -47,7 +38,7 @@ return new class extends Migration
     {
         //
         {
-            Schema::dropIfExists('rutas');
+            Schema::dropIfExists('catalogos');
         }
     }
 };

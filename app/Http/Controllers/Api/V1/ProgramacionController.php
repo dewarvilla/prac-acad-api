@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Programacion;
+use App\Models\Programacion; 
+use App\Models\Creacion;     
 use App\Filters\V1\ProgramacionFilter;
 use App\Http\Resources\V1\ProgramacionResource;
 use App\Http\Resources\V1\ProgramacionCollection;
@@ -18,23 +19,51 @@ class ProgramacionController extends Controller
     public function index(IndexProgramacionRequest $request, ProgramacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Programacion::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new ProgramacionCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
+        if ($request->filled('q')) {
+            $term = (string) $request->query('q');
+            $op   = DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $like = '%'.addcslashes($term, "%_\\").'%';
+
+            $q->where(function ($qq) use ($like, $term, $op) {
+                $qq->where('nombre_practica', $op, $like)
+                ->orWhere('requiere_transporte', $op, $like)
+                ->orWhere('lugar_de_realizacion', $op, $like)
+                ->orWhere('estado_practica', $op, $like)
+                ->orWhere('estado_depart', $op, $like)
+                ->orWhere('estado_postg', $op, $like)
+                ->orWhere('estado_decano', $op, $like)
+                ->orWhere('estado_jefe_postg', $op, $like)
+                ->orWhere('estado_vice', $op, $like)
+                ->orWhere('fecha_inicio', $op, $like)
+                ->orWhere('fecha_finalizacion', $op, $like);
+
+                if (ctype_digit($term)) {
+                    $qq->orWhere('id', (int) $term);
+                }
+            });
         }
-        
-        return ProgramacionResource::collection($q->get());
+
+        return $perPage > 0
+            ? new ProgramacionCollection($q->paginate($perPage)->appends($request->query()))
+            : ProgramacionResource::collection($q->get());
     }
 
     public function store(StoreProgramacionRequest $request)
     {
+        $creacion = \App\Models\Creacion::findOrFail($request->input('creacion_id'));
+
         $now = now();
-        $data = $request->validated() + [
+        $data = $request->validated();
+
+        // FUENTE ÚNICA DE LA VERDAD:
+        $data['nombre_practica']   = $creacion->nombre_practica;
+
+        // auditoría
+        $data += [
             'fechacreacion'       => $now,
             'fechamodificacion'   => $now,
             'usuariocreacion'     => auth()->id() ?? 0,

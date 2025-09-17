@@ -12,9 +12,7 @@ class UpdateCreacionRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nivel_academico' => [Rule::in(['pregrado','postgrado'])],
-            'facultad' => ['string','max:255'],
-            'programa_academico' => ['string','max:255'],
+            'catalogo_id' => ['integer','exists:catalogo,id'],
             'nombre_practica' => ['string','max:255'],
             'recursos_necesarios' => ['string'],
             'justificacion' => ['string'],

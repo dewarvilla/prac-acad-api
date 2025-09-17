@@ -11,10 +11,7 @@ class ProgramacionResource extends JsonResource
     {
         return [
             'id'                 => $this->id,
-            'nombre'             => $this->nombre,
-            'nivel'              => $this->nivel,
-            'facultad'           => $this->facultad,
-            'programaAcademico'  => $this->programa_academico,
+            'nombrePractica'             => $this->nombre_practica,
             'descripcion'        => $this->descripcion,
             'lugarDeRealizacion' => $this->lugar_de_realizacion,
             'justificacion'      => $this->justificacion,

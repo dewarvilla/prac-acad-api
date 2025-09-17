@@ -8,9 +8,6 @@ class CreacionFilter extends ApiFilter
 {
     protected array $safeParms = [
         'id' => ['eq','in','gt','lt','gte','lte'],
-        'nivel_academico' => ['eq','in'],
-        'facultad' => ['eq','lk'],
-        'programa_academico' => ['eq','lk'],
         'nombre_practica' => ['eq','lk'],
         'recursos_necesarios' => ['eq','lk'],
         'justificacion' => ['eq','lk'],
