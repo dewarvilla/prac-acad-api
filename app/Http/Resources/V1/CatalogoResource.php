@@ -13,6 +13,7 @@ class CatalogoResource extends JsonResource
             'id'                     => $this->id,
             'nivelAcademico'         => $this->nivel_academico,
             'facultad'               => $this->facultad,
+            'label'           => $this->programa_academico,
             'programaAcademico'      => $this->programa_academico,
             'fechacreacion'          => $this->fechacreacion,
             'usuariocreacion'        => $this->usuariocreacion,

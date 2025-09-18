@@ -15,6 +15,10 @@ class Creacion extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'catalogo_id',  
+        'nivel_academico',
+        'facultad',
+        'programa_academico',
         'nombre_practica',
         'recursos_necesarios',
         'justificacion',

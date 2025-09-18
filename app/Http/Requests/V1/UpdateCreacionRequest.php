@@ -12,7 +12,8 @@ class UpdateCreacionRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'catalogo_id' => ['integer','exists:catalogo,id'],
+            'catalogo_id'         => ['required','integer','exists:catalogos,id'],
+
             'nombre_practica' => ['string','max:255'],
             'recursos_necesarios' => ['string'],
             'justificacion' => ['string'],
@@ -27,25 +28,13 @@ class UpdateCreacionRequest extends FormRequest
             return collect($rules)->map(fn($r)=>array_merge(['sometimes'], $r))->all();
         }
 
-        return [
-            'nivel_academico' => ['required', Rule::in(['pregrado','postgrado'])],
-            'facultad' => ['required','string','max:255'],
-            'programa_academico' => ['required','string','max:255'],
-            'nombre_practica' => ['required','string','max:255'],
-            'recursos_necesarios' => ['required','string'],
-            'justificacion' => ['required','string'],
-            'estado_practica' => ['required', Rule::in(['en_aprobacion','aprobada','creada'])],
-            'estado_depart' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_consejo_facultad' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_consejo_academico' => ['required', Rule::in(['aprobada','rechazada','pendiente'])],
-            'requiere_transporte' => ['sometimes','boolean'],
-        ];
+        return $rules;
     }
 
     protected function prepareForValidation(): void
     {
         $map = [
-            'nivelAcademico' => 'nivel_academico',
+            'catalogoId' => 'catalogo_id',
             'programaAcademico' => 'programa_academico',
             'nombrePractica' => 'nombre_practica',
             'recursosNecesarios' => 'recursos_necesarios',

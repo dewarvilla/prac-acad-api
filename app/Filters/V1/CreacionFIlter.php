@@ -15,6 +15,7 @@ class CreacionFilter extends ApiFilter
         'estado_depart' => ['eq','in'],
         'estado_consejo_facultad'=> ['eq','in'],
         'estado_consejo_academico'=> ['eq','in'],
+        'catalogo_id' =>['eq', 'in'],
 
         'fechacreacion'          => ['eq','gt','gte','lt','lte','btn'],
         'usuariocreacion'        => ['eq','in'],
@@ -25,8 +26,7 @@ class CreacionFilter extends ApiFilter
     ];
 
     protected array $columnMap = [
-        'nivelAcademico' => 'nivel_academico',
-        'programaAcademico' => 'programa_academico',
+        'catalogoId' => 'catalogo_id',
         'nombrePractica' => 'nombre_practica',
         'recursosNecesarios' => 'recursos_necesarios',
         'estadoPractica' => 'estado_practica',

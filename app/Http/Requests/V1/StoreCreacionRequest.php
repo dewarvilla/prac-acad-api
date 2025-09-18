@@ -4,6 +4,7 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 
 class StoreCreacionRequest extends FormRequest
 {
@@ -19,14 +20,16 @@ class StoreCreacionRequest extends FormRequest
             'estado_depart' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
             'estado_consejo_facultad' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
             'estado_consejo_academico' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+
+            'catalogo_id'=> ['required','integer','exists:catalogos,id'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $map = [
-            'nivelAcademico' => 'nivel_academico',
-            'programaAcademico' => 'programa_academico',
+        $map = [       
+            'catalogoId' => 'catalogo_id',
+
             'nombrePractica' => 'nombre_practica',
             'recursosNecesarios' => 'recursos_necesarios',
             'estadoPractica' => 'estado_practica',
@@ -34,8 +37,6 @@ class StoreCreacionRequest extends FormRequest
             'estadoConsejoFacultad' => 'estado_consejo_facultad',
             'estadoConsejoAcademico' => 'estado_consejo_academico',
             'requiereTransporte' => 'requiere_transporte',
-            
-            'catalogoId' => 'catalogo_id',
         ];
         
         $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());

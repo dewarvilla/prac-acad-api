@@ -18,7 +18,14 @@ class CreacionResource extends JsonResource
             'estadoDepart'           => $this->estado_depart,
             'estadoConsejoFacultad'  => $this->estado_consejo_facultad,
             'estadoConsejoAcademico' => $this->estado_consejo_academico,
+
+            
+            'nivelAcademico'         => $this->nivel_academico,
+            'facultad'               => $this->facultad,
+            'programaAcademico'      => $this->programa_academico,
+
             'catalogoId' => $this->catalogo_id,
+
             'fechacreacion'          => $this->fechacreacion,
             'usuariocreacion'        => $this->usuariocreacion,
             'fechamodificacion'      => $this->fechamodificacion,

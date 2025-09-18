@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Creacion;
+use App\Models\Catalogo;
 use App\Filters\V1\CreacionFilter;
 use App\Http\Resources\V1\CreacionResource;
 use App\Http\Resources\V1\CreacionCollection;
@@ -48,7 +49,22 @@ class CreacionController extends Controller
     public function store(StoreCreacionRequest $request)
     {
         $now = now();
+        $cat = Catalogo::findOrFail($request->input('catalogo_id'));
+
+        // (Opcional) Unicidad nombre_practica + programa_academico
+        $dup = Creacion::where('nombre_practica', $request->input('nombre_practica'))
+                    ->where('programa_academico', $cat->programa_academico)
+                    ->exists();
+        if ($dup) {
+            return response()->json([
+                'message' => 'La combinación nombre_practica y programa_academico ya existe.'
+            ], 422);
+        }
+
         $data = $request->validated() + [
+            'facultad'            => $cat->facultad,
+            'programa_academico'  => $cat->programa_academico,
+            'nivel_academico'     => $cat->nivel_academico ?? null,
             'fechacreacion'       => $now,
             'fechamodificacion'   => $now,
             'usuariocreacion'     => auth()->id() ?? 0,
@@ -58,10 +74,9 @@ class CreacionController extends Controller
         ];
 
         $creacion = Creacion::create($data);
-
-        return (new CreacionResource($creacion))
-            ->response()->setStatusCode(201);
+        return (new CreacionResource($creacion))->response()->setStatusCode(201);
     }
+
 
     public function show(Creacion $creacion)
     {
@@ -75,6 +90,13 @@ class CreacionController extends Controller
             'usuariomodificacion' => auth()->id() ?? 0,
             'ipmodificacion'      => $request->ip(),
         ];
+
+        if ($request->filled('catalogo_id')) {
+            $cat = Catalogo::findOrFail($request->input('catalogo_id'));
+            $data['facultad']           = $cat->facultad;
+            $data['programa_academico'] = $cat->programa_academico;
+            $data['nivel_academico']    = $cat->nivel_academico ?? null;
+        }
 
         $creacion->update($data);
 

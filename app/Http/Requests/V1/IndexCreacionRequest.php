@@ -5,6 +5,7 @@ namespace App\Http\Requests\V1;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+
 class IndexCreacionRequest extends FormRequest
 {
     public function authorize(): bool { return true; }
@@ -18,6 +19,8 @@ class IndexCreacionRequest extends FormRequest
 
             'sort'     => ['sometimes', Rule::in([
                 'nombrePractica','-nombrePractica',
+                'programaAcademico','-programaAcademico',
+                'estadoPractica','-estadoPractica',
                 'id','-id'
             ])],
 
@@ -53,7 +56,7 @@ class IndexCreacionRequest extends FormRequest
             'nivelAcademico'        => 'nivel_academico',
             'programaAcademico'     => 'programa_academico',
             'nombrePractica'        => 'nombre_practica',
-            'catalagoId'        => 'catalago_id',
+            'catalogoId'        => 'catalogo_id',
             'recursosNecesarios'    => 'recursos_necesarios',
             'estadoPractica'        => 'estado_practica',
             'estadoDepart'          => 'estado_depart',

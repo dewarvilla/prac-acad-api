@@ -30,6 +30,7 @@ class StoreCatalogoRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $map = [
+            'catalogoId' => 'catalogo_id',
             'nivelAcademico' => 'nivel_academico',
             'programaAcademico' => 'programa_academico',
             'nombrePractica' => 'nombre_practica',

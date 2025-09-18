@@ -33,7 +33,6 @@ class UpdateCatalogoRequest extends FormRequest
         $map = [
             'nivelAcademico' => 'nivel_academico',
             'programaAcademico' => 'programa_academico',
-            'nombrePractica' => 'nombre_practica',
             'catalgoId' => 'catalogo_id',
         ];
         
