@@ -17,14 +17,14 @@ return new class extends Migration
 
             $table->string('periodo')->unique();
             
-            $table->date('fecha_apertura_preg')->unique();
-            $table->date('fecha_cierre_docente_preg')->unique();
-            $table->date('fecha_cierre_jefe_depart')->unique();
-            $table->date('fecha_cierre_decano')->unique();
-            $table->date('fecha_apertura_postg')->unique();
-            $table->date('fecha_cierre_docente_postg')->unique();
-            $table->date('fecha_cierre_coordinador_postg')->unique();
-            $table->date('fecha_cierre_jefe_postg')->unique();
+            $table->date('fecha_apertura_preg');
+            $table->date('fecha_cierre_docente_preg');
+            $table->date('fecha_cierre_jefe_depart');
+            $table->date('fecha_cierre_decano');
+            $table->date('fecha_apertura_postg');
+            $table->date('fecha_cierre_docente_postg');
+            $table->date('fecha_cierre_coordinador_postg');
+            $table->date('fecha_cierre_jefe_postg');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 
+
 class IndexCreacionRequest extends FormRequest
 {
     public function authorize(): bool { return true; }

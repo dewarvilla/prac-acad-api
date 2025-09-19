@@ -57,15 +57,23 @@ class FechaController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $fecha = Fecha::create($data);
+        try {
+            $fecha = Fecha::create($data);
+            return (new FechaResource($fecha))->response()->setStatusCode(201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Códigos típicos:
+            // 23000 => violación de integridad (unique, FK). 
+            // 3819 (MySQL) / 23514 (PostgreSQL) => CHECK constraint.
+            $code = (string) $e->getCode();
 
-        return (new FechaResource($fecha))
-            ->response()->setStatusCode(201);
-    }
-
-    public function show(Fecha $fecha)
-    {
-        return new FechaResource($fecha);
+            if ($code === '23000') {
+                return response()->json(['message' => 'El periodo ya existe o hay una violación de integridad.'], 422);
+            }
+            if ($code === '3819' || $code === '23514') {
+                return response()->json(['message' => 'Las fechas no cumplen las reglas del periodo.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function update(UpdateFechaRequest $request, Fecha $fecha)
@@ -76,9 +84,19 @@ class FechaController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $fecha->update($data);
-
-        return new FechaResource($fecha->refresh());
+        try {
+            $fecha->update($data);
+            return new FechaResource($fecha->refresh());
+        } catch (\Illuminate\Database\QueryException $e) {
+            $code = (string) $e->getCode();
+            if ($code === '23000') {
+                return response()->json(['message' => 'El periodo ya existe o hay una violación de integridad.'], 422);
+            }
+            if ($code === '3819' || $code === '23514') {
+                return response()->json(['message' => 'Las fechas no cumplen las reglas del periodo.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function destroy(Fecha $fecha)

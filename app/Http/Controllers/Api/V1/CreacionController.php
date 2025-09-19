@@ -29,7 +29,9 @@ class CreacionController extends Controller
             $like = '%'.addcslashes($term, "%_\\").'%';
 
             $q->where(function ($qq) use ($like, $term, $op) {
+                // columnas de texto a buscar
                 $qq->where('nombre_practica', $op, $like)
+                ->orWhere('programa_academico', $op, $like)     
                 ->orWhere('estado_practica', $op, $like)
                 ->orWhere('estado_depart', $op, $like)
                 ->orWhere('estado_consejo_facultad', $op, $like)
@@ -40,6 +42,37 @@ class CreacionController extends Controller
                 }
             });
         }
+
+
+        if ($sort = $request->query('sort')) {
+            $dir = 'asc';
+            $field = $sort;
+            if (str_starts_with($sort, '-')) {
+                $dir = 'desc';
+                $field = substr($sort, 1);
+            }
+
+            $sortMap = [
+                'id'               => 'id',
+                'nombrePractica'   => 'nombre_practica',
+                'programaAcademico'=> 'programa_academico',
+                'estadoPractica'   => 'estado_practica',
+            ];
+
+            if (isset($sortMap[$field])) {
+                if ($field === 'programaAcademico') {
+                    // usa la collation disponible en tu BD (ajústala si es otra)
+                    $q->orderByRaw("CONVERT(programa_academico USING utf8mb4) COLLATE utf8mb4_spanish2_ci $dir");
+                } else {
+                    $q->orderBy($sortMap[$field], $dir);
+                }
+            } else {
+                $q->orderBy('id', 'asc');
+            }
+        } else {
+            $q->orderBy('id', 'asc');
+        }
+
 
         return $perPage > 0
             ? new CreacionCollection($q->paginate($perPage)->appends($request->query()))

@@ -14,11 +14,17 @@ return new class extends Migration
         //tabla para crear practicas por el vice academico
         Schema::create('catalogos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
+
             $table->enum('nivel_academico', ['pregrado', 'postgrado'])->default('pregrado');
             $table->string('facultad');
             $table->string('programa_academico');
-            $table->unique(['programa_academico', 'facultad']);
+
+            // Único con nombre explícito (evita duplicados/confusión en down/alter)
+            $table->unique(['programa_academico', 'facultad'], 'catalogos_programa_facultad_unique');
+
+            // Índices para filtrar/ordenar rápido
+            $table->index('facultad', 'catalogos_facultad_idx');
+            $table->index('programa_academico', 'catalogos_programa_idx');
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
@@ -27,7 +33,6 @@ return new class extends Migration
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();
             $table->ipAddress('ipmodificacion')->nullable();
-
         });
     }
 
