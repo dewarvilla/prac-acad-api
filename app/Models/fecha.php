@@ -15,6 +15,7 @@ class Fecha extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado',
         'periodo',
         'fecha_apertura_preg',
         'fecha_cierre_docente_preg',

@@ -15,6 +15,7 @@ class Auxilio extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado',
         'pernocta',
         'distancias_mayor_70km',
         'fuera_cordoba',

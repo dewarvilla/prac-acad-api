@@ -15,6 +15,7 @@ class Ruta extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado',
         'latitud_salidas',
         'latitud_llegadas',
         'numero_recorridos',

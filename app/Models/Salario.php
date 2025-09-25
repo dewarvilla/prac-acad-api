@@ -15,6 +15,7 @@ class Salario extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado',
         'anio',
         'valor',
         'usuariocreacion',

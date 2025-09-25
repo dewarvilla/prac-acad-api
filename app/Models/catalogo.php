@@ -15,6 +15,7 @@ class Catalogo extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado',
         'nivel_academico',
         'facultad',
         'programa_academico',

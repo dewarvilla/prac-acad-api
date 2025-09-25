@@ -15,6 +15,7 @@ class Legalizacion extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado_legalizacion',
         'fecha_legalizacion',
         'estado_depart',
         'estado_postg',

@@ -15,6 +15,7 @@ class Participante extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
+        'estado',
         'numero_identificacion',
         'discapacidad',
         'nombre',
