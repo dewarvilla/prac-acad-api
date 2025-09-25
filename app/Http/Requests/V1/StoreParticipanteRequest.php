@@ -24,17 +24,4 @@ class StoreParticipanteRequest extends FormRequest
             'programacion_id' => ['sometimes','exists:programaciones,id'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'numeroIdentificacion' => 'numero_identificacion',
-            'correoInstitucional' => 'correo_institucional',
-            'programaAcademico' => 'programa_academico',
-            'tipoParticipante' => 'tipo_participante',
-            'programacionId' => 'programacion_id',
-        ];
-        
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
-    }
 }

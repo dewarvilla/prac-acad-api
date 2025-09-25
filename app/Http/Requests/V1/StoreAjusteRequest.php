@@ -21,17 +21,4 @@ class StoreAjusteRequest extends FormRequest
             'programacion_id' => ['sometimes','exists:programaciones,id'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'fechaAjuste' => 'fecha_ajuste',
-            'estadoAjuste' => 'estado_ajuste',
-            'estadoVice' => 'estado_vice',
-            'estadoJefeDepart' => 'estado_jefe_depart',
-            'estadoCoordinadorPostg' => 'estado_coordinador_postg',
-            'programacionId' => 'programacion_id',
-        ];
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
-    }
 }

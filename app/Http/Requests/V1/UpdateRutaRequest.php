@@ -38,22 +38,5 @@ class UpdateRutaRequest extends FormRequest
             'programacion_id' => ['required','exists:programaciones,id'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'latitudSalidas' => 'latitud_salidas',
-            'latitudLlegadas' => 'latitud_llegadas',
-            'numeroRecorridos' => 'numero_recorridos',
-            'numeroPeajes' => 'numero_peajes',
-            'valorPeajes' => 'valor_peajes',
-            'distanciaTrayectosKm' => 'distancia_trayectos_km',
-            'rutaSalida' => 'ruta_salida',
-            'rutaLlegada' => 'ruta_llegada',
-            'programacionId' => 'programacion_id',
-        ];
-        
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
-    }
 }
 

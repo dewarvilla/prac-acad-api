@@ -26,18 +26,4 @@ class IndexReprogramacionRequest extends FormRequest
             'programacionId'       => ['sometimes','integer','min:1'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'fechaReprogramacion'  => 'fecha_reprogramacion',
-            'estadoReprogramacion' => 'estado_reprogramacion',
-            'tipoReprogramacion'   => 'tipo_reprogramacion',
-            'estadoVice'           => 'estado_vice',
-            'programacionId'       => 'programacion_id',
-        ];
-        $merge = [];
-        foreach ($map as $in => $out) if ($this->has($in)) $merge[$out] = $this->input($in);
-        if ($merge) $this->merge($merge);
-    }
 }

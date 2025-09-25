@@ -30,24 +30,4 @@ class IndexAuxilioRequest extends FormRequest
             'programacionId'          => ['sometimes','integer','min:1'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'distanciasMayor70km'     => 'distancias_mayor_70km',
-            'fueraCordoba'            => 'fuera_cordoba',
-            'valorPorDocente'         => 'valor_por_docente',
-            'valorPorEstudiante'      => 'valor_por_estudiante',
-            'valorPorAcompanante'     => 'valor_por_acompanante',
-            'programacionId'          => 'programacion_id',
-        ];
-        $merge = [];
-        foreach ($map as $in => $out) if ($this->has($in)) $merge[$out] = $this->input($in);
-
-        foreach (['pernocta','distanciasMayor70km','fueraCordoba'] as $b) {
-            if ($this->has($b)) $merge[$map[$b] ?? $b] = filter_var($this->input($b), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        }
-
-        if ($merge) $this->merge($merge);
-    }
 }

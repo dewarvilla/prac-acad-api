@@ -58,34 +58,4 @@ class StoreFechaRequest extends FormRequest
             }
         });
     }
-
-     protected function prepareForValidation(): void
-    {
-        $map = [
-            'fechaAperturaPreg'           => 'fecha_apertura_preg',
-            'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
-            'fechaCierreJefeDepart'       => 'fecha_cierre_jefe_depart',
-            'fechaCierreDecano'           => 'fecha_cierre_decano',
-            'fechaAperturaPostg'          => 'fecha_apertura_postg',
-            'fechaCierreDocentePostg'     => 'fecha_cierre_docente_postg',
-            'fechaCierreCoordinadorPostg' => 'fecha_cierre_coordinador_postg',
-            'fechaCierreJefePostg'        => 'fecha_cierre_jefe_postg',
-        ];
-
-        $merge = [];
-        foreach ($map as $camel => $snake) {
-            if ($this->has($camel)) {
-                $merge[$snake] = $this->input($camel);
-            }
-        }
-        if (!empty($merge)) {
-            $this->merge($merge);
-        }
-
-        // Normaliza el periodo por si viene con espacios
-        if ($this->has('periodo')) {
-            $this->merge(['periodo' => trim((string)$this->input('periodo'))]);
-        }
-    }
-
 }

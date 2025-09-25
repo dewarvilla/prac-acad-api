@@ -48,4 +48,7 @@ Route::prefix('v1')->group(function () {
 
     Route::apiResource('ajustes', AjusteController::class)
         ->parameters(['ajustes' => 'ajuste']);
+
+        // Catalogos
+    Route::post('catalogos/bulk', [CatalogoController::class, 'storeBulk'])->name('catalogos.bulk');
 });

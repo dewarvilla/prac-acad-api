@@ -27,15 +27,4 @@ class UpdateCatalogoRequest extends FormRequest
             'programa_academico' => ['required','string','max:255'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'nivelAcademico' => 'nivel_academico',
-            'programaAcademico' => 'programa_academico',
-            'catalgoId' => 'catalogo_id',
-        ];
-        
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
-    }
 }

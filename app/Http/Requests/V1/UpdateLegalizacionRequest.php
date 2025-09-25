@@ -37,20 +37,5 @@ class UpdateLegalizacionRequest extends FormRequest
             'programacion_id' => ['required','exists:programaciones,id'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'fechaLegalizacion' => 'fecha_legalizacion',
-            'estadoDepart' => 'estado_depart',
-            'estadoPostg' => 'estado_postg',
-            'estadoLogistica' => 'estado_logistica',
-            'estadoTesoreria' => 'estado_tesoreria',
-            'estadoContabilidad' => 'estado_contabilidad',
-            'programacionId' => 'programacion_id',
-        ];
-        
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
-    }
 }
 

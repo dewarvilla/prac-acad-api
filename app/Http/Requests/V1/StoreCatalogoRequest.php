@@ -26,16 +26,4 @@ class StoreCatalogoRequest extends FormRequest
             ],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'catalogoId' => 'catalogo_id',
-            'nivelAcademico' => 'nivel_academico',
-            'programaAcademico' => 'programa_academico',
-            'nombrePractica' => 'nombre_practica',
-        ];
-        
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
-    }
 }

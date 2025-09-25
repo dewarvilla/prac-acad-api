@@ -31,33 +31,4 @@ class IndexFechaRequest extends FormRequest
             'fechaCierreJefePostg'        => ['sometimes','date'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        if ($this->has('q')) {
-            $q = trim((string) $this->input('q'));
-            if ($q === '') {
-                // si no quieres validarla cuando esté vacía:
-                $this->request->remove('q');
-            } else {
-                $this->merge(['q' => $q]);
-            }
-        }
-        $map = [
-            'fechaAperturaPreg'           => 'fecha_apertura_preg',
-            'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
-            'fechaCierreJefeDepart'       => 'fecha_cierre_jefe_depart',
-            'fechaCierreDecano'           => 'fecha_cierre_decano',
-            'fechaAperturaPostg'          => 'fecha_apertura_postg',
-            'fechaCierreDocentePostg'     => 'fecha_cierre_docente_postg',
-            'fechaCierreCoordinadorPostg' => 'fecha_cierre_coordinador_postg',
-            'fechaCierreJefePostg' => 'fecha_cierre_jefe_postg'
-        ];
-        $merge = [];
-        foreach ($map as $in => $out) {
-            if ($this->has($in)) $merge[$out] = $this->input($in);
-        }
-
-        if ($merge) $this->merge($merge);
-    }
 }

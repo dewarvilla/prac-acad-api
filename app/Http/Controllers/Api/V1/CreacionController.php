@@ -11,31 +11,36 @@ use App\Http\Resources\V1\CreacionCollection;
 use App\Http\Requests\V1\IndexCreacionRequest;
 use App\Http\Requests\V1\StoreCreacionRequest;
 use App\Http\Requests\V1\UpdateCreacionRequest;
-use Illuminate\Database\QueryException;
+use App\Exceptions\ConflictException;
 use Illuminate\Support\Facades\DB;
 
 class CreacionController extends Controller
 {
+    /**
+     * GET /api/v1/creaciones
+     */
     public function index(IndexCreacionRequest $request, CreacionFilter $filter)
     {
-        $perPage = (int) $request->query('per_page', 0);
+        $perPage = (int) $request->query('per_page', 15);
         $q = Creacion::query();
 
+        // Filtros (tu filtro ya mapea params del front a columnas)
         $filter->apply($request, $q);
 
+        // Búsqueda libre (q)
         if ($request->filled('q')) {
             $term = (string) $request->query('q');
-            $op   = DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $driver = DB::connection()->getDriverName();
+            $op   = $driver === 'pgsql' ? 'ilike' : 'like';
             $like = '%'.addcslashes($term, "%_\\").'%';
 
             $q->where(function ($qq) use ($like, $term, $op) {
-                // columnas de texto a buscar
                 $qq->where('nombre_practica', $op, $like)
-                ->orWhere('programa_academico', $op, $like)     
-                ->orWhere('estado_practica', $op, $like)
-                ->orWhere('estado_depart', $op, $like)
-                ->orWhere('estado_consejo_facultad', $op, $like)
-                ->orWhere('estado_consejo_academico', $op, $like);
+                   ->orWhere('programa_academico', $op, $like)
+                   ->orWhere('estado_practica', $op, $like)
+                   ->orWhere('estado_depart', $op, $like)
+                   ->orWhere('estado_consejo_facultad', $op, $like)
+                   ->orWhere('estado_consejo_academico', $op, $like);
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);
@@ -43,61 +48,57 @@ class CreacionController extends Controller
             });
         }
 
+        // Ordenamiento
+        $sort = $request->query('sort', '-id'); // por defecto id desc
+        $dir  = str_starts_with($sort, '-') ? 'desc' : 'asc';
+        $field = ltrim($sort, '-');
 
-        if ($sort = $request->query('sort')) {
-            $dir = 'asc';
-            $field = $sort;
-            if (str_starts_with($sort, '-')) {
-                $dir = 'desc';
-                $field = substr($sort, 1);
-            }
+        $sortMap = [
+            'id'                => 'id',
+            'nombrePractica'    => 'nombre_practica',
+            'programaAcademico' => 'programa_academico',
+            'estadoPractica'    => 'estado_practica',
+        ];
 
-            $sortMap = [
-                'id'               => 'id',
-                'nombrePractica'   => 'nombre_practica',
-                'programaAcademico'=> 'programa_academico',
-                'estadoPractica'   => 'estado_practica',
-            ];
-
-            if (isset($sortMap[$field])) {
-                if ($field === 'programaAcademico') {
-                    // usa la collation disponible en tu BD (ajústala si es otra)
-                    $q->orderByRaw("CONVERT(programa_academico USING utf8mb4) COLLATE utf8mb4_spanish2_ci $dir");
-                } else {
-                    $q->orderBy($sortMap[$field], $dir);
-                }
+        if (isset($sortMap[$field])) {
+            if ($field === 'programaAcademico' && DB::connection()->getDriverName() === 'mysql') {
+                // Ajusta la collation si usas otra
+                $q->orderByRaw("CONVERT(programa_academico USING utf8mb4) COLLATE utf8mb4_spanish2_ci {$dir}");
             } else {
-                $q->orderBy('id', 'asc');
+                $q->orderBy($sortMap[$field], $dir);
             }
         } else {
-            $q->orderBy('id', 'asc');
+            $q->orderBy('id', 'desc');
         }
-
 
         return $perPage > 0
             ? new CreacionCollection($q->paginate($perPage)->appends($request->query()))
             : CreacionResource::collection($q->get());
     }
 
+    /**
+     * POST /api/v1/creaciones
+     */
     public function store(StoreCreacionRequest $request)
     {
         $now = now();
         $cat = Catalogo::findOrFail($request->input('catalogo_id'));
 
-        // (Opcional) Unicidad nombre_practica + programa_academico
-        $dup = Creacion::where('nombre_practica', $request->input('nombre_practica'))
-                    ->where('programa_academico', $cat->programa_academico)
-                    ->exists();
+        // Regla de negocio: (catalogo_id, nombre_practica) o (programa_academico, nombre_practica)
+        $dup = Creacion::where('catalogo_id', $request->input('catalogo_id'))
+            ->where('nombre_practica', $request->input('nombre_practica'))
+            ->exists();
+
         if ($dup) {
-            return response()->json([
-                'message' => 'La combinación nombre_practica y programa_academico ya existe.'
-            ], 422);
+            // (a) Conflicto de negocio -> 409 (Handler a través de esta excepción)
+            throw new ConflictException('Ya existe una práctica con ese nombre en este catálogo.');
         }
 
         $data = $request->validated() + [
             'facultad'            => $cat->facultad,
             'programa_academico'  => $cat->programa_academico,
             'nivel_academico'     => $cat->nivel_academico ?? null,
+            // Auditoría
             'fechacreacion'       => $now,
             'fechamodificacion'   => $now,
             'usuariocreacion'     => auth()->id() ?? 0,
@@ -107,17 +108,29 @@ class CreacionController extends Controller
         ];
 
         $creacion = Creacion::create($data);
-        return (new CreacionResource($creacion))->response()->setStatusCode(201);
+
+        // 201 con Resource
+        return (new CreacionResource($creacion))
+            ->response()
+            ->setStatusCode(201);
     }
 
-
+    /**
+     * GET /api/v1/creaciones/{creacion}
+     */
     public function show(Creacion $creacion)
     {
+        // Si no existe => ModelNotFoundException -> 404 (Handler)
         return new CreacionResource($creacion);
     }
 
+    /**
+     * PUT/PATCH /api/v1/creaciones/{creacion}
+     */
     public function update(UpdateCreacionRequest $request, Creacion $creacion)
     {
+        $this->authorize('update', $creacion); //Policies -> 403 (Handler)
+
         $data = $request->validated() + [
             'fechamodificacion'   => now(),
             'usuariomodificacion' => auth()->id() ?? 0,
@@ -131,23 +144,33 @@ class CreacionController extends Controller
             $data['nivel_academico']    = $cat->nivel_academico ?? null;
         }
 
+        // Evitar duplicado al actualizar (misma regla que en store)
+        if (isset($data['nombre_practica']) || isset($data['catalogo_id'])) {
+            $catId = $data['catalogo_id'] ?? $creacion->catalogo_id;
+            $nom   = $data['nombre_practica'] ?? $creacion->nombre_practica;
+
+            $dup = Creacion::where('catalogo_id', $catId)
+                ->where('nombre_practica', $nom)
+                ->where('id', '!=', $creacion->id)
+                ->exists();
+
+            if ($dup) {
+                throw new ConflictException('Otra práctica con ese nombre ya existe en este catálogo.');
+            }
+        }
+
         $creacion->update($data);
 
         return new CreacionResource($creacion->refresh());
     }
 
+    /**
+     * DELETE /api/v1/creaciones/{creacion}
+     */
     public function destroy(Creacion $creacion)
     {
-        try {
-            $creacion->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $this->authorize('delete', $creacion); //Policies -> 403 (Handler)
+        $creacion->delete(); // Si hay FK => QueryException(23000) -> 409 (Handler)
+        return response()->noContent(); // 204
     }
 }

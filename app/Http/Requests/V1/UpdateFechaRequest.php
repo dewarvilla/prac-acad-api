@@ -37,28 +37,4 @@ class UpdateFechaRequest extends FormRequest
             'fecha_cierre_jefe_postg' => ['required','date'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'fechaAperturaPreg'           => 'fecha_apertura_preg',
-            'fechaCierreDocentePreg'      => 'fecha_cierre_docente_preg',
-            'fechaCierreJefeDepart'       => 'fecha_cierre_jefe_depart',
-            'fechaCierreDecano'           => 'fecha_cierre_decano',
-            'fechaAperturaPostg'          => 'fecha_apertura_postg',
-            'fechaCierreDocentePostg'     => 'fecha_cierre_docente_postg',
-            'fechaCierreCoordinadorPostg' => 'fecha_cierre_coordinador_postg',
-            'fechaCierreJefePostg'        => 'fecha_cierre_jefe_postg',
-        ];
-
-        $merge = [];
-        foreach ($map as $camel => $snake) {
-            if ($this->has($camel)) {
-                $merge[$snake] = $this->input($camel);
-            }
-        }
-        if (!empty($merge)) {
-            $this->merge($merge);
-        }
-    }
 }

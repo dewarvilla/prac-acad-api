@@ -35,27 +35,4 @@ class IndexAjusteRequest extends FormRequest
             'programacionId'          => ['sometimes','integer','min:1'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'fechaAjuste'            => 'fecha_ajuste',
-            'estadoAjuste'           => 'estado_ajuste',
-            'estadoVice'             => 'estado_vice',
-            'estadoJefeDepart'       => 'estado_jefe_depart',
-            'estadoCoordinadorPostg' => 'estado_coordinador_postg',
-            'programacionId'         => 'programacion_id',
-        ];
-
-        $merge = [];
-        foreach ($map as $in => $out) {
-            if ($this->has($in)) {
-                $merge[$out] = $this->input($in);
-            }
-        }
-
-        if ($merge) {
-            $this->merge($merge);
-        }
-    }
 }

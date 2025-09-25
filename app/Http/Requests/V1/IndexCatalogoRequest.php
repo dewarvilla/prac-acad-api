@@ -33,29 +33,4 @@ class IndexCatalogoRequest extends FormRequest
             'programaAcademico.lk'     => ['sometimes','string','max:255'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        // (Opcional) normaliza q y elimínala si viene vacía
-        if ($this->has('q')) {
-            $q = trim((string) $this->input('q'));
-            if ($q === '') {
-                // si no quieres validarla cuando esté vacía:
-                $this->request->remove('q');
-            } else {
-                $this->merge(['q' => $q]);
-            }
-        }
-
-        $map = [
-            'nivelAcademico'        => 'nivel_academico',
-            'programaAcademico'     => 'programa_academico',
-        ];
-        $merge = [];
-        foreach ($map as $in => $out) {
-            if ($this->has($in)) $merge[$out] = $this->input($in);
-        }
-
-        if ($merge) $this->merge($merge);
-    }
 }

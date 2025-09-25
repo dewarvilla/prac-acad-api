@@ -4,6 +4,7 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Http\Resources\V1\ProgramacionResource;
 
 class UpdateProgramacionRequest extends FormRequest
 {
@@ -43,25 +44,6 @@ class UpdateProgramacionRequest extends FormRequest
             'fecha_finalizacion'  => ['required','date','after_or_equal:fecha_inicio'],
             'creacion_id'         => ['required','integer','exists:creaciones,id'],
         ]);
-    }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'nombrePractica'   => 'nombre_practica',
-            'lugarDeRealizacion' => 'lugar_de_realizacion',
-            'recursosNecesarios' => 'recursos_necesarios',
-            'estadoPractica'      => 'estado_practica',
-            'estadoDepart'        => 'estado_depart',
-            'estadoPostg'         => 'estado_postg',
-            'estadoDecano'        => 'estado_decano',
-            'estadoJefePostg'     => 'estado_jefe_postg',
-            'estadoVice'          => 'estado_vice',
-            'fechaInicio'         => 'fecha_inicio',
-            'fechaFinalizacion'   => 'fecha_finalizacion',
-            'creacionId'          => 'creacion_id',
-        ];
-        $this->merge(collect($map)->mapWithKeys(fn ($out, $in) => [$out => $this->input($in)])->filter(fn ($v) => !is_null($v))->all());
     }
 }
 

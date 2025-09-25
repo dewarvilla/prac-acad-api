@@ -31,23 +31,4 @@ class IndexParticipanteRequest extends FormRequest
             'programacionId'       => ['sometimes','integer','min:1'],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $map = [
-            'numeroIdentificacion' => 'numero_identificacion',
-            'tipoParticipante'     => 'tipo_participante',
-            'correoInstitucional'  => 'correo_institucional',
-            'programaAcademico'    => 'programa_academico',
-            'programacionId'       => 'programacion_id',
-        ];
-        $merge = [];
-        foreach ($map as $in => $out) if ($this->has($in)) $merge[$out] = $this->input($in);
-
-        foreach (['discapacidad','repitente'] as $b) {
-            if ($this->has($b)) $merge[$b] = filter_var($this->input($b), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        }
-
-        if ($merge) $this->merge($merge);
-    }
 }
