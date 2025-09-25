@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Programacion; 
-use App\Models\Creacion;     
+use App\Models\Programacion;
 use App\Filters\V1\ProgramacionFilter;
 use App\Http\Resources\V1\ProgramacionResource;
 use App\Http\Resources\V1\ProgramacionCollection;
 use App\Http\Requests\V1\IndexProgramacionRequest;
 use App\Http\Requests\V1\StoreProgramacionRequest;
 use App\Http\Requests\V1\UpdateProgramacionRequest;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class ProgramacionController extends Controller
@@ -30,16 +28,22 @@ class ProgramacionController extends Controller
 
             $q->where(function ($qq) use ($like, $term, $op) {
                 $qq->where('nombre_practica', $op, $like)
-                ->orWhere('requiere_transporte', $op, $like)
-                ->orWhere('lugar_de_realizacion', $op, $like)
-                ->orWhere('estado_practica', $op, $like)
-                ->orWhere('estado_depart', $op, $like)
-                ->orWhere('estado_postg', $op, $like)
-                ->orWhere('estado_decano', $op, $like)
-                ->orWhere('estado_jefe_postg', $op, $like)
-                ->orWhere('estado_vice', $op, $like)
-                ->orWhere('fecha_inicio', $op, $like)
-                ->orWhere('fecha_finalizacion', $op, $like);
+                  ->orWhere('lugar_de_realizacion', $op, $like)
+                  ->orWhere('estado_practica', $op, $like)
+                  ->orWhere('estado_depart', $op, $like)
+                  ->orWhere('estado_postg', $op, $like)
+                  ->orWhere('estado_decano', $op, $like)
+                  ->orWhere('estado_jefe_postg', $op, $like)
+                  ->orWhere('estado_vice', $op, $like)
+                  ->orWhere('fecha_inicio', $op, $like)
+                  ->orWhere('fecha_finalizacion', $op, $like);
+
+                // match boolean requiere_transporte
+                $low = strtolower($term);
+                if (in_array($low, ['si','sí','true','1','no','false','0'], true)) {
+                    $val = in_array($low, ['si','sí','true','1'], true) ? 1 : 0;
+                    $qq->orWhere('requiere_transporte', $val);
+                }
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);
@@ -59,10 +63,9 @@ class ProgramacionController extends Controller
         $now = now();
         $data = $request->validated();
 
-        // FUENTE ÚNICA DE LA VERDAD:
-        $data['nombre_practica']   = $creacion->nombre_practica;
+        // Fuente única de la verdad
+        $data['nombre_practica'] = $creacion->nombre_practica;
 
-        // auditoría
         $data += [
             'fechacreacion'       => $now,
             'fechamodificacion'   => $now,
@@ -98,17 +101,7 @@ class ProgramacionController extends Controller
 
     public function destroy(Programacion $programacion)
     {
-        try {
-            $programacion->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $programacion->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }
-

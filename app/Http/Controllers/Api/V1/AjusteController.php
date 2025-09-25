@@ -10,25 +10,19 @@ use App\Http\Resources\V1\AjusteCollection;
 use App\Http\Requests\V1\IndexAjusteRequest;
 use App\Http\Requests\V1\StoreAjusteRequest;
 use App\Http\Requests\V1\UpdateAjusteRequest;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class AjusteController extends Controller
 {
     public function index(IndexAjusteRequest $request, AjusteFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Ajuste::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new AjusteCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
-        }
-        
-        return AjusteResource::collection($q->get());
+        return $perPage > 0
+            ? new AjusteCollection($q->paginate($perPage)->appends($request->query()))
+            : AjusteResource::collection($q->get());
     }
 
     public function store(StoreAjusteRequest $request)
@@ -69,16 +63,7 @@ class AjusteController extends Controller
 
     public function destroy(Ajuste $ajuste)
     {
-        try {
-            $ajuste->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $ajuste->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

@@ -10,25 +10,19 @@ use App\Http\Resources\V1\ReprogramacionCollection;
 use App\Http\Requests\V1\IndexReprogramacionRequest;
 use App\Http\Requests\V1\StoreReprogramacionRequest;
 use App\Http\Requests\V1\UpdateReprogramacionRequest;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class ReprogramacionController extends Controller
 {
     public function index(IndexReprogramacionRequest $request, ReprogramacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Reprogramacion::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new ReprogramacionCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
-        }
-        
-        return ReprogramacionResource::collection($q->get());
+        return $perPage > 0
+            ? new ReprogramacionCollection($q->paginate($perPage)->appends($request->query()))
+            : ReprogramacionResource::collection($q->get());
     }
 
     public function store(StoreReprogramacionRequest $request)
@@ -69,16 +63,7 @@ class ReprogramacionController extends Controller
 
     public function destroy(Reprogramacion $reprogramacion)
     {
-        try {
-            $reprogramacion->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $reprogramacion->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

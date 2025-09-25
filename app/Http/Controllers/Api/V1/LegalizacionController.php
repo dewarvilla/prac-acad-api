@@ -10,25 +10,19 @@ use App\Http\Resources\V1\LegalizacionCollection;
 use App\Http\Requests\V1\IndexLegalizacionRequest;
 use App\Http\Requests\V1\StoreLegalizacionRequest;
 use App\Http\Requests\V1\UpdateLegalizacionRequest;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class LegalizacionController extends Controller
 {
     public function index(IndexLegalizacionRequest $request, LegalizacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Legalizacion::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new LegalizacionCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
-        }
-        
-        return LegalizacionResource::collection($q->get());
+        return $perPage > 0
+            ? new LegalizacionCollection($q->paginate($perPage)->appends($request->query()))
+            : LegalizacionResource::collection($q->get());
     }
 
     public function store(StoreLegalizacionRequest $request)
@@ -69,16 +63,7 @@ class LegalizacionController extends Controller
 
     public function destroy(Legalizacion $legalizacion)
     {
-        try {
-            $legalizacion->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $legalizacion->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

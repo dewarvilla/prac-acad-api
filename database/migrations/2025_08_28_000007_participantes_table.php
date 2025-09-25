@@ -31,6 +31,7 @@ return new class extends Migration
             $table->unique(['numero_identificacion', 'programacion_id']);
 
             // Auditoría
+            $table->boolean('estado')->default(true)->comment('');
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
             $table->unsignedBigInteger('usuariocreacion')->nullable();

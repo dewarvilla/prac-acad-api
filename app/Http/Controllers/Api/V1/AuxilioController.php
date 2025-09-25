@@ -10,25 +10,19 @@ use App\Http\Resources\V1\AuxilioCollection;
 use App\Http\Requests\V1\IndexAuxilioRequest;
 use App\Http\Requests\V1\StoreAuxilioRequest;
 use App\Http\Requests\V1\UpdateAuxilioRequest;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class AuxilioController extends Controller
 {
     public function index(IndexAuxilioRequest $request, AuxilioFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Auxilio::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new AuxilioCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
-        }
-        
-        return AuxilioResource::collection($q->get());
+        return $perPage > 0
+            ? new AuxilioCollection($q->paginate($perPage)->appends($request->query()))
+            : AuxilioResource::collection($q->get());
     }
 
     public function store(StoreAuxilioRequest $request)
@@ -69,16 +63,7 @@ class AuxilioController extends Controller
 
     public function destroy(Auxilio $auxilio)
     {
-        try {
-            $auxilio->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $auxilio->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

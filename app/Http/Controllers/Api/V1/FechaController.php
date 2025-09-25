@@ -10,7 +10,6 @@ use App\Http\Resources\V1\FechaCollection;
 use App\Http\Requests\V1\IndexFechaRequest;
 use App\Http\Requests\V1\StoreFechaRequest;
 use App\Http\Requests\V1\UpdateFechaRequest;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class FechaController extends Controller
@@ -29,10 +28,10 @@ class FechaController extends Controller
 
             $q->where(function ($qq) use ($like, $term, $op) {
                 $qq->where('periodo', $op, $like)
-                ->orWhere('fecha_apertura_preg', $op, $like)
-                ->orWhere('fecha_cierre_docente_preg', $op, $like)
-                ->orWhere('fecha_apertura_postg', $op, $like)
-                ->orWhere('fecha_cierre_docente_postg', $op, $like);
+                  ->orWhere('fecha_apertura_preg', $op, $like)
+                  ->orWhere('fecha_cierre_docente_preg', $op, $like)
+                  ->orWhere('fecha_apertura_postg', $op, $like)
+                  ->orWhere('fecha_cierre_docente_postg', $op, $like);
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);
@@ -61,11 +60,7 @@ class FechaController extends Controller
             $fecha = Fecha::create($data);
             return (new FechaResource($fecha))->response()->setStatusCode(201);
         } catch (\Illuminate\Database\QueryException $e) {
-            // Códigos típicos:
-            // 23000 => violación de integridad (unique, FK). 
-            // 3819 (MySQL) / 23514 (PostgreSQL) => CHECK constraint.
             $code = (string) $e->getCode();
-
             if ($code === '23000') {
                 return response()->json(['message' => 'El periodo ya existe o hay una violación de integridad.'], 422);
             }
@@ -101,16 +96,7 @@ class FechaController extends Controller
 
     public function destroy(Fecha $fecha)
     {
-        try {
-            $fecha->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $fecha->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

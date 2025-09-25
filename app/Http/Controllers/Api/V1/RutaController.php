@@ -10,25 +10,19 @@ use App\Http\Resources\V1\RutaCollection;
 use App\Http\Requests\V1\IndexRutaRequest;
 use App\Http\Requests\V1\StoreRutaRequest;
 use App\Http\Requests\V1\UpdateRutaRequest;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class RutaController extends Controller
 {
     public function index(IndexRutaRequest $request, RutaFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Ruta::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new RutaCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
-        }
-        
-        return RutaResource::collection($q->get());
+        return $perPage > 0
+            ? new RutaCollection($q->paginate($perPage)->appends($request->query()))
+            : RutaResource::collection($q->get());
     }
 
     public function store(StoreRutaRequest $request)
@@ -69,16 +63,7 @@ class RutaController extends Controller
 
     public function destroy(Ruta $ruta)
     {
-        try {
-            $ruta->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $ruta->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

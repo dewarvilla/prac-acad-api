@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreign('salario_id')->references('id')->on('salarios')->onUpdate('cascade')->onDelete('cascade');
 
             // Auditoría
+            $table->boolean('estado')->default(true)->comment('');
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
             $table->unsignedBigInteger('usuariocreacion')->nullable();

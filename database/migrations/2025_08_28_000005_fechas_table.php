@@ -27,6 +27,7 @@ return new class extends Migration
             $table->date('fecha_cierre_jefe_postg');
 
             // Auditoría
+            $table->boolean('estado')->default(true)->comment('');
             $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
             $table->unsignedBigInteger('usuariocreacion')->nullable();

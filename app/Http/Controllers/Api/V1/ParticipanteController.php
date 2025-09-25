@@ -10,26 +10,19 @@ use App\Http\Resources\V1\ParticipanteCollection;
 use App\Http\Requests\V1\IndexParticipanteRequest;
 use App\Http\Requests\V1\StoreParticipanteRequest;
 use App\Http\Requests\V1\UpdateParticipanteRequest;
-use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class ParticipanteController extends Controller
 {
     public function index(IndexParticipanteRequest $request, ParticipanteFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-
         $q = Participante::query();
+
         $filter->apply($request, $q);
 
-        if ($perPage > 0) {
-            return new ParticipanteCollection(
-                $q->paginate($perPage)->appends($request->query())
-            );
-        }
-        
-        return ParticipanteResource::collection($q->get());
+        return $perPage > 0
+            ? new ParticipanteCollection($q->paginate($perPage)->appends($request->query()))
+            : ParticipanteResource::collection($q->get());
     }
 
     public function store(StoreParticipanteRequest $request)
@@ -70,16 +63,7 @@ class ParticipanteController extends Controller
 
     public function destroy(Participante $participante)
     {
-        try {
-            $participante->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $participante->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }

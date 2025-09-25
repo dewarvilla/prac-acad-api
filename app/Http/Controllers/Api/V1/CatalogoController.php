@@ -10,7 +10,6 @@ use App\Http\Resources\V1\CatalogoCollection;
 use App\Http\Requests\V1\IndexCatalogoRequest;
 use App\Http\Requests\V1\StoreCatalogoRequest;
 use App\Http\Requests\V1\UpdateCatalogoRequest;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class CatalogoController extends Controller
@@ -29,8 +28,8 @@ class CatalogoController extends Controller
 
             $q->where(function ($qq) use ($like, $term, $op) {
                 $qq->where('facultad', $op, $like)
-                ->orWhere('programa_academico', $op, $like)
-                ->orWhere('nivel_academico', $op, $like);
+                  ->orWhere('programa_academico', $op, $like)
+                  ->orWhere('nivel_academico', $op, $like);
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);
@@ -81,16 +80,12 @@ class CatalogoController extends Controller
 
     public function destroy(Catalogo $catalogo)
     {
-        try {
-            $catalogo->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $catalogo->delete(); // Handler 23000 -> 409
+        return response()->noContent();
+    }
+
+    // (Opcional) Bulk si lo estás usando:
+    public function storeBulk(BulkCatalogoRequest $request) {
+
     }
 }

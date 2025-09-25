@@ -16,6 +16,8 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('programacion_id');
             $table->date('fecha_legalizacion');
+            
+            $table->enum('estado_legalizacion', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
 
             $table->enum('estado_depart', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_postg', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');

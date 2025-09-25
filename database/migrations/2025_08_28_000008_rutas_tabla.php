@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
             
             // Auditoría
+            $table->boolean('estado')->default(true)->comment('');
             $table->timestamp('fogramacionechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
             $table->unsignedBigInteger('usuariocreacion')->nullable();

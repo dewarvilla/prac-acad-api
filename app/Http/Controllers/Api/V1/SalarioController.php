@@ -10,7 +10,6 @@ use App\Http\Resources\V1\SalarioCollection;
 use App\Http\Requests\V1\IndexSalarioRequest;
 use App\Http\Requests\V1\StoreSalarioRequest;
 use App\Http\Requests\V1\UpdateSalarioRequest;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class SalarioController extends Controller
@@ -29,7 +28,7 @@ class SalarioController extends Controller
 
             $q->where(function ($qq) use ($like, $term, $op) {
                 $qq->where('anio', $op, $like)
-                ->orWhere('valor', $op, $like);
+                  ->orWhere('valor', $op, $like);
 
                 if (ctype_digit($term)) {
                     $qq->orWhere('id', (int) $term);
@@ -80,16 +79,7 @@ class SalarioController extends Controller
 
     public function destroy(Salario $salario)
     {
-        try {
-            $salario->delete();
-            return response()->noContent();
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'message' => 'No se puede eliminar: existen registros relacionados.'
-                ], 409);
-            }
-            throw $e;
-        }
+        $salario->delete(); // Handler 23000 -> 409
+        return response()->noContent();
     }
 }
