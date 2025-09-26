@@ -63,7 +63,10 @@ class AuxilioController extends Controller
 
     public function destroy(Auxilio $auxilio)
     {
-        $auxilio->delete(); // Handler 23000 -> 409
+        $auxilio->usuarioborrado = auth()->id() ?? 0;
+        $auxilio->ipborrado = request()->ip();
+        $auxilio->save();
+        $auxilio->delete(); // soft delete
         return response()->noContent();
     }
 }

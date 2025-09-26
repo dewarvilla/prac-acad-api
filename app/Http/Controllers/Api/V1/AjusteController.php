@@ -63,7 +63,10 @@ class AjusteController extends Controller
 
     public function destroy(Ajuste $ajuste)
     {
-        $ajuste->delete(); // Handler 23000 -> 409
+        $ajuste->usuarioborrado = auth()->id() ?? 0;
+        $ajuste->ipborrado = request()->ip();
+        $ajuste->save();
+        $ajuste->delete(); // soft delete
         return response()->noContent();
     }
 }

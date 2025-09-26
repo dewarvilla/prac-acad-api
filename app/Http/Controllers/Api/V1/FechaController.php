@@ -96,7 +96,10 @@ class FechaController extends Controller
 
     public function destroy(Fecha $fecha)
     {
-        $fecha->delete(); // Handler 23000 -> 409
+        $fecha->usuarioborrado = auth()->id() ?? 0;
+        $fecha->ipborrado = request()->ip();
+        $fecha->save();
+        $fecha->delete(); // soft delete
         return response()->noContent();
     }
 }

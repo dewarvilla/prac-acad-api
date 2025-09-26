@@ -144,8 +144,10 @@ class CreacionController extends Controller
 
     public function destroy(Creacion $creacion)
     {
-        $this->authorize('delete', $creacion);
-        $creacion->delete(); // Handler 23000 -> 409
+        $creacion->usuarioborrado = auth()->id() ?? 0;
+        $creacion->ipborrado = request()->ip();
+        $creacion->save();
+        $creacion->delete(); // soft delete
         return response()->noContent();
     }
 }

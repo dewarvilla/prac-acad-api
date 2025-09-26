@@ -63,7 +63,10 @@ class LegalizacionController extends Controller
 
     public function destroy(Legalizacion $legalizacion)
     {
-        $legalizacion->delete(); // Handler 23000 -> 409
+        $legalizacion->usuarioborrado = auth()->id() ?? 0;
+        $legalizacion->ipborrado = request()->ip();
+        $legalizacion->save();
+        $legalizacion->delete(); // soft delete
         return response()->noContent();
     }
 }

@@ -63,7 +63,10 @@ class ReprogramacionController extends Controller
 
     public function destroy(Reprogramacion $reprogramacion)
     {
-        $reprogramacion->delete(); // Handler 23000 -> 409
+        $reprogramacion->usuarioborrado = auth()->id() ?? 0;
+        $reprogramacion->ipborrado = request()->ip();
+        $reprogramacion->save();
+        $reprogramacion->delete(); // soft delete
         return response()->noContent();
     }
 }

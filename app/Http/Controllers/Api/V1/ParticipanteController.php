@@ -63,7 +63,10 @@ class ParticipanteController extends Controller
 
     public function destroy(Participante $participante)
     {
-        $participante->delete(); // Handler 23000 -> 409
+        $participante->usuarioborrado = auth()->id() ?? 0;
+        $participante->ipborrado = request()->ip();
+        $participante->save();
+        $participante->delete(); // soft delete
         return response()->noContent();
     }
 }

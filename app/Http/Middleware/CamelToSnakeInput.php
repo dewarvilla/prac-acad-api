@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class CamelToSnakeInput
@@ -25,6 +24,16 @@ class CamelToSnakeInput
         if (!empty($request->query())) {
             $request->query->replace($this->snakeKeys($request->query()));
         }
+
+        // Logs de diagnóstico
+        \Log::info('CamelToSnakeInput HIT (BEFORE next)', [
+            'is_json'      => $request->isJson(),
+            'content_type' => $request->headers->get('content-type'),
+            'raw_json'     => $request->getContent(),
+            'all'          => $request->all(),
+            'json'         => $request->isJson() ? $request->json()->all() : null,
+            'query'        => $request->query(),
+        ]);
 
         return $next($request);
     }

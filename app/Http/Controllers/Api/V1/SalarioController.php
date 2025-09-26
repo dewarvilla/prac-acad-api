@@ -79,7 +79,10 @@ class SalarioController extends Controller
 
     public function destroy(Salario $salario)
     {
-        $salario->delete(); // Handler 23000 -> 409
+        $salario->usuarioborrado = auth()->id() ?? 0;
+        $salario->ipborrado = request()->ip();
+        $salario->save();
+        $salario->delete(); // soft delete
         return response()->noContent();
     }
 }

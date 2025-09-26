@@ -63,7 +63,10 @@ class RutaController extends Controller
 
     public function destroy(Ruta $ruta)
     {
-        $ruta->delete(); // Handler 23000 -> 409
+        $ruta->usuarioborrado = auth()->id() ?? 0;
+        $ruta->ipborrado = request()->ip();
+        $ruta->save();
+        $ruta->delete(); // soft delete
         return response()->noContent();
     }
 }

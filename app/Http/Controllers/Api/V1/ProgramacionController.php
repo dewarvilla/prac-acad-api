@@ -101,7 +101,10 @@ class ProgramacionController extends Controller
 
     public function destroy(Programacion $programacion)
     {
-        $programacion->delete(); // Handler 23000 -> 409
+        $programacion->usuarioborrado = auth()->id() ?? 0;
+        $programacion->ipborrado = request()->ip();
+        $programacion->save();
+        $programacion->delete(); // soft delete
         return response()->noContent();
     }
 }

@@ -38,6 +38,10 @@ return new class extends Migration
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();
             $table->ipAddress('ipmodificacion')->nullable();
+
+            $table->softDeletes(); // deleted_at
+            $table->unsignedBigInteger('usuarioborrado')->nullable();
+            $table->ipAddress('ipborrado')->nullable();
         });
     }
 
