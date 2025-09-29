@@ -10,6 +10,7 @@ use App\Http\Resources\V1\RutaCollection;
 use App\Http\Requests\V1\IndexRutaRequest;
 use App\Http\Requests\V1\StoreRutaRequest;
 use App\Http\Requests\V1\UpdateRutaRequest;
+use App\Http\Requests\V1\BulkDeleteRutaRequest;
 
 class RutaController extends Controller
 {
@@ -68,5 +69,33 @@ class RutaController extends Controller
         $ruta->save();
         $ruta->delete(); // soft delete
         return response()->noContent();
+    }
+    
+    public function destroyBulk(BulkDeleteRutaRequest $request)
+    {
+        $ids = array_values(array_unique(array_map('intval', $request->input('ids', []))));
+        $uid = auth()->id() ?? 0;
+        $ip  = $request->ip();
+
+        $result = \DB::transaction(function () use ($ids, $uid, $ip) {
+            // marca quién borró
+            Ruta::whereIn('id', $ids)->update([
+                'usuarioborrado' => $uid,
+                'ipborrado'      => $ip,
+                'fechamodificacion'   => now(),
+                'usuariomodificacion' => $uid,
+                'ipmodificacion'      => $ip,
+            ]);
+
+            // soft delete
+            $deleted = 0;
+            foreach (array_chunk($ids, 500) as $slice) {
+                $deleted += Ruta::whereIn('id', $slice)->delete();
+            }
+
+            return ['requested'=>count($ids), 'deleted'=>$deleted, 'not_found'=>max(0, count($ids)-$deleted)];
+        });
+
+        return response()->json(['ok'=>true,'code'=>200,'message'=>'Borrado masivo ejecutado.','data'=>$result], 200);
     }
 }

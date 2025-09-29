@@ -10,6 +10,7 @@ use App\Http\Resources\V1\SalarioCollection;
 use App\Http\Requests\V1\IndexSalarioRequest;
 use App\Http\Requests\V1\StoreSalarioRequest;
 use App\Http\Requests\V1\UpdateSalarioRequest;
+use App\Http\Requests\V1\BulkDeleteSalarioRequest;
 use Illuminate\Support\Facades\DB;
 
 class SalarioController extends Controller
@@ -84,5 +85,33 @@ class SalarioController extends Controller
         $salario->save();
         $salario->delete(); // soft delete
         return response()->noContent();
+    }
+    
+    public function destroyBulk(BulkDeleteSalarioRequest $request)
+    {
+        $ids = array_values(array_unique(array_map('intval', $request->input('ids', []))));
+        $uid = auth()->id() ?? 0;
+        $ip  = $request->ip();
+
+        $result = \DB::transaction(function () use ($ids, $uid, $ip) {
+            // marca quién borró
+            Salario::whereIn('id', $ids)->update([
+                'usuarioborrado' => $uid,
+                'ipborrado'      => $ip,
+                'fechamodificacion'   => now(),
+                'usuariomodificacion' => $uid,
+                'ipmodificacion'      => $ip,
+            ]);
+
+            // soft delete
+            $deleted = 0;
+            foreach (array_chunk($ids, 500) as $slice) {
+                $deleted += Salario::whereIn('id', $slice)->delete();
+            }
+
+            return ['requested'=>count($ids), 'deleted'=>$deleted, 'not_found'=>max(0, count($ids)-$deleted)];
+        });
+
+        return response()->json(['ok'=>true,'code'=>200,'message'=>'Borrado masivo ejecutado.','data'=>$result], 200);
     }
 }
