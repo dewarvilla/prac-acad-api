@@ -34,7 +34,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // camelCase -> snake_case (entrada)
+            // camelCase -> snake_case (entrada) — debe ir primero
             \App\Http\Middleware\CamelToSnakeInput::class,
 
             'throttle:api',
@@ -43,7 +43,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * Route middleware aliases.
+     * Route middleware aliases (para usar por ruta).
      */
     protected $middlewareAliases = [
         'auth'             => \App\Http\Middleware\Authenticate::class,
@@ -57,5 +57,8 @@ class Kernel extends HttpKernel
         'throttle'         => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'bindings'         => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
+        // Alias para forzar el middleware en rutas específicas
+        'camel' => \App\Http\Middleware\CamelToSnakeInput::class,
     ];
 }

@@ -7,29 +7,50 @@ use Illuminate\Support\Str;
 
 class CamelToSnakeInput
 {
+    // app/Http/Middleware/CamelToSnakeInput.php
     public function handle($request, Closure $next)
     {
-        // Body JSON
+        \Log::info('CamelToSnakeInput >>> ENTRO', [
+            'is_json' => $request->isJson(),
+            'ct' => $request->headers->get('content-type'),
+            'raw_start' => substr(trim($request->getContent()),0,1),
+        ]);
+        // 1) Intentar tratar el body como JSON aunque falte Content-Type
+        $raw = $request->getContent();
+        $looksJson = is_string($raw) && $raw !== '' && in_array(substr(trim($raw), 0, 1), ['{', '[']);
+        $decoded = null;
+
+        if ($request->isJson() || $looksJson) {
+            try {
+                $decoded = $request->isJson()
+                    ? $request->json()->all()
+                    : json_decode($raw, true, flags: JSON_THROW_ON_ERROR);
+            } catch (\Throwable $e) {
+                $decoded = null; // no era JSON válido
+            }
+        }
+
         if ($request->isJson()) {
-            $json = $request->json()->all();
-            $request->json()->replace($this->snakeKeys($json));
-        }
+            $data = json_decode($request->getContent(), true);
 
-        // Form-data / x-www-form-urlencoded
-        if (!empty($request->all())) {
-            $request->replace($this->snakeKeys($request->all()));
-        }
+            if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+                $snake = $this->snakeKeys($data);
 
-        // Query string (?fooBar=1)
+                // Reemplazar en los tres lugares:
+                $request->json()->replace($snake);     // para $request->json()
+                $request->request->replace($snake);    // para $request->all()
+                $request->replace($snake);             // fuerza que all() respete snake_case
+            }
+        }
+        // 3) Query string
         if (!empty($request->query())) {
             $request->query->replace($this->snakeKeys($request->query()));
         }
 
-        // Logs de diagnóstico
-        \Log::info('CamelToSnakeInput HIT (BEFORE next)', [
+        \Log::info('CamelToSnakeInput HIT', [
             'is_json'      => $request->isJson(),
             'content_type' => $request->headers->get('content-type'),
-            'raw_json'     => $request->getContent(),
+            'raw_starts'   => substr(trim($raw), 0, 1),
             'all'          => $request->all(),
             'json'         => $request->isJson() ? $request->json()->all() : null,
             'query'        => $request->query(),
@@ -37,17 +58,16 @@ class CamelToSnakeInput
 
         return $next($request);
     }
-
-    private function snakeKeys($value)
-    {
-        if (is_array($value)) {
-            $out = [];
-            foreach ($value as $k => $v) {
-                $nk = is_string($k) ? Str::snake($k) : $k;
-                $out[$nk] = $this->snakeKeys($v);
+        private function snakeKeys($value)
+        {
+            if (is_array($value)) {
+                $out = [];
+                foreach ($value as $k => $v) {
+                    $nk = is_string($k) ? Str::snake($k) : $k;
+                    $out[$nk] = $this->snakeKeys($v);
+                }
+                return $out;
             }
-            return $out;
+            return $value;
         }
-        return $value;
-    }
 }
