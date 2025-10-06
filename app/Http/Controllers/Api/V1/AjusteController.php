@@ -64,38 +64,26 @@ class AjusteController extends Controller
 
     public function destroy(Ajuste $ajuste)
     {
-        $ajuste->usuarioborrado = auth()->id() ?? 0;
-        $ajuste->ipborrado = request()->ip();
-        $ajuste->save();
-        $ajuste->delete(); // soft delete
+        $ajuste->delete(); 
         return response()->noContent();
     }
 
     public function destroyBulk(BulkDeleteAjusteRequest $request)
     {
         $ids = array_values(array_unique(array_map('intval', $request->input('ids', []))));
-        $uid = auth()->id() ?? 0;
-        $ip  = $request->ip();
 
-        $result = \DB::transaction(function () use ($ids, $uid, $ip) {
-            // marca quién borró
-            Ajuste::whereIn('id', $ids)->update([
-                'usuarioborrado' => $uid,
-                'ipborrado'      => $ip,
-                'fechamodificacion'   => now(),
-                'usuariomodificacion' => $uid,
-                'ipmodificacion'      => $ip,
-            ]);
+        return \DB::transaction(function () use ($ids) {
 
-            // soft delete
-            $deleted = 0;
-            foreach (array_chunk($ids, 500) as $slice) {
-                $deleted += Ajuste::whereIn('id', $slice)->delete();
-            }
+            $deleted = \App\Models\Ajuste::whereIn('id', $ids)->delete();
 
-            return ['requested'=>count($ids), 'deleted'=>$deleted, 'not_found'=>max(0, count($ids)-$deleted)];
+            return response()->json([
+                'ok'      => true,
+                'message' => 'Ajustes eliminados correctamente.',
+                'counts'  => [
+                    'requested' => count($ids),
+                    'deleted'   => (int) $deleted,
+                ],
+            ], 200);
         });
-
-        return response()->json(['ok'=>true,'code'=>200,'message'=>'Borrado masivo ejecutado.','data'=>$result], 200);
     }
 }

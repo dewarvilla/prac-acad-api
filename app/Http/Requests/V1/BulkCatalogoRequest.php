@@ -35,21 +35,20 @@ class BulkCatalogoRequest extends FormRequest
         $validator->after(function ($v) {
             $items = collect($this->input('items', []));
 
-            // Normaliza espacios y minúsculas para detectar duplicados (facultad, programa_academico)
             $norm = function (?string $s): string {
                 $s = (string) $s;
-                $s = preg_replace('/\s+/u', ' ', trim($s));
-                return mb_strtolower($s);
+                $s = preg_replace('/\s+/u', ' ', trim($s)); 
+                return mb_strtolower($s);                   
             };
 
             $dupes = $items->groupBy(function ($i) use ($norm) {
-                $fac = $norm($i['facultad'] ?? null);
-                $pro = $norm($i['programa_academico'] ?? null);
+                $fac = $norm($i['facultad'] ?? '');
+                $pro = $norm($i['programa_academico'] ?? '');
                 return $fac.'|'.$pro;
             })->filter(fn($g) => $g->count() > 1)->keys();
 
             if ($dupes->isNotEmpty()) {
-                $v->errors()->add('items', 'Hay combinaciones repetidas (facultad, programa_academico) en el payload.');
+                $v->errors()->add('items', 'Hay combinaciones repetidas (facultad, programa_académico) en el payload.');
             }
         });
     }

@@ -72,6 +72,11 @@ class FechaController extends Controller
         }
     }
 
+    public function show(Fecha $fecha)
+    {
+        return new FechaResource($fecha);
+    }
+
     public function update(UpdateFechaRequest $request, Fecha $fecha)
     {
         $data = $request->validated() + [
@@ -97,38 +102,26 @@ class FechaController extends Controller
 
     public function destroy(Fecha $fecha)
     {
-        $fecha->usuarioborrado = auth()->id() ?? 0;
-        $fecha->ipborrado = request()->ip();
-        $fecha->save();
-        $fecha->delete(); // soft delete
+        $fecha->delete(); 
         return response()->noContent();
     }
-    
+
     public function destroyBulk(BulkDeleteFechaRequest $request)
     {
         $ids = array_values(array_unique(array_map('intval', $request->input('ids', []))));
-        $uid = auth()->id() ?? 0;
-        $ip  = $request->ip();
 
-        $result = \DB::transaction(function () use ($ids, $uid, $ip) {
-            // marca quién borró
-            Fecha::whereIn('id', $ids)->update([
-                'usuarioborrado' => $uid,
-                'ipborrado'      => $ip,
-                'fechamodificacion'   => now(),
-                'usuariomodificacion' => $uid,
-                'ipmodificacion'      => $ip,
-            ]);
+        return \DB::transaction(function () use ($ids) {
 
-            // soft delete
-            $deleted = 0;
-            foreach (array_chunk($ids, 500) as $slice) {
-                $deleted += Fecha::whereIn('id', $slice)->delete();
-            }
+            $deleted = \App\Models\Fecha::whereIn('id', $ids)->delete();
 
-            return ['requested'=>count($ids), 'deleted'=>$deleted, 'not_found'=>max(0, count($ids)-$deleted)];
+            return response()->json([
+                'ok'      => true,
+                'message' => 'Fechas eliminados correctamente.',
+                'counts'  => [
+                    'requested' => count($ids),
+                    'deleted'   => (int) $deleted,
+                ],
+            ], 200);
         });
-
-        return response()->json(['ok'=>true,'code'=>200,'message'=>'Borrado masivo ejecutado.','data'=>$result], 200);
     }
 }

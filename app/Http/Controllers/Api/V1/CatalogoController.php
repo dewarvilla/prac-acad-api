@@ -82,10 +82,7 @@ class CatalogoController extends Controller
 
     public function destroy(Catalogo $catalogo)
     {
-        $catalogo->usuarioborrado = auth()->id() ?? 0;
-        $catalogo->ipborrado = request()->ip();
-        $catalogo->save();
-        $catalogo->delete(); // soft delete
+        $catalogo->delete(); 
         return response()->noContent();
     }
 
@@ -93,62 +90,87 @@ class CatalogoController extends Controller
     {
         $items = collect($request->validated()['items'] ?? []);
         if ($items->isEmpty()) {
-            return response()->json(['ok' => false, 'code' => 422, 'message' => 'No se enviaron elementos para procesar.'], 422);
+            return response()->json([
+                'ok' => false, 'code' => 422, 'message' => 'No se enviaron elementos para procesar.'
+            ], 422);
         }
 
         $now = now();
         $uid = auth()->id() ?? 0;
         $ip  = $request->ip();
 
-        // $items[*] ya trae: nivel_academico, facultad, programa_academico
-        $rows = $items->map(fn ($i) => [
-            'nivel_academico'     => $i['nivel_academico'],
-            'facultad'            => $i['facultad'],
-            'programa_academico'  => $i['programa_academico'],
-            'fechacreacion'       => $now,
-            'usuariocreacion'     => $uid,
-            'ipcreacion'          => $ip,
-            'fechamodificacion'   => $now,
-            'usuariomodificacion' => $uid,
-            'ipmodificacion'      => $ip,
-        ]);
+        // Normaliza entradas (trim/espacios) para consistencia con la DB
+        $normalize = function (string $s): string {
+            return preg_replace('/\s+/u', ' ', trim($s));
+        };
 
-        // Métricas de existencia (previas)
-        $existentes = Catalogo::query()
-            ->whereIn('facultad', $rows->pluck('facultad')->unique()->all())
-            ->whereIn('programa_academico', $rows->pluck('programa_academico')->unique()->all())
+        $rows = $items->map(function ($i) use ($now, $uid, $ip, $normalize) {
+            $fac = $normalize($i['facultad']);
+            $pro = $normalize($i['programa_academico']);
+            return [
+                'nivel_academico'     => $i['nivel_academico'],
+                'facultad'            => $fac,
+                'programa_academico'  => $pro,
+                'fechacreacion'       => $now,
+                'usuariocreacion'     => $uid,
+                'ipcreacion'          => $ip,
+                'fechamodificacion'   => $now,
+                'usuariomodificacion' => $uid,
+                'ipmodificacion'      => $ip,
+                '__key'               => mb_strtolower($fac).'|'.mb_strtolower($pro), // auxiliar
+            ];
+        });
+
+        $existentes = \App\Models\Catalogo::query()
+            ->where(function ($q) use ($rows) {
+                // Reducimos a pares únicos
+                $pairs = $rows->pluck('__key')->unique()->values();
+                foreach ($pairs as $key) {
+                    [$facKey, $proKey] = explode('|', $key, 2);
+                    $q->orWhere(function ($qq) use ($facKey, $proKey) {
+                        $qq->whereRaw('LOWER(facultad) = ?', [$facKey])
+                        ->whereRaw('LOWER(programa_academico) = ?', [$proKey]);
+                    });
+                }
+            })
             ->get()
-            ->mapWithKeys(fn ($c) => [mb_strtolower($c->facultad).'|'.mb_strtolower($c->programa_academico) => true]);
+            ->mapWithKeys(function ($c) {
+                return [ mb_strtolower($c->facultad).'|'.mb_strtolower($c->programa_academico) => true ];
+            });
 
-        $marcas = $rows->map(function ($r) use ($existentes) {
-            $key = mb_strtolower($r['facultad']).'|'.mb_strtolower($r['programa_academico']);
-            return ['key' => $key, 'existing' => $existentes->has($key)];
+        // Marca previos existentes en memoria
+        $marcas = $rows->map(fn($r) => [
+            'key' => $r['__key'], 'existing' => $existentes->has($r['__key']),
+        ]);
+-
+        \DB::transaction(function () use ($rows) {
+            foreach ($rows->chunk(500) as $slice) {
+                \App\Models\Catalogo::upsert(
+                    $slice->map(fn($r) => collect($r)->except('__key')->all())->all(),
+                    ['programa_academico', 'facultad'],      // columnas clave (únicas)
+                    ['nivel_academico', 'fechamodificacion','usuariomodificacion','ipmodificacion'] // columnas a actualizar
+                );
+            }
         });
 
-        DB::transaction(function () use ($rows) {
-            Catalogo::upsert(
-                $rows->all(),
-                ['programa_academico', 'facultad'],
-                ['nivel_academico', 'fechamodificacion', 'usuariomodificacion', 'ipmodificacion']
-            );
-        });
-
-        $affected = Catalogo::query()
+        $affected = \App\Models\Catalogo::query()
             ->where(function ($q) use ($rows) {
                 foreach ($rows as $r) {
                     $q->orWhere(function ($qq) use ($r) {
                         $qq->where('facultad', $r['facultad'])
-                           ->where('programa_academico', $r['programa_academico']);
+                        ->where('programa_academico', $r['programa_academico']);
                     });
                 }
             })
+            ->orderBy('facultad')
+            ->orderBy('programa_academico')
             ->get();
 
         $created   = $marcas->where('existing', false)->count();
         $updated   = $marcas->where('existing', true)->count();
         $processed = $rows->count();
 
-        return CatalogoResource::collection($affected)
+        return \App\Http\Resources\V1\CatalogoResource::collection($affected)
             ->additional([
                 'meta' => [
                     'processed' => $processed,
@@ -161,32 +183,23 @@ class CatalogoController extends Controller
             ->setStatusCode(201);
     }
 
+
     public function destroyBulk(BulkDeleteCatalogoRequest $request)
     {
         $ids = array_values(array_unique(array_map('intval', $request->input('ids', []))));
-        $uid = auth()->id() ?? 0;
-        $ip  = $request->ip();
 
-        $result = \DB::transaction(function () use ($ids, $uid, $ip) {
-            // marca quién borró
-            Catalogo::whereIn('id', $ids)->update([
-                'usuarioborrado' => $uid,
-                'ipborrado'      => $ip,
-                'fechamodificacion'   => now(),
-                'usuariomodificacion' => $uid,
-                'ipmodificacion'      => $ip,
-            ]);
+        return \DB::transaction(function () use ($ids) {
 
-            // soft delete
-            $deleted = 0;
-            foreach (array_chunk($ids, 500) as $slice) {
-                $deleted += Catalogo::whereIn('id', $slice)->delete();
-            }
+            $deleted = \App\Models\Catalogo::whereIn('id', $ids)->delete();
 
-            return ['requested'=>count($ids), 'deleted'=>$deleted, 'not_found'=>max(0, count($ids)-$deleted)];
+            return response()->json([
+                'ok'      => true,
+                'message' => 'Catálogos eliminados correctamente.',
+                'counts'  => [
+                    'requested' => count($ids),
+                    'deleted'   => (int) $deleted,
+                ],
+            ], 200);
         });
-
-        return response()->json(['ok'=>true,'code'=>200,'message'=>'Borrado masivo ejecutado.','data'=>$result], 200);
     }
-
 }
