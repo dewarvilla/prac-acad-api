@@ -14,7 +14,6 @@ return new class extends Migration
         //tabla para programaciones de practicas
         Schema::create('programaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('creacion_id');
             $table->string('nombre_practica');
             $table->text('descripcion');
             $table->boolean('requiere_transporte')->default(false);
@@ -33,7 +32,7 @@ return new class extends Migration
             $table->date('fecha_inicio');
             $table->date('fecha_finalizacion'); 
 
-            $table->foreign('creacion_id')->references('id')->on('creaciones')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('creacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();  
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

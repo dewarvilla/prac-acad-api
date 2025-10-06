@@ -14,7 +14,6 @@ return new class extends Migration
         // tabla reprogramacion de practicas
         Schema::create('reprogramaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('programacion_id');
             
             $table->date('fecha_reprogramacion');
 
@@ -24,7 +23,7 @@ return new class extends Migration
 
             $table->string('justificacion');
 
-            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

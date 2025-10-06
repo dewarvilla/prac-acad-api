@@ -14,7 +14,6 @@ return new class extends Migration
         // tabla rutas de practicas
         Schema::create('rutas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('programacion_id');
 
             $table->string('latitud_salidas');
             $table->string('latitud_llegadas');
@@ -27,7 +26,7 @@ return new class extends Migration
             $table->string('ruta_salida')->nullable();
             $table->string('ruta_llegada')->nullable();
 
-            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();  
             
             // Auditoría
             $table->boolean('estado')->default(true)->comment('');

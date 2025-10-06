@@ -14,7 +14,6 @@ return new class extends Migration
         //tabla participantes de practicas
         Schema::create('participantes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('programacion_id');
             $table->string('numero_identificacion');
             $table->boolean('discapacidad')->default(false);
             $table->string('nombre');
@@ -25,7 +24,7 @@ return new class extends Migration
             $table->boolean('repitente')->default(false);
             $table->enum('tipo_participante', ['estudiante', 'docente', 'acompanante']);
             
-            $table->foreign('programacion_id')->references('id')->on('programaciones')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();  
 
             //para que no se repita el participante en la misma practica
             $table->unique(['numero_identificacion', 'programacion_id']);
