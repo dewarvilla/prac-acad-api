@@ -11,15 +11,31 @@ class StoreRutaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'latitud_salidas' => ['required','string','max:255'],
-            'latitud_llegadas' => ['required','string','max:255'],
-            'numero_recorridos' => ['required','integer','min:0'],
-            'numero_peajes' => ['required','integer','min:0'],
-            'valor_peajes' => ['required','numeric','min:0'],
-            'distancia_trayectos_km' => ['required','numeric','min:0'],
-            'ruta_salida' => ['nullable','string','max:255'],
-            'ruta_llegada' => ['nullable','string','max:255'],
-            'programacion_id' => ['required','exists:programaciones,id'],
+            'programacion_id'  => ['required','exists:programaciones,id'],
+
+            'origen_lat'       => ['nullable','numeric','between:-90,90'],
+            'origen_lng'       => ['nullable','numeric','between:-180,180'],
+            'origen_desc'      => ['nullable','string'],
+            'origen_place_id'  => ['nullable','string','max:255'],
+
+            'destino_lat'      => ['nullable','numeric','between:-90,90'],
+            'destino_lng'      => ['nullable','numeric','between:-180,180'],
+            'destino_desc'     => ['nullable','string'],
+            'destino_place_id' => ['nullable','string','max:255'],
+
+            'distancia_m'      => ['nullable','integer','min:0'],
+            'duracion_s'       => ['nullable','integer','min:0'],
+            'polyline'         => ['nullable','string'],
+
+            'numero_peajes'    => ['nullable','integer','min:0'],
+            'valor_peajes'     => ['nullable','numeric','min:0'],
+
+            'orden'            => ['nullable','integer','min:1'],
+
+            // Requerido por el Escenario 6
+            'justificacion'    => ['required','string','min:10'],
+
+            'estado'           => ['nullable','boolean'],
         ];
     }
 }

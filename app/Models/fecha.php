@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Fecha extends Model
 {
@@ -44,4 +45,23 @@ class Fecha extends Model
         'fechacreacion'              => 'datetime',
         'fechamodificacion'          => 'datetime',
     ];
+
+    /** Ventana SOLO para programación por DOCENTE (no aprobaciones). */
+    public function ventanaDocente(string $nivel): array
+    {
+        if ($nivel === 'pregrado') {
+            return [$this->fecha_apertura_preg, $this->fecha_cierre_docente_preg];
+        }
+        if ($nivel === 'postgrado') {
+            return [$this->fecha_apertura_postg, $this->fecha_cierre_docente_postg];
+        }
+        return [null, null];
+    }
+
+    /** Inclusivo: inicio <= fecha <= fin */
+    public static function dentro(?Carbon $inicio, ?Carbon $fin, Carbon $fecha): bool
+    {
+        if (!$inicio || !$fin) return false;
+        return $fecha->gte($inicio) && $fecha->lte($fin);
+    }
 }

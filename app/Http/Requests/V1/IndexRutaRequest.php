@@ -3,7 +3,6 @@
 namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 class IndexRutaRequest extends FormRequest
@@ -26,8 +25,14 @@ class IndexRutaRequest extends FormRequest
     public function rules(): array
     {
         $sortable = [
-            'numero_recorridos','-numero_recorridos',
+            'id','-id',
+            'programacion_id','-programacion_id',
+            'distancia_m','-distancia_m',
+            'duracion_s','-duracion_s',
             'numero_peajes','-numero_peajes',
+            'valor_peajes','-valor_peajes',
+            'orden','-orden',
+            'fechacreacion','-fechacreacion',
         ];
 
         return [
@@ -41,15 +46,22 @@ class IndexRutaRequest extends FormRequest
                 }
             }],
 
-            'latitud_salidas'        => ['sometimes','string','max:255'],
-            'latitud_llegadas'       => ['sometimes','string','max:255'],
-            'numero_recorridos'      => ['sometimes','integer','min:0'],
-            'numero_peajes'          => ['sometimes','integer','min:0'],
-            'valor_peajes'           => ['sometimes','numeric'],
-            'distancia_trayectos_km' => ['sometimes','numeric'],
-            'ruta_salida'            => ['sometimes','string','max:255'],
-            'ruta_llegada'           => ['sometimes','string','max:255'],
-            'programacion_id'        => ['sometimes','integer','min:1'],
+            'programacion_id' => ['sometimes','integer','min:1'],
+
+            'origen_lat'      => ['sometimes','numeric'],
+            'origen_lng'      => ['sometimes','numeric'],
+            'destino_lat'     => ['sometimes','numeric'],
+            'destino_lng'     => ['sometimes','numeric'],
+            'origen_desc'     => ['sometimes','string','max:255'],
+            'destino_desc'    => ['sometimes','string','max:255'],
+
+            'distancia_m'     => ['sometimes','integer','min:0'],
+            'duracion_s'      => ['sometimes','integer','min:0'],
+            'numero_peajes'   => ['sometimes','integer','min:0'],
+            'valor_peajes'    => ['sometimes','numeric','min:0'],
+            'orden'           => ['sometimes','integer','min:1'],
+
+            'estado'          => ['sometimes','boolean'],
         ];
     }
 }

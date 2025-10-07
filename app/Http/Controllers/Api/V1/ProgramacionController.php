@@ -50,6 +50,17 @@ class ProgramacionController extends Controller
                     $qq->orWhere('id', (int) $term);
                 }
             });
+
+            $sort = $request->query('sort', '-id');
+            $dir  = str_starts_with($sort, '-') ? 'desc' : 'asc';
+            $field = ltrim($sort, '-');
+
+            $sortMap = [
+                'id'                => 'id',
+                'estadoPractica'    => 'estado_practica',
+                'fechaInicio' => 'fecha_inicio',
+                'fechaFinalizacion'    => 'fecha_finalizacion',
+            ];
         }
 
         return $perPage > 0

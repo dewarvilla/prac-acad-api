@@ -15,29 +15,35 @@ class Ruta extends Model
     const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
-        'estado',
-        'latitud_salidas',
-        'latitud_llegadas',
-        'numero_recorridos',
-        'numero_peajes',
-        'valor_peajes',
-        'distancia_trayectos_km',
-        'ruta_salida',
-        'ruta_llegada',
         'programacion_id',
-        'usuariocreacion',
-        'usuariomodificacion',
-        'ipcreacion',
-        'ipmodificacion',
+
+        'origen_lat','origen_lng','origen_desc','origen_place_id',
+        'destino_lat','destino_lng','destino_desc','destino_place_id',
+
+        'distancia_m','duracion_s','polyline',
+
+        'numero_peajes','valor_peajes',
+        'orden',
+        'justificacion',
+
+        'estado',
+        'usuariocreacion','usuariomodificacion',
+        'ipcreacion','ipmodificacion',
     ];
 
     protected $casts = [
-        'numero_recorridos'     => 'integer',
-        'numero_peajes'         => 'integer',
-        'valor_peajes'          => 'decimal:2',
-        'distancia_trayectos_km'=> 'decimal:2',
-        'fechacreacion'         => 'datetime',
-        'fechamodificacion'     => 'datetime',
+        'origen_lat'   => 'float',
+        'origen_lng'   => 'float',
+        'destino_lat'  => 'float',
+        'destino_lng'  => 'float',
+        'distancia_m'  => 'integer',
+        'duracion_s'   => 'integer',
+        'numero_peajes'=> 'integer',
+        'valor_peajes' => 'decimal:2',
+        'orden'        => 'integer',
+        'estado'       => 'boolean',
+        'fechacreacion'=> 'datetime',
+        'fechamodificacion' => 'datetime',
     ];
 
     public function programacion()

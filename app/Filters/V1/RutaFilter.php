@@ -7,36 +7,47 @@ use App\Filters\ApiFilter;
 class RutaFilter extends ApiFilter
 {
     protected array $safeParms = [
-        'id'                    => ['eq','in','gt','lt','gte','lte'],
-        'latitud_salidas'       => ['eq','lk'],
-        'latitud_llegadas'      => ['eq','lk'],
-        'numero_recorridos'     => ['eq','gt','gte','lt','lte','btn'],
-        'numero_peajes'         => ['eq','gt','gte','lt','lte','btn'],
-        'valor_peajes'          => ['eq','gt','gte','lt','lte','btn'],
-        'distancia_trayectos_km'=> ['eq','gt','gte','lt','lte','btn'],
-        'ruta_salida'           => ['eq','lk'],
-        'ruta_llegada'          => ['eq','lk'],
+        'id'             => ['eq','in','gt','lt','gte','lte'],
 
-        'programacion_id'       => ['eq','in'],
+        'programacion_id'=> ['eq','in'],
 
-        'fechacreacion'         => ['eq','gt','gte','lt','lte','btn'],
-        'usuariocreacion'       => ['eq','in'],
-        'fechamodificacion'     => ['eq','gt','gte','lt','lte','btn'],
-        'usuariomodificacion'   => ['eq','in'],
-        'ipcreacion'            => ['eq'],
-        'ipmodificacion'        => ['eq'],
+        'origen_lat'     => ['eq','gt','gte','lt','lte','btn'],
+        'origen_lng'     => ['eq','gt','gte','lt','lte','btn'],
+        'destino_lat'    => ['eq','gt','gte','lt','lte','btn'],
+        'destino_lng'    => ['eq','gt','gte','lt','lte','btn'],
+        'origen_desc'    => ['eq','lk'],
+        'destino_desc'   => ['eq','lk'],
+
+        'distancia_m'    => ['eq','gt','gte','lt','lte','btn'],
+        'duracion_s'     => ['eq','gt','gte','lt','lte','btn'],
+        'numero_peajes'  => ['eq','gt','gte','lt','lte','btn'],
+        'valor_peajes'   => ['eq','gt','gte','lt','lte','btn'],
+        'orden'          => ['eq','gt','gte','lt','lte'],
+
+        'estado'         => ['eq'],
+
+        'fechacreacion'  => ['eq','gt','gte','lt','lte','btn'],
+        'fechamodificacion' => ['eq','gt','gte','lt','lte','btn'],
+        'usuariocreacion'   => ['eq','in'],
+        'usuariomodificacion'=> ['eq','in'],
+        'ipcreacion'        => ['eq'],
+        'ipmodificacion'    => ['eq'],
     ];
 
     protected array $columnMap = [
-        'latitudSalidas'        => 'latitud_salidas',
-        'latitudLlegadas'       => 'latitud_llegadas',
-        'numeroRecorridos'      => 'numero_recorridos',
-        'numeroPeajes'          => 'numero_peajes',
-        'valorPeajes'           => 'valor_peajes',
-        'distanciaTrayectosKm'  => 'distancia_trayectos_km',
-        'rutaSalida'            => 'ruta_salida',
-        'rutaLlegada'           => 'ruta_llegada',
-        'programacionId'        => 'programacion_id',
+        'programacionId' => 'programacion_id',
+
+        'origenLat'      => 'origen_lat',
+        'origenLng'      => 'origen_lng',
+        'destinoLat'     => 'destino_lat',
+        'destinoLng'     => 'destino_lng',
+        'origenDesc'     => 'origen_desc',
+        'destinoDesc'    => 'destino_desc',
+
+        'distanciaM'     => 'distancia_m',
+        'duracionS'      => 'duracion_s',
+        'numeroPeajes'   => 'numero_peajes',
+        'valorPeajes'    => 'valor_peajes',
     ];
 
     protected array $dateFilters = ['fechacreacion','fechamodificacion'];

@@ -4,49 +4,60 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
-        // tabla rutas de practicas
         Schema::create('rutas', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('latitud_salidas');
-            $table->string('latitud_llegadas');
-            $table->integer('numero_recorridos');
-            $table->integer('numero_peajes');
+            // FK correcta: referencia a tabla 'programaciones'
+            $table->foreignId('programacion_id')
+                  ->constrained('programaciones')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
 
-            $table->decimal('valor_peajes', 10, 2);
-            $table->decimal('distancia_trayectos_km', 10, 2);
+            // Origen / Destino (coordenadas y descripciones opcionales)
+            $table->decimal('origen_lat', 10, 7)->nullable();
+            $table->decimal('origen_lng', 10, 7)->nullable();
+            $table->string('origen_desc')->nullable();
+            $table->string('origen_place_id')->nullable();
 
-            $table->string('ruta_salida')->nullable();
-            $table->string('ruta_llegada')->nullable();
+            $table->decimal('destino_lat', 10, 7)->nullable();
+            $table->decimal('destino_lng', 10, 7)->nullable();
+            $table->string('destino_desc')->nullable();
+            $table->string('destino_place_id')->nullable();
 
-            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();  
-            
+            // Resultados del cálculo / datos de costo
+            $table->unsignedBigInteger('distancia_m')->nullable();         // metros (más preciso)
+            $table->unsignedInteger('duracion_s')->nullable();             // segundos
+            $table->text('polyline')->nullable();                          // polyline codificado
+
+            // Peajes (si los capturas manualmente por ahora)
+            $table->unsignedInteger('numero_peajes')->nullable();
+            $table->decimal('valor_peajes', 12, 2)->nullable();
+
+            // Por si quieres ordenar múltiples recorridos
+            $table->unsignedInteger('orden')->default(1);
+
+            // Requisito Escenario 6
+            $table->text('justificacion');
+
             // Auditoría
-            $table->boolean('estado')->default(true)->comment('');
-            $table->timestamp('fogramacionechacreacion')->useCurrent();
+            $table->boolean('estado')->default(true);
+            $table->timestamp('fechacreacion')->useCurrent();
             $table->timestamp('fechamodificacion')->useCurrent()->useCurrentOnUpdate();
             $table->unsignedBigInteger('usuariocreacion')->nullable();
             $table->unsignedBigInteger('usuariomodificacion')->nullable();
             $table->ipAddress('ipcreacion')->nullable();
             $table->ipAddress('ipmodificacion')->nullable();
+
+            // Índices útiles
+            $table->index(['programacion_id', 'orden']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
-        {
-            Schema::dropIfExists('rutas');
-        }
+        Schema::dropIfExists('rutas');
     }
 };
