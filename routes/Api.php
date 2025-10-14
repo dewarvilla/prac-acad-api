@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\AjusteController;
 use App\Http\Controllers\Api\V1\CatalogoController;
 use App\Http\Controllers\Api\V1\RutapeajeController;
 use App\Http\Controllers\Api\V1\RutapeajesSyncController;
+use App\Http\Controllers\UsageController;
 
 Route::prefix('v1')->group(function() {
 
@@ -73,6 +74,10 @@ Route::prefix('v1')->group(function() {
     /* ==================== AJUSTES ==================== */
     Route::apiResource('ajustes', AjusteController::class)->parameters(['ajustes' => 'ajuste']);
     Route::post('ajustes/bulk-delete', [AjusteController::class, 'destroyBulk'])->name('ajustes.bulk-delete');
+
+    /* ==================== Usage ==================== */
+    Route::post('/usage/routes/preflight', [UsageController::class, 'preflight']);
+    Route::get('/usage/routes/stats', [UsageController::class, 'stats']);
 
     /* ==================== PRUEBA LOCAL ==================== */
     /*

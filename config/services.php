@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'route_usage' => [
+        'limit'     => (int) env('ROUTES_MONTHLY_LIMIT', 9750),
+        'warn_ratio'=> (float) env('ROUTES_WARN_RATIO', 0.8),
+    ],
+
 ];
