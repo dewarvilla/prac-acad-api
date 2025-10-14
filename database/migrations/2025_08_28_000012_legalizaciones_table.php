@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('estado_tesoreria', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_contabilidad', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             
-            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('programacion_id')->constrained('programaciones')->cascadeOnUpdate()->restrictOnDelete();
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();

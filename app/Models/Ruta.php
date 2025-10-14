@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Rutapeaje;
 
 class Ruta extends Model
 {
@@ -49,5 +50,10 @@ class Ruta extends Model
     public function programacion()
     {
         return $this->belongsTo(Programacion::class, 'programacion_id');
+    }
+
+    public function peajes()
+    {
+        return $this->hasMany(Rutapeaje::class, 'ruta_id');
     }
 }

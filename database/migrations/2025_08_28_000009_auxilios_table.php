@@ -23,9 +23,9 @@ return new class extends Migration
             $table->decimal('valor_por_estudiante', 10, 2);
             $table->decimal('valor_por_acompanante', 10, 2)->default(0);
 
-            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();  
-            $table->foreignId('salario_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('participante_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();  
+            $table->foreignId('programacion_id')->constrained('programaciones')->cascadeOnUpdate()->restrictOnDelete();  
+            $table->foreignId('salario_id')->constrained('salarios')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('participante_id')->constrained('participantes')->cascadeOnUpdate()->restrictOnDelete();  
               
 
             // Auditoría

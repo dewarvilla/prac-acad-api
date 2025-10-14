@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->string('justificacion');
 
-            $table->foreignId('programacion_id')->constrained('id')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('programacion_id')->constrained('programaciones')->cascadeOnUpdate()->restrictOnDelete();
 
             // Auditoría
             $table->timestamp('fechacreacion')->useCurrent();
