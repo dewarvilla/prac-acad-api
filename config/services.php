@@ -40,4 +40,8 @@ return [
         'warn_ratio'=> (float) env('ROUTES_WARN_RATIO', 0.8),
     ],
 
+    'google_routes' => [
+        'key'           => env('GOOGLE_ROUTES_API_KEY'),
+        'traffic_aware' => (bool) env('GOOGLE_ROUTES_TRAFFIC_AWARE', true),
+    ],
 ];

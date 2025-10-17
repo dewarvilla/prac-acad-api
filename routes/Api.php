@@ -16,7 +16,8 @@ use App\Http\Controllers\Api\V1\AjusteController;
 use App\Http\Controllers\Api\V1\CatalogoController;
 use App\Http\Controllers\Api\V1\RutapeajeController;
 use App\Http\Controllers\Api\V1\RutapeajesSyncController;
-use App\Http\Controllers\UsageController;
+use App\Http\Controllers\Api\V1\UsageController;
+use App\Http\Controllers\Api\V1\RoutesComputeController;
 
 Route::prefix('v1')->group(function() {
 
@@ -78,6 +79,9 @@ Route::prefix('v1')->group(function() {
     /* ==================== Usage ==================== */
     Route::post('/usage/routes/preflight', [UsageController::class, 'preflight']);
     Route::get('/usage/routes/stats', [UsageController::class, 'stats']);
+
+    /* ==================== Compute para integracion con maps ==================== */
+    Route::post('compute-route', [RoutesComputeController::class, 'compute']);
 
     /* ==================== PRUEBA LOCAL ==================== */
     /*

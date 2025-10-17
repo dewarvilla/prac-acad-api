@@ -33,7 +33,7 @@ class StoreRutaRequest extends FormRequest
             'orden'            => ['nullable','integer','min:1'],
 
             // Requerido por el Escenario 6
-            'justificacion'    => ['required','string','min:10'],
+            'justificacion'    => ['required','string'],
 
             'estado'           => ['nullable','boolean'],
         ];
