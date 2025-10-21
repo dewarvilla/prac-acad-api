@@ -32,6 +32,7 @@ class ProgramacionResource extends JsonResource
             'ipcreacion'         => $this->ipcreacion,
             'ipmodificacion'     => $this->ipmodificacion,
             'requiereTransporte' => $this->requiere_transporte, 
+            'numeroEstudiantes'  => $this->numero_estudiantes,
             
         ];
     }

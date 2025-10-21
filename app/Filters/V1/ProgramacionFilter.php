@@ -20,6 +20,8 @@ class ProgramacionFilter extends ApiFilter
         'estado_decano'        => ['eq','in'],
         'estado_jefe_postg'    => ['eq','in'],
         'estado_vice'          => ['eq','in'],
+        'numero_estudiantes'   => ['eq','in','gt','lt','gte','lte'],
+
 
         'fecha_inicio'         => ['eq','gt','gte','lt','lte','btn'],
         'fecha_finalizacion'   => ['eq','gt','gte','lt','lte','btn'],
@@ -49,6 +51,7 @@ class ProgramacionFilter extends ApiFilter
         'creacionId'         => 'creacion_id',
         'fechacreacion'      => 'fechacreacion',
         'fechamodificacion'  => 'fechamodificacion',
+        'numeroEstudiantes'  => 'numero_estudiantes',
     ];
 
     protected array $dateFilters = [

@@ -22,6 +22,7 @@ class StoreProgramacionRequest extends FormRequest
             'justificacion'       => ['required','string'],
             'recursos_necesarios' => ['required','string'],
             'requiere_transporte' => ['required','boolean'],
+            'numero_estudiantes' => ['integer', 'between:1,100'],
 
             'estado_practica'     => ['nullable', Rule::in(['en_aprobacion','aprobada','rechazada','en_ejecucion','ejecutada','en_legalizacion','legalizada'])],
             'estado_depart'       => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],

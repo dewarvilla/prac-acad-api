@@ -34,6 +34,7 @@ class Programacion extends Model
         'usuariomodificacion',
         'ipcreacion',
         'ipmodificacion',
+        'numero_estudiantes',
     ];
 
     protected $casts = [

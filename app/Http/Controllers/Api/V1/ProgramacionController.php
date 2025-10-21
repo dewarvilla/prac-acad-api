@@ -37,7 +37,8 @@ class ProgramacionController extends Controller
                   ->orWhere('estado_jefe_postg', $op, $like)
                   ->orWhere('estado_vice', $op, $like)
                   ->orWhere('fecha_inicio', $op, $like)
-                  ->orWhere('fecha_finalizacion', $op, $like);
+                  ->orWhere('fecha_finalizacion', $op, $like)
+                  ->orWhere('numero_estudiantes', $op, $like);
 
                 // match boolean requiere_transporte
                 $low = strtolower($term);

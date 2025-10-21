@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('lugar_de_realizacion')->nullable();
             $table->text('justificacion');
             $table->text('recursos_necesarios');
+            $table->integer('numero_estudiantes');
 
             $table->enum('estado_practica', [
                 'en_aprobacion','aprobada','rechazada','en_ejecucion',

@@ -20,6 +20,8 @@ class UpdateProgramacionRequest extends FormRequest
             'justificacion'       => ['string'],
             'recursos_necesarios' => ['string'],
             'requiere_transporte' => ['boolean'],
+            
+            'numero_estudiantes' => ['integer', 'between:1,100'],
 
             'estado_practica'     => [Rule::in(['en_aprobacion','aprobada','rechazada','en_ejecucion','ejecutada','en_legalizacion','legalizada'])],
             'estado_depart'       => [Rule::in(['aprobada','rechazada','pendiente'])],
