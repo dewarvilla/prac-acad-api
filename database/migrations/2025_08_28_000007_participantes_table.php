@@ -25,8 +25,6 @@ return new class extends Migration
             $table->enum('tipo_participante', ['estudiante', 'docente', 'acompanante']);
             
             $table->foreignId('programacion_id')->constrained('programaciones')->cascadeOnUpdate()->restrictOnDelete();  
-
-            //para que no se repita el participante en la misma practica
             $table->unique(['numero_identificacion', 'programacion_id']);
 
             // Auditoría

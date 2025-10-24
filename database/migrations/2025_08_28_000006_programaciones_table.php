@@ -10,10 +10,8 @@ return new class extends Migration {
         Schema::create('programaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            // Relación obligatoria con Creaciones
             $table->foreignId('creacion_id')->constrained('creaciones')->cascadeOnUpdate()->restrictOnDelete();
 
-            // Nombre viene de la Creación seleccionada (lo copia el controller)
             $table->string('nombre_practica');
 
             $table->text('descripcion')->nullable();
@@ -37,13 +35,11 @@ return new class extends Migration {
             $table->date('fecha_inicio');
             $table->date('fecha_finalizacion');
 
-            // Índices útiles
             $table->index('creacion_id');
             $table->index('nombre_practica');
             $table->index('estado_practica');
             $table->index(['fecha_inicio','fecha_finalizacion'], 'programaciones_fechas_idx');
 
-            // Impedir 2 programaciones con mismo nombre + mismas fechas:
             $table->unique(['nombre_practica','fecha_inicio','fecha_finalizacion'], 'programaciones_nombre_fechas_unique');
 
             // Auditoría

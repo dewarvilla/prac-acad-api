@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // tabla legalizacion de practicas
         Schema::create('legalizaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->date('fecha_legalizacion');

@@ -19,10 +19,8 @@ return new class extends Migration
             $table->string('facultad');
             $table->string('programa_academico');
 
-            // Único con nombre explícito (evita duplicados/confusión en down/alter)
             $table->unique(['programa_academico', 'facultad'], 'catalogos_programa_facultad_unique');
-
-            // Índices para filtrar/ordenar rápido
+            
             $table->index('facultad', 'catalogos_facultad_idx');
             $table->index('programa_academico', 'catalogos_programa_idx');
 

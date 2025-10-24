@@ -10,13 +10,11 @@ return new class extends Migration {
         Schema::create('rutas', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            // FK correcta: referencia a tabla 'programaciones'
             $table->foreignId('programacion_id')
                   ->constrained('programaciones')
                   ->cascadeOnUpdate()
                   ->cascadeOnDelete();
 
-            // Origen / Destino (coordenadas y descripciones opcionales)
             $table->decimal('origen_lat', 10, 7)->nullable();
             $table->decimal('origen_lng', 10, 7)->nullable();
             $table->string('origen_desc')->nullable();
@@ -27,19 +25,15 @@ return new class extends Migration {
             $table->string('destino_desc')->nullable();
             $table->string('destino_place_id')->nullable();
 
-            // Resultados del cálculo / datos de costo
-            $table->unsignedBigInteger('distancia_m')->nullable();         // metros (más preciso)
-            $table->unsignedInteger('duracion_s')->nullable();             // segundos
-            $table->text('polyline')->nullable();                          // polyline codificado
+            $table->unsignedBigInteger('distancia_m')->nullable();     
+            $table->unsignedInteger('duracion_s')->nullable();        
+            $table->text('polyline')->nullable();                         
 
-            // Peajes (si los capturas manualmente por ahora)
             $table->unsignedInteger('numero_peajes')->nullable();
             $table->decimal('valor_peajes', 12, 2)->nullable();
 
-            // Por si quieres ordenar múltiples recorridos
             $table->unsignedInteger('orden')->default(1);
 
-            // Requisito Escenario 6
             $table->text('justificacion');
 
             // Auditoría
