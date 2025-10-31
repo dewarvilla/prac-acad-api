@@ -10,9 +10,8 @@ class RutapeajesSyncController extends Controller
 {
     public function __construct(private RutapeajesSyncService $svc) {}
 
-    public function recalcular(Ruta $ruta)
+    public function recalcular(\Illuminate\Http\Request $req, Ruta $ruta)
     {
-        // Requisitos: que la ruta ya tenga polyline (o la calculas antes)
         if (!$ruta->polyline) {
             return response()->json([
                 'ok' => false,
@@ -20,14 +19,27 @@ class RutapeajesSyncController extends Controller
             ], 400);
         }
 
-        $n = $this->svc->syncFromSocrata($ruta);
-        return response()->json([
-            'ok'      => true,
-            'message' => "Peajes recalculados: $n",
-            'counts'  => [
-                'peajes' => $ruta->peajes()->count(),
-            ],
-        ]);
+        try {
+            $categoria = strtoupper(trim($req->input('categoria', $ruta->categoria_vehiculo ?? 'I')));
+            $res = $this->svc->syncFromSocrata($ruta, $categoria);
+
+            return response()->json([
+                'ok'      => true,
+                'message' => "Peajes recalculados correctamente (Categoría {$categoria}).",
+                'data'    => [
+                    'insertados'   => $res['insertados'] ?? 0,
+                    'total_valor'  => $res['total_valor'] ?? 0,
+                    'num_peajes'   => $ruta->peajes()->count(),
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error("Error al sincronizar peajes: " . $e->getMessage());
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error al sincronizar peajes',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function totalCategoria(\Illuminate\Http\Request $req, Ruta $ruta)

@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->decimal('destino_lng', 10, 7)->nullable();
             $table->string('destino_desc')->nullable();
             $table->string('destino_place_id')->nullable();
+            $table->string('categoria_peaje', 10)->nullable();
 
             $table->unsignedBigInteger('distancia_m')->nullable();     
             $table->unsignedInteger('duracion_s')->nullable();        

@@ -37,12 +37,46 @@ class RutaController extends Controller
             'ipcreacion'          => $request->ip(),
             'ipmodificacion'      => $request->ip(),
         ];
-
         $ruta = Ruta::create($data);
+        try {
+            $compute = app(\App\Services\RoutesComputeService::class);
+            $metrics = $compute->computeMetrics([
+                'origin' => [
+                    'lat' => $ruta->origen_lat,
+                    'lng' => $ruta->origen_lng
+                ],
+                'dest' => [
+                    'lat' => $ruta->destino_lat,
+                    'lng' => $ruta->destino_lng
+                ],
+            ]);
 
-        return (new RutaResource($ruta))
+            if ($metrics) {
+                $ruta->distancia_m = $metrics['distance_m'] ?? null;
+                $ruta->duracion_s  = $metrics['duration_s'] ?? null;
+                $ruta->polyline    = $metrics['polyline'] ?? null;
+                $ruta->save();
+            }
+        } catch (\Throwable $e) {
+            \Log::warning("No se pudo calcular distancia o polyline para ruta {$ruta->id}: " . $e->getMessage());
+        }
+        try {
+            if ($ruta->polyline) {
+                $syncService = app(\App\Services\RutapeajesSyncService::class);
+                $categoria = $data['categoria_vehiculo'] ?? 'I';
+                $res = $syncService->syncFromSocrata($ruta, $categoria);
+                \Log::info("Ruta {$ruta->id} — Peajes sincronizados automáticamente ({$res['insertados']} encontrados, categoría {$categoria})");
+            } else {
+                \Log::info("Ruta {$ruta->id} creada sin polyline, se omitió sincronización de peajes.");
+            }
+        } catch (\Throwable $e) {
+            \Log::error("Error al sincronizar peajes de ruta {$ruta->id}: " . $e->getMessage());
+        }
+
+        return (new \App\Http\Resources\V1\RutaResource($ruta->fresh()))
             ->response()->setStatusCode(201);
     }
+
 
     public function show(Ruta $ruta)
     {

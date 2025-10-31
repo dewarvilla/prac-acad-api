@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\RutapeajeController;
 use App\Http\Controllers\Api\V1\RutapeajesSyncController;
 use App\Http\Controllers\Api\V1\UsageController;
 use App\Http\Controllers\Api\V1\RoutesComputeController;
+use Illuminate\Support\Facades\Http;
 
 Route::prefix('v1')->group(function() {
 
@@ -46,15 +47,15 @@ Route::prefix('v1')->group(function() {
     Route::apiResource('rutas', RutaController::class)->parameters(['rutas' => 'ruta']);
     Route::post('rutas/bulk-delete', [RutaController::class, 'destroyBulk'])->name('rutas.bulk-delete');
 
-    /* === SUBMÓDULO: RUTAS → PEAJES === */
+    /* === RUTAS → PEAJES === */
     Route::get('rutas/{ruta}/peajes', [RutapeajeController::class, 'indexByRuta'])->name('rutapeajes.indexByRuta');
     Route::post('rutapeajes', [RutapeajeController::class, 'store'])->name('rutapeajes.store');
     Route::put('rutapeajes/{rutapeaje}', [RutapeajeController::class, 'update'])->name('rutapeajes.update');
     Route::delete('rutapeajes/{rutapeaje}', [RutapeajeController::class, 'destroy'])->name('rutapeajes.destroy');
 
     // sincronizar desde datos.gov.co y calcular totales
-    Route::post('rutas/{ruta}/peajes/recalcular', [RutapeajesSyncController::class, 'recalcular'])->name('rutapeajes.recalcular');
-    Route::post('rutas/{ruta}/peajes/total', [RutapeajesSyncController::class, 'totalCategoria'])->name('rutapeajes.total');
+    Route::post('rutas/{ruta}/peajes/sync', [RutapeajesSyncController::class, 'recalcular'])->name('rutapeajes.sync');
+    Route::get('rutas/{ruta}/peajes/total', [RutapeajesSyncController::class, 'totalCategoria'])->name('rutapeajes.total');
 
     /* ==================== REPROGRAMACIONES ==================== */
     Route::apiResource('reprogramaciones', ReprogramacionController::class)->parameters(['reprogramaciones' => 'reprogramacion']);
@@ -84,7 +85,37 @@ Route::prefix('v1')->group(function() {
     Route::post('compute-route', [RoutesComputeController::class, 'compute']);
 
     /* ==================== PRUEBA LOCAL ==================== */
-    /*
+ /*
+    Route::get('peajes/test', function () {
+        $url = 'https://www.datos.gov.co/api/v3/views/68qj-5xux/query.json';
+
+        try {
+            $response = Http::withHeaders([
+                'X-App-Token' => env('SODA_APP_TOKEN'),
+            ])->get($url, [
+                '$limit' => 5,
+            ]);
+
+            if ($response->failed()) {
+                return response()->json([
+                    'ok' => false,
+                    'status' => $response->status(),
+                    'message' => $response->json(),
+                ], $response->status());
+            }
+
+            return response()->json([
+                'ok' => true,
+                'data' => $response->json(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'ok' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    });
+   
     Route::post('_echo', function (Request $r) {
         return response()->json([
             'all'   => $r->all(),
