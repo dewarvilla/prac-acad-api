@@ -15,10 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('api', [
             \App\Http\Middleware\CamelToSnakeInput::class,
         ]);
-
-        // aplicarlo a todas las rutas (web+api) en vez de solo 'api':
-        // $middleware->append(\App\Http\Middleware\CamelToSnakeInput::class);
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
+    ->withProviders([
+        \App\Providers\AuthServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })

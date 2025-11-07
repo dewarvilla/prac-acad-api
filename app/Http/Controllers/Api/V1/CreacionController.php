@@ -16,7 +16,8 @@ use App\Exceptions\ConflictException;
 use Illuminate\Support\Facades\DB;
 
 class CreacionController extends Controller
-{
+{   
+
     public function index(IndexCreacionRequest $request, CreacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 15);
@@ -75,14 +76,6 @@ class CreacionController extends Controller
         $now = now();
         $cat = Catalogo::findOrFail($request->input('catalogo_id'));
 
-        $dup = Creacion::where('catalogo_id', $request->input('catalogo_id'))
-            ->where('nombre_practica', $request->input('nombre_practica'))
-            ->exists();
-
-        if ($dup) {
-            throw new ConflictException('Ya existe una práctica con ese nombre en este catálogo.');
-        }
-
         $data = $request->validated() + [
             'facultad'            => $cat->facultad,
             'programa_academico'  => $cat->programa_academico,
@@ -95,7 +88,14 @@ class CreacionController extends Controller
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $creacion = Creacion::create($data);
+        try {
+            $creacion = Creacion::create($data);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (str_contains(strtolower($e->getMessage()), 'creaciones_catalogo_nombre_unique')) {
+                throw new \App\Exceptions\ConflictException('Ya existe una práctica con ese nombre en este catálogo.');
+            }
+            throw $e;
+        }
 
         return (new CreacionResource($creacion))
             ->response()

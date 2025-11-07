@@ -32,6 +32,12 @@ class Creacion extends Model
         'ipmodificacion',
     ];
 
+    protected function setNombrePracticaAttribute($value)
+    {
+        $v = is_string($value) ? preg_replace('/\s+/', ' ', trim($value)) : $value;
+        $this->attributes['nombre_practica'] = $v;
+    }
+
     protected $casts = [
         'fechacreacion'     => 'datetime',
         'fechamodificacion' => 'datetime',

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->enum('estado_practica', ['en_aprobacion', 'aprobada', 'creada'])
                   ->default('en_aprobacion');
 
-            $table->string('nivel_academico')->nullable();
+            $table->enum('nivel_academico', ['pregrado', 'postgrado'])->default('pregrado');
 
             $table->string('facultad');
             $table->string('programa_academico');
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->enum('estado_consejo_facultad', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
             $table->enum('estado_consejo_academico', ['aprobada', 'rechazada', 'pendiente'])->default('pendiente');
 
-            $table->unique(['nombre_practica', 'programa_academico'], 'creaciones_nombre_programa_unique');
+            $table->unique(['catalogo_id','nombre_practica'], 'creaciones_catalogo_nombre_unique');
 
             $table->index('programa_academico');   
             $table->index('nombre_practica');    

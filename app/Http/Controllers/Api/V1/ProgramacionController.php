@@ -14,7 +14,7 @@ use App\Http\Requests\V1\BulkDeleteProgramacionRequest;
 use Illuminate\Support\Facades\DB;
 
 class ProgramacionController extends Controller
-{
+{   
     public function index(IndexProgramacionRequest $request, ProgramacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

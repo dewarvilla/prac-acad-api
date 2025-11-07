@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class CatalogoController extends Controller
 {
+
     public function index(IndexCatalogoRequest $request, CatalogoFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

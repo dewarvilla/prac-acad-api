@@ -13,7 +13,8 @@ use App\Http\Requests\V1\UpdateAuxilioRequest;
 use App\Http\Requests\V1\BulkDeleteAuxilioRequest;
 
 class AuxilioController extends Controller
-{
+{   
+
     public function index(IndexAuxilioRequest $request, AuxilioFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

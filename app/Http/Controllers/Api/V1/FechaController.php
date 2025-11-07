@@ -14,7 +14,7 @@ use App\Http\Requests\V1\BulkDeleteFechaRequest;
 use Illuminate\Support\Facades\DB;
 
 class FechaController extends Controller
-{
+{   
     public function index(IndexFechaRequest $request, FechaFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

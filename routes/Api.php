@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 use App\Http\Controllers\Api\V1\ProgramacionController;
 use App\Http\Controllers\Api\V1\SalarioController;
@@ -18,7 +19,8 @@ use App\Http\Controllers\Api\V1\RutapeajeController;
 use App\Http\Controllers\Api\V1\RutapeajesSyncController;
 use App\Http\Controllers\Api\V1\UsageController;
 use App\Http\Controllers\Api\V1\RoutesComputeController;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\Api\V1\ProgramacionApprovalController;
+use App\Http\Controllers\Api\V1\AuthController;
 
 Route::prefix('v1')->group(function() {
 
@@ -83,6 +85,44 @@ Route::prefix('v1')->group(function() {
 
     /* ==================== Compute para integracion con maps ==================== */
     Route::post('compute-route', [RoutesComputeController::class, 'compute']);
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+    /* ===== Departamento ===== */
+    Route::post('programaciones/{programacion}/aprobar/departamento', [ProgramacionApprovalController::class, 'approveDepartamento'])
+        ->middleware('permission:programaciones.aprobar.departamento');
+    Route::post('programaciones/{programacion}/rechazar/departamento', [ProgramacionApprovalController::class, 'rejectDepartamento'])
+        ->middleware('permission:programaciones.rechazar.departamento');
+
+    /* ===== Postgrados (Coordinación) ===== */
+    Route::post('programaciones/{programacion}/aprobar/postgrados', [ProgramacionApprovalController::class, 'approvePostgrados'])
+        ->middleware('permission:programaciones.aprobar.postgrados');
+    Route::post('programaciones/{programacion}/rechazar/postgrados', [ProgramacionApprovalController::class, 'rejectPostgrados'])
+        ->middleware('permission:programaciones.rechazar.postgrados');
+
+    /* ===== Decano ===== */
+    Route::post('programaciones/{programacion}/aprobar/decano', [ProgramacionApprovalController::class, 'approveDecano'])
+        ->middleware('permission:programaciones.aprobar.decano');
+    Route::post('programaciones/{programacion}/rechazar/decano', [ProgramacionApprovalController::class, 'rejectDecano'])
+        ->middleware('permission:programaciones.rechazar.decano');
+
+    /* ===== Jefe de Oficina de Postgrados ===== */
+    Route::post('programaciones/{programacion}/aprobar/jefe-postgrados', [ProgramacionApprovalController::class, 'approveJefePostgrados'])
+        ->middleware('permission:programaciones.aprobar.jefe_postgrados');
+    Route::post('programaciones/{programacion}/rechazar/jefe-postgrados', [ProgramacionApprovalController::class, 'rejectJefePostgrados'])
+        ->middleware('permission:programaciones.rechazar.jefe_postgrados');
+
+    /* ===== Vicerrectoría Académica ===== */
+    Route::post('programaciones/{programacion}/aprobar/vicerrectoria', [ProgramacionApprovalController::class, 'approveVicerrectoria'])
+        ->middleware('permission:programaciones.aprobar.vicerrectoria');
+    Route::post('programaciones/{programacion}/rechazar/vicerrectoria', [ProgramacionApprovalController::class, 'rejectVicerrectoria'])
+        ->middleware('permission:programaciones.rechazar.vicerrectoria');
+    });
+
+    Route::post('login',  [AuthController::class, 'login']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('me',      [AuthController::class, 'me']);
+        Route::post('logout', [AuthController::class, 'logout']);
+    });
 
     /* ==================== PRUEBA LOCAL ==================== */
  /*
