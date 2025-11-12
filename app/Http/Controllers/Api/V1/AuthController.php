@@ -15,25 +15,13 @@ class AuthController extends Controller
             'password' => ['required','string'],
         ]);
 
-        if (!Auth::attempt($cred)) {
+        if (!Auth::attempt($cred, true)) { 
             return response()->json(['message' => 'Credenciales inválidas'], 422);
         }
 
-        $user = $request->user(); // el autenticado
-        // Opcional: borra tokens previos si quieres 1 por usuario
-        $user->tokens()->delete();
+        $request->session()->regenerate();
 
-        $token = $user->createToken('api')->plainTextToken;
-
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'Bearer',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
-        ]);
+        return response()->json(['message' => 'ok'], 200);
     }
 
     public function me(Request $request)
@@ -43,7 +31,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()?->delete();
-        return response()->json(['message' => 'Sesión cerrada']);
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->json(['message' => 'Sesión cerrada'], 200);
     }
 }

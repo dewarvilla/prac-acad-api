@@ -16,7 +16,7 @@ class StoreFechaRequest extends FormRequest
             'periodo' => [
                 'required',
                 'string',
-                'regex:/^\d{4}-(1|2)$/',  // ej: 2025-1 o 2025-2
+                'regex:/^\d{4}-(1|2)$/',
                 'unique:fechas,periodo',
             ],
 
@@ -57,5 +57,12 @@ class StoreFechaRequest extends FormRequest
                 }
             }
         });
+    }
+    
+    public function messages(): array
+    {
+        return [
+            'periodo.regex' => 'El periodo debe tener el formato YYYY-1 o YYYY-2.',
+        ];
     }
 }

@@ -43,11 +43,11 @@ class IndexCatalogoRequest extends FormRequest
         ];
 
         return [
-            'q'        => ['sometimes','string','max:255'],
+            'q' => ['sometimes','string','max:255'],
             'per_page' => ['sometimes','integer','min:1','max:200'],
-            'page'     => ['sometimes','integer','min:1'],
+            'page' => ['sometimes','integer','min:1'],
 
-            'sort'     => ['sometimes', function($attr,$value,$fail) use ($sortable) {
+            'sort' => ['sometimes', function($attr,$value,$fail) use ($sortable) {
                 foreach (explode(',', (string)$value) as $part) {
                     if (!in_array(trim($part), $sortable, true)) {
                         return $fail("El valor de sort '{$part}' no es permitido.");
@@ -55,13 +55,13 @@ class IndexCatalogoRequest extends FormRequest
                 }
             }],
 
-            'nivel_academico'    => ['sometimes', Rule::in(['pregrado','postgrado'])],
-            'facultad'           => ['sometimes','string','max:255'],
+            'nivel_academico' => ['sometimes', Rule::in(['pregrado','postgrado'])],
+            'facultad' => ['sometimes','string','max:255'],
             'programa_academico' => ['sometimes','string','max:255'],
 
-            'facultad.lk'           => ['sometimes','string','max:255'],
+            'facultad.lk' => ['sometimes','string','max:255'],
             'programa_academico.lk' => ['sometimes','string','max:255'],
-            'nivel_academico.lk'     => ['sometimes','string','max:255'],
+            'nivel_academico.lk' => ['sometimes','string','max:255'],
         ];
     }
 }

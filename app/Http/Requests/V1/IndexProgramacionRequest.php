@@ -15,8 +15,8 @@ class IndexProgramacionRequest extends FormRequest
         if ($this->has('sort')) {
             $parts = array_map('trim', explode(',', (string)$this->input('sort')));
             $norm  = array_map(function ($p) {
-                $desc = \Illuminate\Support\Str::startsWith($p, '-');
-                $field = \Illuminate\Support\Str::snake(ltrim($p, '-'));
+                $desc  = Str::startsWith($p, '-');
+                $field = Str::snake(ltrim($p, '-'));
                 return $desc ? "-{$field}" : $field;
             }, $parts);
             $this->merge(['sort' => implode(',', $norm)]);
@@ -26,6 +26,7 @@ class IndexProgramacionRequest extends FormRequest
     public function rules(): array
     {
         $sortable = [
+            'id','-id',
             'nombre_practica','-nombre_practica',
             'fecha_inicio','-fecha_inicio',
             'fecha_finalizacion','-fecha_finalizacion',
@@ -33,6 +34,7 @@ class IndexProgramacionRequest extends FormRequest
         ];
 
         return [
+            'q'        => ['sometimes','string','max:255'],
             'per_page' => ['sometimes','integer','min:1','max:200'],
             'page'     => ['sometimes','integer','min:1'],
             'sort'     => ['sometimes', function($attr,$value,$fail) use ($sortable){

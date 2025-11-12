@@ -14,7 +14,15 @@ use App\Http\Requests\V1\BulkDeleteSalarioRequest;
 use Illuminate\Support\Facades\DB;
 
 class SalarioController extends Controller
-{
+{   
+    public function __construct()
+    {
+        $this->middleware('permission:salarios.view,sanctum')->only(['index','show']);
+        $this->middleware('permission:salarios.create,sanctum')->only(['store']);
+        $this->middleware('permission:salarios.edit,sanctum')->only(['update']);
+        $this->middleware('permission:salarios.delete,sanctum')->only(['destroy','destroyBulk']);
+    }
+
     public function index(IndexSalarioRequest $request, SalarioFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

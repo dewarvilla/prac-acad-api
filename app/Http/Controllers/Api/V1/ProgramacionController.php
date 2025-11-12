@@ -15,6 +15,14 @@ use Illuminate\Support\Facades\DB;
 
 class ProgramacionController extends Controller
 {   
+    public function __construct()
+    {
+        $this->middleware('permission:programaciones.view,sanctum')->only(['index','show']);
+        $this->middleware('permission:programaciones.create,sanctum')->only(['store']);
+        $this->middleware('permission:programaciones.edit,sanctum')->only(['update']);
+        $this->middleware('permission:programaciones.delete,sanctum')->only(['destroy','destroyBulk']);
+    }
+
     public function index(IndexProgramacionRequest $request, ProgramacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

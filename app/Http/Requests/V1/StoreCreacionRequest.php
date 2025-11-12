@@ -4,11 +4,19 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Unique;
 
 class StoreCreacionRequest extends FormRequest
 {
     public function authorize(): bool { return true; }
+
+    protected function prepareForValidation(): void
+    {
+        $trim = fn($s) => preg_replace('/\s+/u', ' ', trim((string)$s));
+        $this->merge([
+            'nombre_practica' => $this->has('nombre_practica') ? $trim($this->input('nombre_practica')) : null,
+            'justificacion'   => $this->has('justificacion') ? $trim($this->input('justificacion')) : null,
+        ]);
+    }
 
     public function rules(): array
     {
@@ -21,10 +29,18 @@ class StoreCreacionRequest extends FormRequest
             ],
             'recursos_necesarios' => ['required','string'],
             'justificacion'       => ['required','string'],
-            'estado_practica'     => ['nullable', Rule::in(['en_aprobacion','aprobada','creada'])],
-            'estado_depart'       => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_consejo_facultad'  => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_consejo_academico' => ['nullable', Rule::in(['aprobada','rechazada','pendiente'])],
+
+            'estado_creacion'            => ['prohibited'],
+            'estado_comite_acreditacion' => ['prohibited'],
+            'estado_consejo_facultad'    => ['prohibited'],
+            'estado_consejo_academico'   => ['prohibited'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nombre_practica.unique' => 'Ya existe una creación con ese nombre en el catálogo indicado.',
         ];
     }
 }

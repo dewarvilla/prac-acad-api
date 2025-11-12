@@ -14,7 +14,7 @@ class UpdateSalarioRequest extends FormRequest
         $salario = $this->route('salario');
 
         $rules = [
-            'anio' => ['integer','min:1900', Rule::unique('salarios','anio')->ignore($salario->id ?? null)],
+            'anio' => ['integer','min:1900','max:3000','digits:4', Rule::unique('salarios','anio')->ignore($salario->id ?? null)],
             'valor' => ['numeric','min:0'],
         ];
 

@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\DB;
 
 class CatalogoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:catalogos.view,sanctum')->only(['index','show']);
+        $this->middleware('permission:catalogos.create,sanctum')->only(['store','storeBulk']);
+        $this->middleware('permission:catalogos.edit,sanctum')->only(['update']);
+        $this->middleware('permission:catalogos.delete,sanctum')->only(['destroy','destroyBulk']);
+    }
 
     public function index(IndexCatalogoRequest $request, CatalogoFilter $filter)
     {
@@ -100,7 +107,6 @@ class CatalogoController extends Controller
         $uid = auth()->id() ?? 0;
         $ip  = $request->ip();
 
-        // Normaliza entradas (trim/espacios) para consistencia con la DB
         $normalize = function (string $s): string {
             return preg_replace('/\s+/u', ' ', trim($s));
         };
@@ -124,7 +130,6 @@ class CatalogoController extends Controller
 
         $existentes = \App\Models\Catalogo::query()
             ->where(function ($q) use ($rows) {
-                // Reducimos a pares únicos
                 $pairs = $rows->pluck('__key')->unique()->values();
                 foreach ($pairs as $key) {
                     [$facKey, $proKey] = explode('|', $key, 2);
@@ -139,11 +144,9 @@ class CatalogoController extends Controller
                 return [ mb_strtolower($c->facultad).'|'.mb_strtolower($c->programa_academico) => true ];
             });
 
-        // Marca previos existentes en memoria
         $marcas = $rows->map(fn($r) => [
             'key' => $r['__key'], 'existing' => $existentes->has($r['__key']),
         ]);
--
         \DB::transaction(function () use ($rows) {
             foreach ($rows->chunk(500) as $slice) {
                 \App\Models\Catalogo::upsert(

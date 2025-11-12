@@ -7,9 +7,24 @@ use Illuminate\Validation\Rule;
 
 class BulkCatalogoRequest extends FormRequest
 {
-    public function authorize(): bool
+    public function authorize(): bool { return true; }
+
+    protected function prepareForValidation(): void
     {
-        return true;
+        if (!$this->has('items')) return;
+
+        $trim = fn($s) => preg_replace('/\s+/u', ' ', trim((string)$s));
+
+        $items = collect($this->input('items', []))->map(function ($i) use ($trim) {
+            if (is_array($i)) {
+                if (isset($i['facultad']))           $i['facultad'] = $trim($i['facultad']);
+                if (isset($i['programa_academico'])) $i['programa_academico'] = $trim($i['programa_academico']);
+                if (isset($i['nivel_academico']))    $i['nivel_academico'] = mb_strtolower((string)$i['nivel_academico']);
+            }
+            return $i;
+        })->all();
+
+        $this->merge(['items' => $items]);
     }
 
     public function rules(): array
@@ -37,8 +52,8 @@ class BulkCatalogoRequest extends FormRequest
 
             $norm = function (?string $s): string {
                 $s = (string) $s;
-                $s = preg_replace('/\s+/u', ' ', trim($s)); 
-                return mb_strtolower($s);                   
+                $s = preg_replace('/\s+/u', ' ', trim($s));
+                return mb_strtolower($s);
             };
 
             $dupes = $items->groupBy(function ($i) use ($norm) {

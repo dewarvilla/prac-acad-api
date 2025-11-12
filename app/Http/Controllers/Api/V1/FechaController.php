@@ -15,6 +15,14 @@ use Illuminate\Support\Facades\DB;
 
 class FechaController extends Controller
 {   
+    public function __construct()
+    {
+        $this->middleware('permission:fechas.view,sanctum')->only(['index','show']);
+        $this->middleware('permission:fechas.create,sanctum')->only(['store']);
+        $this->middleware('permission:fechas.edit,sanctum')->only(['update']);
+        $this->middleware('permission:fechas.delete,sanctum')->only(['destroy','destroyBulk']);
+    }
+
     public function index(IndexFechaRequest $request, FechaFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

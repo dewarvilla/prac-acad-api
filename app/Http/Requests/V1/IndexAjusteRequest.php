@@ -35,8 +35,8 @@ class IndexAjusteRequest extends FormRequest
 
         return [
             'per_page' => ['sometimes','integer','min:1','max:200'],
-            'page'     => ['sometimes','integer','min:1'],
-            'sort'     => ['sometimes', function($attr,$value,$fail) use ($sortable){
+            'page' => ['sometimes','integer','min:1'],
+            'sort' => ['sometimes', function($attr,$value,$fail) use ($sortable){
                 foreach (explode(',', (string)$value) as $p) {
                     if (!in_array(trim($p), $sortable, true)) {
                         return $fail("El valor de sort '{$p}' no es permitido.");
@@ -44,13 +44,13 @@ class IndexAjusteRequest extends FormRequest
                 }
             }],
 
-            'fecha_ajuste'            => ['sometimes','date'],
-            'estado_ajuste'           => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_vice'             => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'estado_jefe_depart'      => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+            'fecha_ajuste' => ['sometimes','date'],
+            'estado_ajuste' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_vice' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
+            'estado_jefe_depart' => ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
             'estado_coordinador_postg'=> ['sometimes', Rule::in(['aprobada','rechazada','pendiente'])],
-            'justificacion'           => ['sometimes','string','max:1000'],
-            'programacion_id'         => ['sometimes','integer','min:1'],
+            'justificacion' => ['sometimes','string','max:1000'],
+            'programacion_id' => ['sometimes','integer','min:1'],
         ];
     }
 }

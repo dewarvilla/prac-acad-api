@@ -7,7 +7,25 @@ use App\Models\Programacion;
 use Illuminate\Http\Request;
 
 class ProgramacionApprovalController extends Controller
-{
+{   
+    public function __construct()
+    {
+        $this->middleware('permission:programaciones.aprobar.departamento,sanctum')->only('approveDepartamento');
+        $this->middleware('permission:programaciones.rechazar.departamento,sanctum')->only('rejectDepartamento');
+
+        $this->middleware('permission:programaciones.aprobar.postgrados,sanctum')->only('approvePostgrados');
+        $this->middleware('permission:programaciones.rechazar.postgrados,sanctum')->only('rejectPostgrados');
+
+        $this->middleware('permission:programaciones.aprobar.decano,sanctum')->only('approveDecano');
+        $this->middleware('permission:programaciones.rechazar.decano,sanctum')->only('rejectDecano');
+
+        $this->middleware('permission:programaciones.aprobar.jefe_postgrados,sanctum')->only('approveJefePostgrados');
+        $this->middleware('permission:programaciones.rechazar.jefe_postgrados,sanctum')->only('rejectJefePostgrados');
+
+        $this->middleware('permission:programaciones.aprobar.vicerrectoria,sanctum')->only('approveVicerrectoria');
+        $this->middleware('permission:programaciones.rechazar.vicerrectoria,sanctum')->only('rejectVicerrectoria');
+    }
+
     // ======= Aprobaciones =======
     public function approveDepartamento(Request $r, Programacion $programacion)
     {
@@ -52,7 +70,6 @@ class ProgramacionApprovalController extends Controller
         return $this->reject($r, $programacion, 'vice');
     }
 
-    // ======= Core =======
     protected function approve(Request $r, Programacion $p, string $actorKey)
     {
         if (in_array($p->estado_practica, ['rechazada', 'aprobada'], true)) {
@@ -74,7 +91,6 @@ class ProgramacionApprovalController extends Controller
             ], 409);
         }
 
-        // === NUEVO: validar flujo y prerequisitos ===
         [$flowKeys, $flowCols] = $this->flowFor($p);           
         if (!in_array($actorKey, $flowKeys, true)) {
             return response()->json([
@@ -84,7 +100,6 @@ class ProgramacionApprovalController extends Controller
         }
 
         $idx = array_search($actorKey, $flowKeys, true);
-        // Todas las etapas anteriores deben estar 'aprobada'
         for ($i = 0; $i < $idx; $i++) {
             $prevCol = $flowCols[$i];
             if ($p->{$prevCol} !== 'aprobada') {
@@ -95,19 +110,15 @@ class ProgramacionApprovalController extends Controller
             }
         }
 
-        // Transición: aprobar etapa actual
         $p->{$column} = 'aprobada';
         $p->usuariomodificacion = auth()->id() ?? 0;
         $p->ipmodificacion = $r->ip();
         $p->save();
 
-        // Si todas las requeridas están aprobadas => aprobar global
         if ($this->allRequiredApproved($p)) {
             $p->estado_practica = 'aprobada';
             $p->save();
-            // TODO notificar al docente
         } else {
-            // TODO notificar al siguiente actor del flujo
         }
 
         $this->logDecision($p, $actorKey, 'aprobada', null);
@@ -151,7 +162,6 @@ class ProgramacionApprovalController extends Controller
 
         $this->logDecision($p, $actorKey, 'rechazada', $data['justificacion'] ?? null);
 
-        // TODO: notificar a docente con justificación
         return response()->json([
             'ok' => true,
             'data' => $p->fresh(),
@@ -170,32 +180,28 @@ class ProgramacionApprovalController extends Controller
     }
 
     protected function flowFor(Programacion $p): array
-{
-    // Garantiza que la relación esté cargada
-    $p->loadMissing('creacion:id,nivel_academico');
+    {
+        $p->loadMissing('creacion:id,nivel_academico');
 
-    if (!$p->creacion) {
-        // si este caso es imposible por modelo de negocio, mejor 500/409 explícito
-        abort(409, 'La programación no tiene una creación asociada.');
+        if (!$p->creacion) {
+            abort(409, 'La programación no tiene una creación asociada.');
+        }
+
+        $nivel = strtolower($p->creacion->nivel_academico);
+
+        if ($nivel === 'postgrado') {
+            $keys = ['postg', 'jefe_postg', 'vice'];
+        } else if ($nivel === 'pregrado') {
+            $keys = ['depart', 'decano', 'vice'];
+        } else {
+            abort(422, "Nivel académico inválido: {$nivel}");
+        }
+
+        $cols = array_map(fn($k) => $this->estadoColumn($k), $keys);
+
+        return [$keys, $cols];
     }
 
-    $nivel = strtolower($p->creacion->nivel_academico); // 'pregrado' | 'postgrado'
-
-    if ($nivel === 'postgrado') {
-        $keys = ['postg', 'jefe_postg', 'vice'];
-    } else if ($nivel === 'pregrado') {
-        $keys = ['depart', 'decano', 'vice'];
-    } else {
-        // por si en el futuro alguien mete un valor inválido
-        abort(422, "Nivel académico inválido: {$nivel}");
-    }
-
-    $cols = array_map(fn($k) => $this->estadoColumn($k), $keys);
-
-    return [$keys, $cols];
-}
-
-    /** ¿Todas las etapas requeridas aprobadas? ahora respeta el flujo del nivel */
     protected function allRequiredApproved(Programacion $p): bool
     {
         [, $flowCols] = $this->flowFor($p);

@@ -6,10 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BulkDeleteCatalogoRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return $this->user()?->can('delete', \App\Models\Catalogo::class) ?? true;
-    }
+    public function authorize(): bool { return true; }
 
     public function rules(): array
     {

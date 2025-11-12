@@ -12,12 +12,28 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Middleware(s) de estado (cookies, sesión, CSRF)
+        $middleware->statefulApi();
+
+        // Middleware(s) personalizados (tu normalizador de inputs)
         $middleware->appendToGroup('api', [
             \App\Http\Middleware\CamelToSnakeInput::class,
         ]);
+
+        // Aliases de middlewares
         $middleware->alias([
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            // Laravel
+            'auth'   => \App\Http\Middleware\Authenticate::class,
+            'can'    => \Illuminate\Auth\Middleware\Authorize::class,
+            'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+
+            // Sanctum (abilities en tokens personales)
+            'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'ability'   => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+
+            // Spatie (permisos y roles)
+            'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
     })
