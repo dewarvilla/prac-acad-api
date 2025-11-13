@@ -10,20 +10,20 @@ class ProgramacionApprovalController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('permission:programaciones.aprobar.departamento,sanctum')->only('approveDepartamento');
-        $this->middleware('permission:programaciones.rechazar.departamento,sanctum')->only('rejectDepartamento');
+        $this->middleware('permission:programaciones.aprobar.departamento')->only('approveDepartamento');
+        $this->middleware('permission:programaciones.rechazar.departamento')->only('rejectDepartamento');
 
-        $this->middleware('permission:programaciones.aprobar.postgrados,sanctum')->only('approvePostgrados');
-        $this->middleware('permission:programaciones.rechazar.postgrados,sanctum')->only('rejectPostgrados');
+        $this->middleware('permission:programaciones.aprobar.postgrados')->only('approvePostgrados');
+        $this->middleware('permission:programaciones.rechazar.postgrados')->only('rejectPostgrados');
 
-        $this->middleware('permission:programaciones.aprobar.decano,sanctum')->only('approveDecano');
-        $this->middleware('permission:programaciones.rechazar.decano,sanctum')->only('rejectDecano');
+        $this->middleware('permission:programaciones.aprobar.decano')->only('approveDecano');
+        $this->middleware('permission:programaciones.rechazar.decano')->only('rejectDecano');
 
-        $this->middleware('permission:programaciones.aprobar.jefe_postgrados,sanctum')->only('approveJefePostgrados');
-        $this->middleware('permission:programaciones.rechazar.jefe_postgrados,sanctum')->only('rejectJefePostgrados');
+        $this->middleware('permission:programaciones.aprobar.jefe_postgrados')->only('approveJefePostgrados');
+        $this->middleware('permission:programaciones.rechazar.jefe_postgrados')->only('rejectJefePostgrados');
 
-        $this->middleware('permission:programaciones.aprobar.vicerrectoria,sanctum')->only('approveVicerrectoria');
-        $this->middleware('permission:programaciones.rechazar.vicerrectoria,sanctum')->only('rejectVicerrectoria');
+        $this->middleware('permission:programaciones.aprobar.vicerrectoria')->only('approveVicerrectoria');
+        $this->middleware('permission:programaciones.rechazar.vicerrectoria')->only('rejectVicerrectoria');
     }
 
     // ======= Aprobaciones =======

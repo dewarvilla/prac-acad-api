@@ -19,10 +19,10 @@ class CreacionController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('permission:creaciones.view,sanctum')->only(['index','show']);
-        $this->middleware('permission:creaciones.create,sanctum')->only(['store']);
-        $this->middleware('permission:creaciones.edit,sanctum')->only(['update']);
-        $this->middleware('permission:creaciones.delete,sanctum')->only(['destroy','destroyBulk']);
+        $this->middleware('permission:creaciones.view')->only(['index','show']);
+        $this->middleware('permission:creaciones.create')->only(['store']);
+        $this->middleware('permission:creaciones.edit')->only(['update']);
+        $this->middleware('permission:creaciones.delete')->only(['destroy','destroyBulk']);
     }
 
     public function index(IndexCreacionRequest $request, CreacionFilter $filter)

@@ -7,8 +7,11 @@ use App\Models\Ruta;
 use App\Services\RutapeajesSyncService;
 
 class RutapeajesSyncController extends Controller
-{
-    public function __construct(private RutapeajesSyncService $svc) {}
+{   
+    public function __construct(private RutapeajesSyncService $svc)
+    {
+        $this->middleware('permission:rutas.edit')->only(['recalcular', 'totalCategoria']);
+    }
 
     public function recalcular(\Illuminate\Http\Request $req, Ruta $ruta)
     {

@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Log;
 
 class RoutesComputeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:rutas.view')->only(['compute']);
+    }
+
     public function compute(ComputeRouteRequest $request)
     {
         $key = config('services.google_routes.key');

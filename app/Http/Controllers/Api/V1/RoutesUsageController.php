@@ -16,7 +16,6 @@ class RoutesUsageController extends Controller
 
     public function preflight()
     {
-        // Intenta reservar 1. Si no hay cupo, responde allowed:false
         $res = $this->usage->reserve();
         return response()->json($res);
     }

@@ -35,6 +35,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Salarios
             'salarios.view','salarios.create','salarios.edit','salarios.delete',
+
+            // Rutas (rutas + peajes + compute + sync)
+            'rutas.view','rutas.create','rutas.edit','rutas.delete',
         ];
 
         foreach ($perms as $p) {
@@ -87,6 +90,9 @@ class RolesAndPermissionsSeeder extends Seeder
                 'fechas.create','fechas.edit','fechas.delete',
                 'catalogos.create','catalogos.edit','catalogos.delete',
                 'salarios.create','salarios.edit','salarios.delete',
+
+                // Rutas
+                'rutas.view','rutas.create','rutas.edit','rutas.delete',
             ],
         ];
 

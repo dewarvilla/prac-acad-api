@@ -14,6 +14,14 @@ use App\Http\Requests\V1\BulkDeleteRutaRequest;
 
 class RutaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:rutas.view')->only(['index', 'show']);
+        $this->middleware('permission:rutas.create')->only(['store']);
+        $this->middleware('permission:rutas.edit')->only(['update']);
+        $this->middleware('permission:rutas.delete')->only(['destroy', 'destroyBulk']);
+    }
+
     public function index(IndexRutaRequest $request, RutaFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);

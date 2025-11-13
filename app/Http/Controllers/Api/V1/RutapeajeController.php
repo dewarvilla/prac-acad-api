@@ -11,7 +11,15 @@ use App\Http\Requests\V1\StoreRutapeajeRequest;
 use App\Http\Requests\V1\UpdateRutapeajeRequest;
 
 class RutapeajeController extends Controller
-{
+{   
+    public function __construct()
+    {
+        $this->middleware('permission:rutas.view')->only(['indexByRuta']);
+        $this->middleware('permission:rutas.create')->only(['store']);
+        $this->middleware('permission:rutas.edit')->only(['update']);
+        $this->middleware('permission:rutas.delete')->only(['destroy']);
+    }
+
     public function indexByRuta(Ruta $ruta)
     {
         return new RutapeajeCollection($ruta->peajes()->orderBy('orden_km')->get());

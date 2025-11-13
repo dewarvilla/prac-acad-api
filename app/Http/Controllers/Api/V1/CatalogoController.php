@@ -18,10 +18,10 @@ class CatalogoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:catalogos.view,sanctum')->only(['index','show']);
-        $this->middleware('permission:catalogos.create,sanctum')->only(['store','storeBulk']);
-        $this->middleware('permission:catalogos.edit,sanctum')->only(['update']);
-        $this->middleware('permission:catalogos.delete,sanctum')->only(['destroy','destroyBulk']);
+        $this->middleware('permission:catalogos.view')->only(['index','show']);
+        $this->middleware('permission:catalogos.create')->only(['store','storeBulk']);
+        $this->middleware('permission:catalogos.edit')->only(['update']);
+        $this->middleware('permission:catalogos.delete')->only(['destroy','destroyBulk']);
     }
 
     public function index(IndexCatalogoRequest $request, CatalogoFilter $filter)

@@ -17,10 +17,10 @@ class FechaController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('permission:fechas.view,sanctum')->only(['index','show']);
-        $this->middleware('permission:fechas.create,sanctum')->only(['store']);
-        $this->middleware('permission:fechas.edit,sanctum')->only(['update']);
-        $this->middleware('permission:fechas.delete,sanctum')->only(['destroy','destroyBulk']);
+        $this->middleware('permission:fechas.view')->only(['index','show']);
+        $this->middleware('permission:fechas.create')->only(['store']);
+        $this->middleware('permission:fechas.edit')->only(['update']);
+        $this->middleware('permission:fechas.delete')->only(['destroy','destroyBulk']);
     }
 
     public function index(IndexFechaRequest $request, FechaFilter $filter)

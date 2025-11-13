@@ -9,7 +9,5 @@ class EncryptCookies extends Middleware
     /**
      * Cookies que NO deben cifrarse.
      */
-    protected $except = [
-        'XSRF-TOKEN',
-    ];
+    protected $except = [];
 }

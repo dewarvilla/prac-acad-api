@@ -10,14 +10,14 @@ class CreacionApprovalController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:creaciones.aprobar.comite_acreditacion,sanctum')->only('approveComiteAcreditacion');
-        $this->middleware('permission:creaciones.rechazar.comite_acreditacion,sanctum')->only('rejectComiteAcreditacion');
+        $this->middleware('permission:creaciones.aprobar.comite_acreditacion')->only('approveComiteAcreditacion');
+        $this->middleware('permission:creaciones.rechazar.comite_acreditacion')->only('rejectComiteAcreditacion');
 
-        $this->middleware('permission:creaciones.aprobar.consejo_facultad,sanctum')->only('approveConsejoFacultad');
-        $this->middleware('permission:creaciones.rechazar.consejo_facultad,sanctum')->only('rejectConsejoFacultad');
+        $this->middleware('permission:creaciones.aprobar.consejo_facultad')->only('approveConsejoFacultad');
+        $this->middleware('permission:creaciones.rechazar.consejo_facultad')->only('rejectConsejoFacultad');
 
-        $this->middleware('permission:creaciones.aprobar.consejo_academico,sanctum')->only('approveConsejoAcademico');
-        $this->middleware('permission:creaciones.rechazar.consejo_academico,sanctum')->only('rejectConsejoAcademico');
+        $this->middleware('permission:creaciones.aprobar.consejo_academico')->only('approveConsejoAcademico');
+        $this->middleware('permission:creaciones.rechazar.consejo_academico')->only('rejectConsejoAcademico');
     }
 
     /* ===== Aprobaciones ===== */

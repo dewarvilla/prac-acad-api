@@ -17,10 +17,10 @@ class SalarioController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('permission:salarios.view,sanctum')->only(['index','show']);
-        $this->middleware('permission:salarios.create,sanctum')->only(['store']);
-        $this->middleware('permission:salarios.edit,sanctum')->only(['update']);
-        $this->middleware('permission:salarios.delete,sanctum')->only(['destroy','destroyBulk']);
+        $this->middleware('permission:salarios.view')->only(['index','show']);
+        $this->middleware('permission:salarios.create')->only(['store']);
+        $this->middleware('permission:salarios.edit')->only(['update']);
+        $this->middleware('permission:salarios.delete')->only(['destroy','destroyBulk']);
     }
 
     public function index(IndexSalarioRequest $request, SalarioFilter $filter)
