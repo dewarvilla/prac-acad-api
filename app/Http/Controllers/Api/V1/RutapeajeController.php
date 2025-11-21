@@ -34,14 +34,14 @@ class RutapeajeController extends Controller
         return (new RutapeajeResource($peaje))->response()->setStatusCode(201);
     }
 
-    public function update(UpdateRutapeajeRequest $request, Rutapeaje $rutapeaje) // <-- param renombrado
+    public function update(UpdateRutapeajeRequest $request, Rutapeaje $rutapeaje)
     {
         $rutapeaje->update($request->validated() + ['fechamodificacion'=>now()]);
         $this->recalcularTotales($rutapeaje->ruta_id);
         return new RutapeajeResource($rutapeaje->refresh());
     }
 
-    public function destroy(Rutapeaje $rutapeaje) // <-- param renombrado
+    public function destroy(Rutapeaje $rutapeaje)
     {
         $rutaId = $rutapeaje->ruta_id;
         $rutapeaje->delete();

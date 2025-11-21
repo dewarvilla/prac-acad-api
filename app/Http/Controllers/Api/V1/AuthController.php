@@ -26,7 +26,23 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(null, 200);
+        }
+
+        $user->loadMissing('roles');
+
+        return response()->json([
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+
+            'roles'       => $user->getRoleNames(), 
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+        ]);
     }
 
     public function logout(Request $request)

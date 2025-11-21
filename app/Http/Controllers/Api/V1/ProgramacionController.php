@@ -48,7 +48,6 @@ class ProgramacionController extends Controller
                   ->orWhere('fecha_finalizacion', $op, $like)
                   ->orWhere('numero_estudiantes', $op, $like);
 
-                // match boolean requiere_transporte
                 $low = strtolower($term);
                 if (in_array($low, ['si','sí','true','1','no','false','0'], true)) {
                     $val = in_array($low, ['si','sí','true','1'], true) ? 1 : 0;
@@ -67,8 +66,8 @@ class ProgramacionController extends Controller
             $sortMap = [
                 'id'                => 'id',
                 'estadoPractica'    => 'estado_practica',
-                'fechaInicio' => 'fecha_inicio',
-                'fechaFinalizacion'    => 'fecha_finalizacion',
+                'fechaInicio'       => 'fecha_inicio',
+                'fechaFinalizacion' => 'fecha_finalizacion',
             ];
         }
 
@@ -79,12 +78,13 @@ class ProgramacionController extends Controller
 
     public function store(StoreProgramacionRequest $request)
     {
+        $this->authorize('create', Programacion::class);
+
         $creacion = \App\Models\Creacion::findOrFail($request->input('creacion_id'));
 
         $now = now();
         $data = $request->validated();
 
-        // Fuente única de la verdad
         $data['nombre_practica'] = $creacion->nombre_practica;
 
         $data += [
@@ -104,11 +104,14 @@ class ProgramacionController extends Controller
 
     public function show(Programacion $programacion)
     {
+        $this->authorize('view', $programacion);
         return new ProgramacionResource($programacion);
     }
 
     public function update(UpdateProgramacionRequest $request, Programacion $programacion)
     {
+        $this->authorize('update', $programacion);
+
         $data = $request->validated() + [
             'fechamodificacion'   => now(),
             'usuariomodificacion' => auth()->id() ?? 0,
@@ -122,7 +125,10 @@ class ProgramacionController extends Controller
 
     public function destroy(Programacion $programacion)
     {
+        $this->authorize('delete', $programacion);
+
         $programacion->delete(); 
+
         return response()->noContent();
     }
 
@@ -130,13 +136,18 @@ class ProgramacionController extends Controller
     {
         $ids = array_values(array_unique(array_map('intval', $request->input('ids', []))));
 
-        return \DB::transaction(function () use ($ids) {
+        return DB::transaction(function () use ($ids) {
+            $programaciones = Programacion::whereIn('id', $ids)->get();
 
-            $deleted = \App\Models\Programacion::whereIn('id', $ids)->delete();
+            foreach ($programaciones as $programacion) {
+                $this->authorize('delete', $programacion);
+            }
+
+            $deleted = Programacion::whereIn('id', $programaciones->pluck('id'))->delete();
 
             return response()->json([
                 'ok'      => true,
-                'message' => 'Programaciones eliminados correctamente.',
+                'message' => 'Programaciones eliminadas correctamente.',
                 'counts'  => [
                     'requested' => count($ids),
                     'deleted'   => (int) $deleted,
