@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('lugar_de_realizacion')->nullable();
             $table->text('justificacion');
             $table->text('recursos_necesarios');
-            $table->integer('numero_estudiantes');
+            $table->unsignedInteger('numero_estudiantes');
 
             $table->enum('estado_practica', [
                 'en_aprobacion','aprobada','rechazada','en_ejecucion',
@@ -34,6 +34,13 @@ return new class extends Migration {
 
             $table->date('fecha_inicio');
             $table->date('fecha_finalizacion');
+
+            // índices para las etapas 
+            $table->index('estado_depart');
+            $table->index('estado_postg');
+            $table->index('estado_decano');
+            $table->index('estado_jefe_postg');
+            $table->index('estado_vice');
 
             $table->index('creacion_id');
             $table->index('nombre_practica');

@@ -46,30 +46,40 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $roles = [
             'docente' => [
-                'programaciones.view',
-                'programaciones.create','programaciones.edit','programaciones.delete',
-                'creaciones.create','creaciones.edit','creaciones.delete',
+            'programaciones.view',
+            'programaciones.create','programaciones.edit','programaciones.delete',
+
+            'creaciones.view',
+            'creaciones.create','creaciones.edit','creaciones.delete',
+
+            'rutas.view','rutas.create','rutas.edit','rutas.delete',
             ],
+
             'jefe_departamento' => [
                 'programaciones.view',
                 'programaciones.aprobar.departamento','programaciones.rechazar.departamento',
+                'rutas.view'
             ],
             'coordinador_postgrados' => [
                 'programaciones.view',
                 'programaciones.aprobar.postgrados','programaciones.rechazar.postgrados',
+                'rutas.view'
             ],
             'decano' => [
                 'programaciones.view',
                 'programaciones.aprobar.decano','programaciones.rechazar.decano',
+                'rutas.view'
             ],
             'jefe_postgrados' => [
                 'programaciones.view',
                 'programaciones.aprobar.jefe_postgrados','programaciones.rechazar.jefe_postgrados',
+                'rutas.view'
             ],
             'vicerrectoria' => [
                 'programaciones.view','fechas.view',
                 'programaciones.aprobar.vicerrectoria','programaciones.rechazar.vicerrectoria',
                 'fechas.create','fechas.edit','fechas.delete',
+                'rutas.view'
             ],
             'comite_acreditacion' => [
                 'creaciones.view',

@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\UsageController;
 use App\Http\Controllers\Api\V1\RoutesComputeController;
 use App\Http\Controllers\Api\V1\ProgramacionApprovalController;
 use App\Http\Controllers\Api\V1\CreacionApprovalController;
+use App\Http\Controllers\Api\V1\NotificationController;
 
 Route::prefix('v1')->group(function () {
 
@@ -51,6 +52,10 @@ Route::prefix('v1')->group(function () {
             Route::post('aprobar/vicerrectoria', [ProgramacionApprovalController::class, 'approveVicerrectoria'])->name('programaciones.approvals.vicerrectoria.approve');
             Route::post('rechazar/vicerrectoria', [ProgramacionApprovalController::class, 'rejectVicerrectoria'])->name('programaciones.approvals.vicerrectoria.reject');
         });
+        /* ----- Notificaciones Programaciones ----- */
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 
         /* ==================== SALARIOS ==================== */
         Route::apiResource('salarios', SalarioController::class)->parameters(['salarios' => 'salario']);

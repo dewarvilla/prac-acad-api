@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Programacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
+use App\Notifications\ProgramacionDecisionNotification;
 
 class ProgramacionApprovalController extends Controller
 {   
@@ -122,6 +125,7 @@ class ProgramacionApprovalController extends Controller
         }
 
         $this->logDecision($p, $actorKey, 'aprobada', null);
+        $this->notifyInApp($p, $actorKey, 'aprobada');
 
         return response()->json([
             'ok' => true,
@@ -161,6 +165,7 @@ class ProgramacionApprovalController extends Controller
         $p->save();
 
         $this->logDecision($p, $actorKey, 'rechazada', $data['justificacion'] ?? null);
+        $this->notifyInApp($p, $actorKey, 'rechazada');
 
         return response()->json([
             'ok' => true,
@@ -225,6 +230,58 @@ class ProgramacionApprovalController extends Controller
                 'ip'              => request()->ip(),
             ]);
         }
+    }
+
+    protected function notifyInApp(Programacion $p, string $actorKey, string $decision): void
+    {
+        if ($decision === 'rechazada' && $p->usuariocreacion) {
+            $docente = User::find($p->usuariocreacion);
+
+            if ($docente) {
+                $docente->notify(
+                    new ProgramacionDecisionNotification(
+                        $p,
+                        $actorKey,          
+                        'rechazada',
+                        'docente_rechazo'
+                    )
+                );
+            }
+        }
+
+        if ($decision !== 'aprobada') {
+            return;
+        }
+
+        [$keys, ] = $this->flowFor($p);
+        $idx = array_search($actorKey, $keys, true);
+        if ($idx === false || $idx >= count($keys) - 1) {
+            return;
+        }
+
+        $nextKey = $keys[$idx + 1];
+
+        $rolesMap = [
+            'depart'     => ['decano'],
+            'postg'      => ['jefe_postgrados'],
+            'decano'     => ['vicerrectoria'],
+            'jefe_postg' => ['vicerrectoria'],
+        ];
+
+        $roles = $rolesMap[$actorKey] ?? [];
+        if (!$roles) {
+            return;
+        }
+
+        $users = User::role($roles)->get();
+        if ($users->isEmpty()) {
+            return;
+        }
+
+        Notification::send(
+            $users,
+            new ProgramacionDecisionNotification($p, $nextKey, 'aprobada', 'siguiente')
+        );
     }
 }
 

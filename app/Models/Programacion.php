@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\User;
 
 class Programacion extends Model
 {
@@ -60,6 +62,8 @@ class Programacion extends Model
         });
     }
 
+    /* ================== RELACIONES ================== */
+
     public function creacion()
     {
         return $this->belongsTo(Creacion::class, 'creacion_id');
@@ -93,5 +97,80 @@ class Programacion extends Model
     public function ajustes()
     {
         return $this->hasMany(Ajuste::class, 'programacion_id');
+    }
+
+    /* ================== SCOPE DE VISIBILIDAD ================== */
+
+    public function scopeVisibleFor(Builder $query, User $user): Builder
+    {
+        if ($user->hasRole('administrador') || $user->hasRole('super_admin')) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($user) {
+            $q->where('usuariocreacion', $user->id);
+
+            if ($user->can('programaciones.aprobar.departamento')) {
+                $q->orWhere(function (Builder $qx) {
+                    $qx->whereHas('creacion', function (Builder $qc) {
+                            $qc->whereRaw('LOWER(nivel_academico) = ?', ['pregrado']);
+                        })
+                        ->where('estado_depart', 'pendiente')
+                        ->where('estado_practica', '!=', 'rechazada');
+                });
+            }
+            if ($user->can('programaciones.aprobar.postgrados')) {
+                $q->orWhere(function (Builder $qx) {
+                    $qx->whereHas('creacion', function (Builder $qc) {
+                            $qc->whereRaw('LOWER(nivel_academico) = ?', ['postgrado']);
+                        })
+                        ->where('estado_postg', 'pendiente')
+                        ->where('estado_practica', '!=', 'rechazada');
+                });
+            }
+
+            if ($user->can('programaciones.aprobar.decano')) {
+                $q->orWhere(function (Builder $qx) {
+                    $qx->whereHas('creacion', function (Builder $qc) {
+                            $qc->whereRaw('LOWER(nivel_academico) = ?', ['pregrado']);
+                        })
+                        ->where('estado_depart', 'aprobada')
+                        ->where('estado_decano', 'pendiente')
+                        ->where('estado_practica', '!=', 'rechazada');
+                });
+            }
+
+            if ($user->can('programaciones.aprobar.jefe_postgrados')) {
+                $q->orWhere(function (Builder $qx) {
+                    $qx->whereHas('creacion', function (Builder $qc) {
+                            $qc->whereRaw('LOWER(nivel_academico) = ?', ['postgrado']);
+                        })
+                        ->where('estado_postg', 'aprobada')
+                        ->where('estado_jefe_postg', 'pendiente')
+                        ->where('estado_practica', '!=', 'rechazada');
+                });
+            }
+
+            if ($user->can('programaciones.aprobar.vicerrectoria')) {
+                $q->orWhere(function (Builder $qx) {
+                    $qx->where('estado_vice', 'pendiente')
+                        ->where('estado_practica', '!=', 'rechazada')
+                        ->where(function (Builder $q2) {
+                            $q2->where(function (Builder $qq) {
+                                $qq->whereHas('creacion', function (Builder $qc) {
+                                        $qc->whereRaw('LOWER(nivel_academico) = ?', ['pregrado']);
+                                    })
+                                   ->where('estado_decano', 'aprobada');
+                            })
+                            ->orWhere(function (Builder $qq) {
+                                $qq->whereHas('creacion', function (Builder $qc) {
+                                        $qc->whereRaw('LOWER(nivel_academico) = ?', ['postgrado']);
+                                    })
+                                   ->where('estado_jefe_postg', 'aprobada');
+                            });
+                        });
+                });
+            }
+        });
     }
 }

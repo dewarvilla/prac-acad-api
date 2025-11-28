@@ -4,75 +4,69 @@ namespace App\Notifications;
 
 use App\Models\Programacion;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class ProgramacionDecisionNotification extends Notification
+class ProgramacionDecisionNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     public function __construct(
-        protected Programacion $programacion,
-        protected string $actorKey,    
-        protected string $decision,   
-        protected string $audience     
-    ) {}
+        public Programacion $programacion,
+        public string $actorKey, 
+        public string $estado,     
+        public string $tipo    
+    ) {
+    }
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['database'];
     }
 
-    public function toDatabase(object $notifiable): array
+    public function toArray($notifiable): array
     {
-        return [
-            'type'            => 'programacion_decision',
-            'programacion_id' => $this->programacion->id,
-            'nombre_practica' => $this->programacion->nombre_practica,
-            'estado_practica' => $this->programacion->estado_practica,
-            'actor'           => $this->actorKey,
-            'decision'        => $this->decision,
-            'audience'        => $this->audience,
-            'title'           => $this->buildTitle(),
-            'message'         => $this->buildMessage(),
-        ];
-    }
+        $p = $this->programacion;
+        $nombre = $p->nombre_practica ?? ('Práctica #'.$p->id);
 
-    protected function buildTitle(): string
-    {
-        if ($this->decision === 'aprobada') {
-            return 'Programación aprobada';
-        }
-        return 'Programación rechazada';
-    }
-
-    protected function actorLabel(): string
-    {
-        return [
+        $actorLabel = match ($this->actorKey) {
             'depart'     => 'Jefe de Departamento',
             'postg'      => 'Coordinador de Postgrados',
-            'decano'     => 'Decano',
-            'jefe_postg' => 'Jefe de Oficina de Postgrados',
+            'decano'     => 'Decano de Facultad',
+            'jefe_postg' => 'Jefe de Postgrados',
             'vice'       => 'Vicerrectoría Académica',
-        ][$this->actorKey] ?? $this->actorKey;
-    }
+            default      => 'Aprobador',
+        };
 
-    protected function buildMessage(): string
-    {
-        $actor = $this->actorLabel();
-        $id    = $this->programacion->id;
-        $name  = $this->programacion->nombre_practica;
-
-        if ($this->audience === 'docente') {
-            if ($this->decision === 'aprobada') {
-                return "El {$actor} aprobó la programación #{$id} — «{$name}».";
+        if ($this->tipo === 'creacion') {
+            $title   = 'Nueva práctica para revisión';
+            $message = "Se ha creado la práctica «{$nombre}» y requiere revisión del {$actorLabel}.";
+        } elseif ($this->tipo === 'siguiente') {
+            $title   = 'Práctica lista para su revisión';
+            $message = "La práctica «{$nombre}» ha avanzado en el flujo y ahora requiere revisión del {$actorLabel}.";
+        } elseif ($this->tipo === 'cambio_estado') {
+            if ($this->estado === 'aprobada') {
+                $title   = 'Práctica aprobada';
+                $message = "La práctica «{$nombre}» ha sido aprobada por el {$actorLabel}.";
+            } elseif ($this->estado === 'rechazada') {
+                $title   = 'Práctica rechazada';
+                $message = "La práctica «{$nombre}» ha sido rechazada por el {$actorLabel}.";
+            } else {
+                $title   = 'Actualización de práctica';
+                $message = "La práctica «{$nombre}» ha cambiado de estado a «{$this->estado}».";
             }
-            return "El {$actor} rechazó la programación #{$id} — «{$name}».";
+        } else {
+            $title   = 'Actualización de práctica';
+            $message = "La práctica «{$nombre}» ha tenido un cambio por favor volver a revisar.";
         }
 
-        if ($this->decision === 'aprobada') {
-            return "Tienes una programación #{$id} — «{$name}» pendiente de revisión después de la aprobación del {$actor}.";
-        }
-
-        return "Una programación #{$id} — «{$name}» fue rechazada por el {$actor}.";
+        return [
+            'programacion_id' => $p->id,
+            'actor'           => $this->actorKey,
+            'estado'          => $this->estado,
+            'tipo'            => $this->tipo,
+            'title'           => $title,
+            'message'         => $message,
+        ];
     }
 }

@@ -12,11 +12,17 @@ use App\Http\Requests\V1\StoreProgramacionRequest;
 use App\Http\Requests\V1\UpdateProgramacionRequest;
 use App\Http\Requests\V1\BulkDeleteProgramacionRequest;
 use Illuminate\Support\Facades\DB;
+use App\Services\ProgramacionFirstNotificationService;
 
 class ProgramacionController extends Controller
 {   
-    public function __construct()
+    /** @var ProgramacionFirstNotificationService */
+    protected ProgramacionFirstNotificationService $firstNotifier;
+
+    public function __construct(ProgramacionFirstNotificationService $firstNotifier)
     {
+        $this->firstNotifier = $firstNotifier;
+
         $this->middleware('permission:programaciones.view')->only(['index','show']);
         $this->middleware('permission:programaciones.create')->only(['store']);
         $this->middleware('permission:programaciones.edit')->only(['update']);
@@ -26,8 +32,8 @@ class ProgramacionController extends Controller
     public function index(IndexProgramacionRequest $request, ProgramacionFilter $filter)
     {
         $perPage = (int) $request->query('per_page', 0);
-        $q = Programacion::query();
-
+        $user    = $request->user();
+        $q = Programacion::visibleFor($user);
         $filter->apply($request, $q);
 
         if ($request->filled('q')) {
@@ -58,17 +64,21 @@ class ProgramacionController extends Controller
                     $qq->orWhere('id', (int) $term);
                 }
             });
+        }
+        
+        $sort = $request->query('sort', '-id');
+        $dir  = str_starts_with($sort, '-') ? 'desc' : 'asc';
+        $field = ltrim($sort, '-');
 
-            $sort = $request->query('sort', '-id');
-            $dir  = str_starts_with($sort, '-') ? 'desc' : 'asc';
-            $field = ltrim($sort, '-');
+        $sortMap = [
+            'id'                => 'id',
+            'estadoPractica'    => 'estado_practica',
+            'fechaInicio'       => 'fecha_inicio',
+            'fechaFinalizacion' => 'fecha_finalizacion',
+        ];
 
-            $sortMap = [
-                'id'                => 'id',
-                'estadoPractica'    => 'estado_practica',
-                'fechaInicio'       => 'fecha_inicio',
-                'fechaFinalizacion' => 'fecha_finalizacion',
-            ];
+        if (isset($sortMap[$field])) {
+            $q->orderBy($sortMap[$field], $dir);
         }
 
         return $perPage > 0
@@ -82,7 +92,7 @@ class ProgramacionController extends Controller
 
         $creacion = \App\Models\Creacion::findOrFail($request->input('creacion_id'));
 
-        $now = now();
+        $now  = now();
         $data = $request->validated();
 
         $data['nombre_practica'] = $creacion->nombre_practica;
@@ -98,9 +108,12 @@ class ProgramacionController extends Controller
 
         $programacion = Programacion::create($data);
 
-        return (new ProgramacionResource($programacion))
+        $this->firstNotifier->notifyFirstApprover($programacion);
+
+        return (new ProgramacionResource($programacion->fresh()))
             ->response()->setStatusCode(201);
     }
+
 
     public function show(Programacion $programacion)
     {
@@ -112,16 +125,36 @@ class ProgramacionController extends Controller
     {
         $this->authorize('update', $programacion);
 
+        $user = $request->user();
+
+        $wasRejected       = $programacion->estado_practica === 'rechazada';
+        $esDocenteCreador  = $user && $user->id === $programacion->usuariocreacion;
+        $esAdmin           = $user && $user->hasRole('admin'); 
+
         $data = $request->validated() + [
             'fechamodificacion'   => now(),
-            'usuariomodificacion' => auth()->id() ?? 0,
+            'usuariomodificacion' => $user?->id ?? 0,
             'ipmodificacion'      => $request->ip(),
         ];
 
-        $programacion->update($data);
+        if ($wasRejected && ($esDocenteCreador || $esAdmin)) {
+            $data['estado_practica']   = 'en_aprobacion';
+            $data['estado_depart']     = 'pendiente';
+            $data['estado_postg']      = 'pendiente';
+            $data['estado_decano']     = 'pendiente';
+            $data['estado_jefe_postg'] = 'pendiente';
+            $data['estado_vice']       = 'pendiente';
+
+            $programacion->update($data);
+
+            $this->firstNotifier->notifyFirstApprover($programacion->fresh());
+        } else {
+            $programacion->update($data);
+        }
 
         return new ProgramacionResource($programacion->refresh());
     }
+
 
     public function destroy(Programacion $programacion)
     {
