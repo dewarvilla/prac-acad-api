@@ -53,6 +53,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'creaciones.create','creaciones.edit','creaciones.delete',
 
             'rutas.view','rutas.create','rutas.edit','rutas.delete',
+
+            'catalogos.view'
             ],
 
             'jefe_departamento' => [

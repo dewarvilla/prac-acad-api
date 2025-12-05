@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Creacion;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\CreacionDecisionNotification;
 
 class CreacionApprovalController extends Controller
 {
@@ -68,6 +71,7 @@ class CreacionApprovalController extends Controller
                 'message' => "La etapa '{$actorKey}' no aplica para el flujo de esta creación."
             ], 422);
         }
+
         $idx = array_search($actorKey, $flowKeys, true);
         for ($i = 0; $i < $idx; $i++) {
             $prevCol = $flowCols[$i];
@@ -87,10 +91,11 @@ class CreacionApprovalController extends Controller
         if ($this->allRequiredApproved($c)) {
             $c->estado_creacion = 'aprobada';
             $c->save();
-        } else {
         }
 
         $this->logDecision($c, $actorKey, 'aprobada', null);
+
+        $this->notifyInApp($c, $actorKey, 'aprobada', null);
 
         return response()->json([
             'ok'   => true,
@@ -123,13 +128,17 @@ class CreacionApprovalController extends Controller
             'justificacion' => ['required','string','min:5'],
         ]);
 
+        $just = $data['justificacion'] ?? null;
+
         $c->{$column} = 'rechazada';
         $c->estado_creacion = 'rechazada';
         $c->usuariomodificacion = auth()->id() ?? 0;
         $c->ipmodificacion = $r->ip();
         $c->save();
 
-        $this->logDecision($c, $actorKey, 'rechazada', $data['justificacion'] ?? null);
+        $this->logDecision($c, $actorKey, 'rechazada', $just);
+
+        $this->notifyInApp($c, $actorKey, 'rechazada', $just);
 
         return response()->json([
             'ok'   => true,
@@ -176,5 +185,83 @@ class CreacionApprovalController extends Controller
                 'ip'             => request()->ip(),
             ]);
         }
+    }
+
+    protected function notifyInApp(
+        Creacion $c,
+        string $actorKey,
+        string $decision,
+        ?string $justificacion = null
+    ): void {
+        if ($decision === 'rechazada' && $c->usuariocreacion) {
+            $docente = User::find($c->usuariocreacion);
+
+            if ($docente) {
+                $docente->notify(
+                    new CreacionDecisionNotification(
+                        $c,
+                        $actorKey,
+                        'rechazada',
+                        'docente_rechazo',
+                        $justificacion
+                    )
+                );
+            }
+            return;
+        }
+
+        if ($decision === 'aprobada' && $actorKey === 'consejo_academico' && $c->usuariocreacion) {
+            $docente = User::find($c->usuariocreacion);
+
+            if ($docente) {
+                $docente->notify(
+                    new CreacionDecisionNotification(
+                        $c,
+                        $actorKey,
+                        'aprobada',
+                        'cambio_estado',
+                        null
+                    )
+                );
+            }
+        }
+
+        if ($decision !== 'aprobada') {
+            return;
+        }
+
+        [$keys, ] = $this->flowFor($c);
+        $idx = array_search($actorKey, $keys, true);
+        if ($idx === false || $idx >= count($keys) - 1) {
+            return; 
+        }
+
+        $nextKey = $keys[$idx + 1];
+
+        $rolesMap = [
+            'comite_acreditacion' => ['consejo_facultad'],
+            'consejo_facultad'    => ['consejo_academico'],
+        ];
+
+        $roles = $rolesMap[$actorKey] ?? [];
+        if (!$roles) {
+            return;
+        }
+
+        $users = User::role($roles)->get();
+        if ($users->isEmpty()) {
+            return;
+        }
+
+        Notification::send(
+            $users,
+            new CreacionDecisionNotification(
+                $c,
+                $nextKey,
+                'pendiente',
+                'siguiente',
+                null
+            )
+        );
     }
 }

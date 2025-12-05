@@ -232,7 +232,7 @@ class ProgramacionApprovalController extends Controller
         }
     }
 
-    protected function notifyInApp(Programacion $p, string $actorKey, string $decision): void
+    protected function notifyInApp(Programacion $p, string $actorKey, string $decision, ?string $justificacion = null): void 
     {
         if ($decision === 'rechazada' && $p->usuariocreacion) {
             $docente = User::find($p->usuariocreacion);
@@ -241,9 +241,28 @@ class ProgramacionApprovalController extends Controller
                 $docente->notify(
                     new ProgramacionDecisionNotification(
                         $p,
-                        $actorKey,          
+                        $actorKey,             // quién rechazó (depart, postg, etc.)
                         'rechazada',
-                        'docente_rechazo'
+                        'docente_rechazo',     // tipo especial para el docente
+                        $justificacion        
+                    )
+                );
+            }
+
+            return;
+        }
+
+        if ($decision === 'aprobada' && $actorKey === 'vice' && $p->usuariocreacion) {
+            $docente = User::find($p->usuariocreacion);
+
+            if ($docente) {
+                $docente->notify(
+                    new ProgramacionDecisionNotification(
+                        $p,
+                        $actorKey,         
+                        'aprobada',
+                        'cambio_estado',    
+                        null
                     )
                 );
             }
@@ -280,7 +299,13 @@ class ProgramacionApprovalController extends Controller
 
         Notification::send(
             $users,
-            new ProgramacionDecisionNotification($p, $nextKey, 'aprobada', 'siguiente')
+            new ProgramacionDecisionNotification(
+                $p,
+                $nextKey,
+                'aprobada',
+                'siguiente',
+                null
+            )
         );
     }
 }

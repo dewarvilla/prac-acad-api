@@ -4,18 +4,18 @@ namespace App\Notifications;
 
 use App\Models\Programacion;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class ProgramacionDecisionNotification extends Notification implements ShouldQueue
+class ProgramacionDecisionNotification extends Notification
 {
     use Queueable;
 
     public function __construct(
         public Programacion $programacion,
-        public string $actorKey, 
-        public string $estado,     
-        public string $tipo    
+        public string $actorKey,  // 'depart', 'postg', 'decano', 'jefe_postg', 'vice'
+        public string $estado,    // 'aprobada', 'rechazada', 'en_aprobacion'.
+        public string $tipo,       // 'creacion', 'siguiente', 'cambio_estado', 'docente', etc.
+        public ?string $justificacion = null
     ) {
     }
 
@@ -26,7 +26,7 @@ class ProgramacionDecisionNotification extends Notification implements ShouldQue
 
     public function toArray($notifiable): array
     {
-        $p = $this->programacion;
+        $p      = $this->programacion;
         $nombre = $p->nombre_practica ?? ('Práctica #'.$p->id);
 
         $actorLabel = match ($this->actorKey) {
@@ -41,9 +41,16 @@ class ProgramacionDecisionNotification extends Notification implements ShouldQue
         if ($this->tipo === 'creacion') {
             $title   = 'Nueva práctica para revisión';
             $message = "Se ha creado la práctica «{$nombre}» y requiere revisión del {$actorLabel}.";
+
         } elseif ($this->tipo === 'siguiente') {
             $title   = 'Práctica lista para su revisión';
             $message = "La práctica «{$nombre}» ha avanzado en el flujo y ahora requiere revisión del {$actorLabel}.";
+
+        } elseif ($this->tipo === 'docente_rechazo') {
+            $title   = 'Tu práctica fue rechazada';
+            $message = "Tu práctica «{$nombre}» ha sido rechazada por el {$actorLabel}. "
+                    . "Por favor revisa la justificación en el sistema.";
+
         } elseif ($this->tipo === 'cambio_estado') {
             if ($this->estado === 'aprobada') {
                 $title   = 'Práctica aprobada';
@@ -67,6 +74,7 @@ class ProgramacionDecisionNotification extends Notification implements ShouldQue
             'tipo'            => $this->tipo,
             'title'           => $title,
             'message'         => $message,
+            'justificacion'   => $this->justificacion,
         ];
     }
 }

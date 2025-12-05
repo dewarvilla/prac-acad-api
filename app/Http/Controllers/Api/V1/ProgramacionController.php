@@ -22,7 +22,6 @@ class ProgramacionController extends Controller
     public function __construct(ProgramacionFirstNotificationService $firstNotifier)
     {
         $this->firstNotifier = $firstNotifier;
-
         $this->middleware('permission:programaciones.view')->only(['index','show']);
         $this->middleware('permission:programaciones.create')->only(['store']);
         $this->middleware('permission:programaciones.edit')->only(['update']);

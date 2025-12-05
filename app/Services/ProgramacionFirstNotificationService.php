@@ -31,12 +31,14 @@ class ProgramacionFirstNotificationService
             'nivel_normalizado' => $nivel,
         ]);
 
-        if (str_contains($nivel, 'postgrad')) {
-            $actorKey = 'postg';
-            $roles    = ['coordinador_postgrados'];
+        if (str_contains($nivel, 'postgrad') || str_contains($nivel, 'posgrad')) {
+            $actorKey = 'postg';                         
+            $roles    = ['coordinador_postgrados'];      
+
         } elseif (str_contains($nivel, 'pregrad')) {
             $actorKey = 'depart';
             $roles    = ['jefe_departamento'];
+
         } else {
             Log::warning('Nivel académico no reconocido para primer aprobador', [
                 'programacion_id' => $p->id,
@@ -65,7 +67,13 @@ class ProgramacionFirstNotificationService
 
         Notification::send(
             $users,
-            new ProgramacionDecisionNotification($p, $actorKey, 'aprobada', 'siguiente')
+            new ProgramacionDecisionNotification(
+                $p,
+                $actorKey,        
+                'pendiente',      
+                'creacion',
+                null      
+            )
         );
     }
 }

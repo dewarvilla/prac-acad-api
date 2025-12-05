@@ -14,11 +14,15 @@ use App\Http\Requests\V1\UpdateCreacionRequest;
 use App\Http\Requests\V1\BulkDeleteCreacionRequest;
 use App\Exceptions\ConflictException;
 use Illuminate\Support\Facades\DB;
+use App\Services\CreacionFirstNotificationService;
 
 class CreacionController extends Controller
 {   
-    public function __construct()
+    protected CreacionFirstNotificationService $firstNotifier;
+
+    public function __construct(CreacionFirstNotificationService $firstNotifier)
     {
+        $this->firstNotifier = $firstNotifier;
         $this->middleware('permission:creaciones.view')->only(['index','show']);
         $this->middleware('permission:creaciones.create')->only(['store']);
         $this->middleware('permission:creaciones.edit')->only(['update']);
@@ -93,6 +97,11 @@ class CreacionController extends Controller
             'usuariomodificacion' => auth()->id() ?? 0,
             'ipcreacion'          => $request->ip(),
             'ipmodificacion'      => $request->ip(),
+
+            'estado_creacion'              => 'en_aprobacion',
+            'estado_comite_acreditacion'   => 'pendiente',
+            'estado_consejo_facultad'      => 'pendiente',
+            'estado_consejo_academico'     => 'pendiente',
         ];
 
         try {
@@ -103,6 +112,8 @@ class CreacionController extends Controller
             }
             throw $e;
         }
+
+        $this->firstNotifier->notifyFirstApprover($creacion->fresh());
 
         return (new CreacionResource($creacion))
             ->response()
